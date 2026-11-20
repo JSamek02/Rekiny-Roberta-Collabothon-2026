@@ -1,0 +1,229 @@
+import hashlib
+import os
+import subprocess
+import sys
+import tempfile
+import time
+import unittest
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from unittest.mock import patch
+from urllib.parse import parse_qs, urlparse
+
+from joserfc import jwt
+from joserfc.jwk import RSAKey
+from sqlalchemy import create_engine, inspect, select
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
+from sqlalchemy.pool import StaticPool
+
+from api.auth import oauth
+from app import app
+from database.models import Base, User, UserSession
+
+
+class ApiTest(unittest.TestCase):
+    def setUp(self):
+        self.engine = create_engine("sqlite://", poolclass=StaticPool)
+        Base.metadata.create_all(self.engine)
+        engine_patch = patch("database.engine", self.engine)
+        engine_patch.start()
+        self.addCleanup(engine_patch.stop)
+        self.addCleanup(self.engine.dispose)
+        self.client = app.test_client()
+        previous_secret = app.secret_key
+        app.secret_key = "test-secret"
+        self.addCleanup(setattr, app, "secret_key", previous_secret)
+
+    def test_health(self):
+        self.assertEqual(self.client.get("/api/health").get_json(), {"status": "ok"})
+        self.assertEqual(self.client.get("/api/db-health").get_json(), {"status": "ok"})
+
+    def test_database_unavailable(self):
+        with patch.object(self.engine, "connect", side_effect=SQLAlchemyError("unavailable")):
+            response = self.client.get("/api/db-health")
+        self.assertEqual(response.status_code, 503)
+
+    def test_init_db_creates_model_tables(self):
+        Base.metadata.drop_all(self.engine)
+        result = app.test_cli_runner().invoke(args=["init-db"])
+        self.assertEqual(result.exit_code, 0, result.output)
+        self.assertEqual(set(inspect(self.engine).get_table_names()), {"users", "user_sessions"})
+
+    def test_callback_rejects_missing_oauth_state(self):
+        with patch.object(oauth.google, "fetch_access_token") as fetch:
+            response = self.client.get("/api/auth/google/callback?code=test&state=wrong")
+        self.assertEqual(response.status_code, 400)
+        fetch.assert_not_called()
+
+    def test_login_redirect_uses_state_and_pkce(self):
+        google = oauth.google
+        metadata = {"authorization_endpoint": "https://accounts.google.com/o/oauth2/v2/auth"}
+        with patch.object(google, "client_id", "client-id"), \
+                patch.object(google, "client_secret", "client-secret"), \
+                patch.object(google, "load_server_metadata", return_value=metadata):
+            response = self.client.get("/api/auth/google")
+        self.assertEqual(response.status_code, 302)
+        params = parse_qs(urlparse(response.location).query)
+        self.assertTrue(params["state"][0])
+        self.assertTrue(params["nonce"][0])
+        self.assertEqual(params["code_challenge_method"], ["S256"])
+        self.assertTrue(params["code_challenge"][0])
+
+    def test_callback_rejects_unverified_email(self):
+        with patch.object(oauth.google, "authorize_access_token", return_value={
+            "userinfo": {"sub": "google-id", "email": "test@example.com", "email_verified": False}
+        }):
+            response = self.client.get("/api/auth/google/callback")
+        self.assertEqual(response.status_code, 400)
+        with Session(self.engine) as db:
+            self.assertIsNone(db.scalar(select(User)))
+
+    def test_callback_rejects_id_token_with_wrong_nonce(self):
+        google = oauth.google
+        key = RSAKey.generate_key(parameters={"kid": "test"})
+        metadata = {
+            "authorization_endpoint": "https://accounts.google.com/o/oauth2/v2/auth",
+            "issuer": "https://accounts.google.com",
+            "id_token_signing_alg_values_supported": ["RS256"],
+            "jwks": {"keys": [key.as_dict()]},
+        }
+        now = int(time.time())
+        id_token = jwt.encode({"alg": "RS256", "kid": "test"}, {
+            "iss": metadata["issuer"], "sub": "google-id", "aud": "client-id",
+            "iat": now, "exp": now + 300, "nonce": "wrong",
+            "email": "test@example.com", "email_verified": True,
+        }, key)
+        with patch.object(google, "client_id", "client-id"), \
+                patch.object(google, "client_secret", "client-secret"), \
+                patch.object(google, "load_server_metadata", return_value=metadata), \
+                patch.object(google, "fetch_access_token", return_value={"access_token": "test", "id_token": id_token}):
+            login = self.client.get("/api/auth/google")
+            state = parse_qs(urlparse(login.location).query)["state"][0]
+            response = self.client.get(f"/api/auth/google/callback?code=test&state={state}")
+        self.assertEqual(response.status_code, 400)
+
+    def test_google_login_updates_existing_user_and_logout_revokes_session(self):
+        info = {"sub": "google-id", "email": "test@example.com", "email_verified": True, "name": "Test"}
+        with patch.object(oauth.google, "authorize_access_token", return_value={"userinfo": info}):
+            response = self.client.get("/api/auth/google/callback")
+            self.assertEqual(response.status_code, 302)
+            self.assertIn("HttpOnly", response.headers["Set-Cookie"])
+            self.assertIn("SameSite=Lax", response.headers["Set-Cookie"])
+            first_id = self.client.get("/api/auth/me").get_json()["user"]["id"]
+            info["name"] = "Changed"
+            self.assertEqual(self.client.get("/api/auth/google/callback").status_code, 302)
+
+        user = self.client.get("/api/auth/me").get_json()["user"]
+        self.assertEqual((user["id"], user["name"]), (first_id, "Changed"))
+        token = self.client.get_cookie("auth_session").value
+        self.assertEqual(self.client.post("/api/auth/logout").status_code, 403)
+        response = self.client.post("/api/auth/logout", headers={"X-Requested-With": "XMLHttpRequest"})
+        self.assertEqual(response.status_code, 200)
+        self.client.set_cookie("auth_session", token)
+        self.assertEqual(self.client.get("/api/auth/me").status_code, 401)
+        with Session(self.engine) as db:
+            self.assertEqual(len(db.scalars(select(User)).all()), 1)
+            self.assertIsNone(db.get(UserSession, hashlib.sha256(token.encode()).hexdigest()))
+
+    def test_session_revocation_failure_is_not_reported_as_logout(self):
+        self.client.set_cookie("auth_session", "session-token")
+        with patch("api.auth.database", side_effect=SQLAlchemyError("unavailable")):
+            response = self.client.post("/api/auth/logout", headers={"X-Requested-With": "XMLHttpRequest"})
+        self.assertEqual(response.status_code, 503)
+        self.assertIsNotNone(self.client.get_cookie("auth_session"))
+
+    def test_mock_login_is_disabled_by_default(self):
+        response = self.client.post("/api/auth/mock", headers={"X-Requested-With": "XMLHttpRequest"})
+        self.assertEqual(response.status_code, 404)
+
+    def test_mock_login_and_logout_without_google_credentials(self):
+        headers = {"X-Requested-With": "XMLHttpRequest"}
+        with patch.dict(app.config, {"AUTH_MODE": "mock", "SECRET_KEY": None}):
+            self.assertEqual(self.client.post("/api/auth/mock").status_code, 403)
+            self.assertEqual(self.client.get("/api/auth/google").status_code, 404)
+            self.assertEqual(self.client.get("/api/auth/google/callback").status_code, 404)
+            response = self.client.post("/api/auth/mock", headers=headers)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn("HttpOnly", response.headers["Set-Cookie"])
+            self.assertEqual(self.client.get("/api/auth/me").get_json()["user"]["email"], "demo@example.invalid")
+            self.assertEqual(self.client.post("/api/auth/logout", headers=headers).status_code, 200)
+            self.assertEqual(self.client.get("/api/auth/me").status_code, 401)
+
+    def test_google_mode_rejects_real_mock_session(self):
+        with patch.dict(app.config, {"AUTH_MODE": "mock"}):
+            self.client.post("/api/auth/mock", headers={"X-Requested-With": "XMLHttpRequest"})
+            self.assertEqual(self.client.get("/api/auth/me").status_code, 200)
+        self.assertEqual(self.client.get("/api/auth/me").status_code, 401)
+
+    def test_expired_session_is_rejected(self):
+        token = "expired-token"
+        with Session(self.engine) as db, db.begin():
+            user_id = User.upsert(db, {"sub": "google-id", "email": "test@example.com"})
+            db.add(UserSession(token_hash=hashlib.sha256(token.encode()).hexdigest(), user_id=user_id,
+                               expires_at=datetime.now(timezone.utc) - timedelta(days=1)))
+        self.client.set_cookie("auth_session", token)
+        self.assertEqual(self.client.get("/api/auth/me").status_code, 401)
+
+    def test_user_creation_rolls_back_if_session_creation_fails(self):
+        with patch.dict(app.config, {"AUTH_MODE": "mock"}), \
+                patch.object(Session, "add", side_effect=SQLAlchemyError("unavailable")):
+            response = self.client.post("/api/auth/mock", headers={"X-Requested-With": "XMLHttpRequest"})
+        self.assertEqual(response.status_code, 503)
+        self.assertIsNone(self.client.get_cookie("auth_session"))
+        with Session(self.engine) as db:
+            self.assertIsNone(db.scalar(select(User)))
+
+    def test_auth_mode_flag_sets_mock_mode(self):
+        code = (
+            "import runpy, sys; from unittest.mock import patch; "
+            "sys.argv = ['app.py', '--auth-mode', 'mock']; "
+            "p = patch('flask.Flask.run'); p.start(); "
+            "namespace = runpy.run_path('app.py', run_name='__main__'); "
+            "assert namespace['app'].config['AUTH_MODE'] == 'mock'"
+        )
+        result = subprocess.run(
+            [sys.executable, "-c", code], cwd=Path(__file__).resolve().parent.parent,
+            capture_output=True, text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_env_is_loaded_before_database_and_oauth_configuration(self):
+        code = '''
+import os
+from pathlib import Path
+from unittest.mock import patch
+from dotenv import load_dotenv
+
+def load_test_env(path):
+    assert Path(path).name == ".env"
+    return load_dotenv(os.environ["TEST_ENV_FILE"])
+
+with patch("dotenv.load_dotenv", side_effect=load_test_env):
+    import app
+    import database
+    from api.auth import oauth
+    assert app.app.secret_key == "environment-key"
+    assert database.engine.url.username == "env_user"
+    assert oauth.google.client_id == "env-client"
+'''
+        with tempfile.TemporaryDirectory() as directory:
+            env_file = Path(directory) / ".env"
+            env_file.write_text(
+                "SECRET_KEY=file-key\n"
+                "DATABASE_URL=postgresql://env_user:password@localhost:5432/test\n"
+                "GOOGLE_CLIENT_ID=env-client\n"
+            )
+            env = os.environ.copy()
+            env.update(TEST_ENV_FILE=str(env_file), SECRET_KEY="environment-key")
+            env.pop("DATABASE_URL", None)
+            env.pop("GOOGLE_CLIENT_ID", None)
+            result = subprocess.run(
+                [sys.executable, "-c", code], cwd=Path(__file__).resolve().parent.parent,
+                env=env, capture_output=True, text=True,
+            )
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+
+if __name__ == "__main__":
+    unittest.main()

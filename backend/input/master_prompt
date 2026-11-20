@@ -1,0 +1,135 @@
+Poniżej znajduje się transkrypcja tekstu ze wszystkich przesłanych kartek. Zachowałem oryginalny język dokumentów, podział na sekcje oraz numerację przy zadaniach. W przypadku odręcznych notatek niektóre sformułowania zostały lekko uporządkowane, a nieczytelne fragmenty oznaczone.
+1. Challenge Card – Commerzbank (zdjęcia 1–2)
+Collabothon 2026 – Challenge Card
+Challenge title: Finance Quest
+
+Organisation: Commerzbank
+
+Contact person for challenge topics:
+- Sandra Fensterseifer
+- Thomas Muth
+- Anel Memic
+Discord Channel for general questions: #Commerzbank
+Current context
+What does the current reality look like in the context of this challenge?
+
+For many people, the barrier to making better financial decisions is not simply a lack of information. Financial products can feel complex, and even after learning the basics, people may still hesitate to take action.
+
+Meanwhile, the way people consume information is changing. Short, accessible, and engaging content is increasingly shaping expectations, while traditional learning formats can feel time-consuming and disconnected from real-life decisions.
+
+Our challenge is to bridge the gap between financial knowledge and action, creating learning experiences that reduce complexity, build confidence, and empower people to take the next step.
+Challenge
+What is the problem / challenge in this area? What is not working properly / optimally?
+
+How can we make financial learning engaging, relevant and actionable so that self-directed investors not only seek out financial knowledge, but feel confident enough to take the first step and apply what they learn?
+Goal & expected change
+What would you like to change or achieve by implementing the solution?
+
+The goal is to help self-directed investors understand financial concepts and build confidence in applying them. The proposed approach can be a gamified platform or a similar engaging learning format using missions, challenges, and real-world scenarios.
+Expected outcomes & benefits
+- demonstrable prototype showing a complete learning “mission”.
+- An explanation of the target learner and learning objective.
+- A demonstration of how the experience supports understanding and engagement.
+Fit with theme
+How does the proposed challenge fit the Collabothon 2026 theme “Innovations for all generations”?
+
+Make financial learning relevant across life stages by reflecting different goals, investment horizons, financial circumstances, and levels of experience.
+2. Lista funkcjonalności – zdjęcie 3
+Na kartce zapisano listę potencjalnych funkcjonalności aplikacji. Zachowałem liczby wpisane w kółkach, które prawdopodobnie oznaczają priorytety lub poziomy złożoności.
+Funkcjonalność	Liczba
+Logowanie, rejestracja	1
+Wylogowanie	1
+Wyświetl dostępne lekcje	1
+Wybierz kategorię / ścieżkę	1
+Pomiń lekcję w kategorii	2
+Obejrzyj wideo	1
+Przeczytaj lekcję	1
+Rozwiąż quiz	1,5
+Spersonalizuj avatar	3
+Zakup personalizację	3
+Zdobądź punkty / level / EXP	2
+Zobacz ranking	3
+Zobacz statystyki	4
+Zmodyfikuj profil (nazwa, profilowe)	3
+Rozwiąż quiz startowy	1
+Skorzystanie z czatu	2
+Skorzystanie z kalkulatora	3
+Zmień opcje accessibility	2
+Usuń konto	3
+Zresetuj postęp	3
+Edycja lekcji	4
+
+
+3. Co mogą robić użytkownicy? – zdjęcie 4
+CO MOGĄ ROBIĆ?
+1. Zalogować się / założyć konto (Google OAuth), wylogowanie.
+2. Wyświetlać dostępne lekcje.
+3. Wybierać kategorie / ścieżkę.
+4. Pomijać lekcję w kategorii.
+5. Obejrzeć materiał wideo.
+6. Przeczytać artykuł / lekcję.
+7. Rozwiązać quiz.
+8. Spersonalizować avatar (rekinka).
+9. Zakupić personalizację.
+10. Zdobyć punkty, wbić level (EXP).
+11. Zobaczyć ranking.
+12. Zobaczyć statystyki.
+13. Zmodyfikować profil (nazwa, profilowe).
+14. Rozwiązać quiz startowy.
+15. Skorzystać z czatu (text lub voice).
+16. Skorzystać z kalkulatora.
+17. Platforma do pseudoinwestowania?
+18. Accessibility (kontrast, rozmiar, język) – USTAWIENIA.
+19. Usuń konto.
+20. Zresetuj postęp.
+Dodatkowe notatki na karteczkach
+Zielone karteczki
+- „Wyświetlić poziom danej lekcji – do systemu?” (częściowo nieczytelne).
+- „Wykonane lekcje, progres, co się zrobiło”.
+- „Amortyzacja, ile ... hipoteka” (częściowo nieczytelne).
+Żółta karteczka
+
+- „W jaki sposób ma to działać?”
+
+Różowa karteczka
+
+- „Do doprecyzowania quizy”.
+4. Cele projektu – zdjęcie 5
+CELE
+1. Nauczyć użytkowników.
+2. Zaangażować (gamifikacja).
+3. Chat.
+4. Inkluzywność (ścieżki poziomów trudności).
+5. Interaktywność.
+6. Szkolenie DEMO (!?).
+7. Modularność + (kategorie i style nauki).
+8. Różne grupy wiekowe.
+9. Silnik modułów?
+10. Długo- vs krótkoterminowość.
+Na zielonej karteczce z rysunkiem maskotki:
+
+„Jakiś ludzik Robert Biznesu?” (odczyt przybliżony).
+
+Pozostałe karteczki na dole zawierają głównie szkice postaci i potencjalnych awatarów.
+5. Ficzery – zdjęcia 6–7
+Oba zdjęcia przedstawiają praktycznie tę samą kartkę, dlatego treść została przepisana jednokrotnie.
+FICZERY
+1. Chat (rozmowa głosowa).
+2. Kategorie wiedzy do nauki.
+3. RPG i drzewko umiejętności.
+4. Maskotka (ROBERT BIZNESU).
+5. SHARCOIN.
+6. Levele postaci.
+7. Rankingi.
+8. Znajomi???
+9. Statystyki, paski postępu.
+10. System rekomendacji → czego chcesz się dzisiaj nauczyć.
+11. Kalkulator finansowy.
+12. Profil – avatar i customizacja.
+13. Streak (dni nauki, dni nieresetowania giełdy).
+14. Odznaki.
+Dodatkowe fragmenty
+Na dole zdjęć widoczny jest napis PYTANIA oraz częściowo zasłonięta notatka:
+- „Interpretować grupy docelowe?” (odczyt przybliżony).
+- Pozostała treść jest zasłonięta lub nieczytelna.
+W ten sposób masz przepisaną treść ze wszystkich siedmiu zdjęć. Najważniejsze informacje projektowe znajdują się w trzech obszarach: cele wyzwania Commerzbanku, lista funkcjonalności aplikacji oraz założenia dotyczące gamifikacji i personalizacji nauki.
