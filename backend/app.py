@@ -27,11 +27,7 @@ oauth.init_app(app)
 app.register_blueprint(health)
 app.register_blueprint(auth)
 app.register_blueprint(courses)
-<<<<<<< Updated upstream
-=======
-app.register_blueprint(chat)
 app.register_blueprint(simulation)
->>>>>>> Stashed changes
 app.cli.add_command(init_db)
 
 
