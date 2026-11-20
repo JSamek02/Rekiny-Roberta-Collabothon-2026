@@ -74,6 +74,14 @@ PREBUILT_VOICES = [
         "gender": "male",
         "recommended": False,
     },
+    {
+        "id": "Algieba",
+        "name": "Algieba",
+        "style": "Smooth",
+        "description": "Gładki, opanowany i profesjonalny ton.",
+        "gender": "male",
+        "recommended": False,
+    },
 ]
 
 
