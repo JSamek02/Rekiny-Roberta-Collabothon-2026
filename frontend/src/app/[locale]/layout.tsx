@@ -3,11 +3,11 @@ import { Poppins } from 'next/font/google';
 import './globals.css';
 import { NextIntlClientProvider } from 'next-intl';
 import { Header } from '@/components/header';
-import { BottomNav } from '@/components/bottom-nav/bottom-nav';
+import { BottomNav } from '@/components/bottom-nav';
 
 const poppinsFont = Poppins({
   variable: '--font-poppins',
-  weight: ['400', '500'],
+  weight: ['400', '500', '600'],
 });
 
 export const metadata: Metadata = {
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<'/[locale]'>) {
   return (
     <html lang="en" className={`${poppinsFont.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-blue-50 font-sans">
+      <body className="min-h-full flex flex-col bg-blue-50 font-sans isolate">
         <NextIntlClientProvider>
           <Header />
           {children}

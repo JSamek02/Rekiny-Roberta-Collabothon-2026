@@ -10,7 +10,7 @@ export const BottomNav = async () => {
   const t = await getTranslations('global.routes');
 
   return (
-    <nav className="px-1.5 pt-2 pb-4 bg-white sticky bottom-0 w-full flex gap-2 shadow-bottom-nav">
+    <nav className="px-1.5 pt-2 pb-4 bg-white sticky bottom-0 w-full flex gap-2 shadow-bottom-nav z-10">
       <BottomNavItem href={routes.learning}>
         <BooksIcon />
         <span>{t('learning')}</span>
