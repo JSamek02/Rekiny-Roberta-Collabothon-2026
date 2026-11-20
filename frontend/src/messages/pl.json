@@ -1,4 +1,10 @@
 {
+  "components": {
+    "lesson-category-nav-item": {
+      "progress": "Postęp",
+      "lesson-count": "{count}/{total, plural, =1 {# lekcja} few {# lekcje} other {# lekcji}}"
+    }
+  },
   "global": {
     "routes": {
       "home": "Strona główna",

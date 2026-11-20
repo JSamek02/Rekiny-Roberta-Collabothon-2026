@@ -1,7 +1,7 @@
 import { Messages, NamespaceKeys, NestedKeyOf, useTranslations } from 'next-intl';
 import formats from '@/i18n/request';
 import { routing } from '@/i18n/routing';
-import messagesGlobal from '../messages/pl.json';
+import messagesGlobal from '../messages/en.json';
 
 export type AppLocale = (typeof routing.locales)[number];
 
