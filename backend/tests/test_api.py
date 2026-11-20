@@ -48,7 +48,10 @@ class ApiTest(unittest.TestCase):
         Base.metadata.drop_all(self.engine)
         result = app.test_cli_runner().invoke(args=["init-db"])
         self.assertEqual(result.exit_code, 0, result.output)
-        self.assertEqual(set(inspect(self.engine).get_table_names()), {"users", "user_sessions"})
+        self.assertEqual(
+            set(inspect(self.engine).get_table_names()),
+            {"users", "user_sessions", "courses", "lessons", "activities", "user_course_enrollments", "user_activity_progress"},
+        )
 
     def test_callback_rejects_missing_oauth_state(self):
         with patch.object(oauth.google, "fetch_access_token") as fetch:
