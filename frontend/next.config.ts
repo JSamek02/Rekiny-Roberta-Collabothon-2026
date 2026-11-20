@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
 
-const nextConfig: NextConfig = {
+const withNextIntl = createNextIntlPlugin();
+
+const nextConfig = {
   /* config options here */
   reactCompiler: true,
   turbopack: {
@@ -11,6 +14,6 @@ const nextConfig: NextConfig = {
       },
     },
   },
-};
+} satisfies NextConfig;
 
-export default nextConfig;
+export default withNextIntl(nextConfig);
