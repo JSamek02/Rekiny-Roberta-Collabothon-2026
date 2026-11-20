@@ -1,11 +1,17 @@
+import json
 import math
+import os
 import re
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from database.models import Course, Lesson, Activity
 from services.gemini_service import GeminiService
+
+
+CACHE_FILE = Path(__file__).resolve().parent / ".embedding_cache.json"
 
 
 # Core Curated Finance Knowledge Base (Rekiny Roberta / Commerzbank Finance Quest)
@@ -161,8 +167,25 @@ def cosine_similarity(vec_a: List[float], vec_b: List[float]) -> float:
 class RagService:
     def __init__(self, gemini_service: Optional[GeminiService] = None):
         self.gemini = gemini_service or GeminiService()
-        self._embedded_docs: Dict[str, List[float]] = {}
         self._curated_docs = list(CURATED_FINANCE_DOCUMENTS)
+        self._embedded_docs: Dict[str, List[float]] = {}
+        self._load_cache()
+
+    def _load_cache(self):
+        if CACHE_FILE.exists():
+            try:
+                with open(CACHE_FILE, "r", encoding="utf-8") as f:
+                    self._embedded_docs = json.load(f)
+            except Exception as e:
+                print(f"[RagService] Warning loading cache: {e}")
+                self._embedded_docs = {}
+
+    def _save_cache(self):
+        try:
+            with open(CACHE_FILE, "w", encoding="utf-8") as f:
+                json.dump(self._embedded_docs, f)
+        except Exception as e:
+            print(f"[RagService] Warning saving cache: {e}")
 
     def _tokenize(self, text: str) -> set[str]:
         words = re.findall(r"\w+", text.lower())
@@ -267,6 +290,7 @@ class RagService:
                     doc_vec = self.gemini.generate_embedding(f"{title}: {content}")
                     if doc_vec:
                         self._embedded_docs[doc_id] = doc_vec
+                        self._save_cache()
                 
                 if doc_vec:
                     sem_score = cosine_similarity(query_embedding, doc_vec)

@@ -11,6 +11,7 @@ Użycie:
 import argparse
 import os
 import sys
+import time
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -26,6 +27,7 @@ from services.rag_service import RagService
 
 
 def run_query(query: str, voice: str = "Puck", save_audio: bool = True):
+    t_start = time.time()
     print("=" * 70)
     print(f"🦈 PYTANIE DO ROBERTA BIZNESU: {query}")
     print(f"🎙️  WYBRANY GŁOS: {voice}")
@@ -39,8 +41,11 @@ def run_query(query: str, voice: str = "Puck", save_audio: bool = True):
 
     rag = RagService(gemini_svc)
 
-    print("\n[1/3] 🔍 Przeszukiwanie Bazy Wiedzy RAG (Retrieval-Augmented Generation)...")
+    t0 = time.time()
+    print("\n[1/3] 🔍 Przeszukiwanie Bazy Wiedzy RAG (Retrieval-Augmented Generation)...", end="", flush=True)
     sources = rag.retrieve(query, top_k=3)
+    t_rag = time.time() - t0
+    print(f" ({t_rag:.2f}s)")
     if sources:
         for idx, s in enumerate(sources, 1):
             score_str = f"dopasowanie: {s.get('score', 0):.2f}"
@@ -48,12 +53,15 @@ def run_query(query: str, voice: str = "Puck", save_audio: bool = True):
     else:
         print("   Brak bezpośrednich źródeł.")
 
-    print("\n[2/3] 🤖 Generowanie odpowiedzi Roberta Biznesu (Gemini)...")
+    t0 = time.time()
+    print("\n[2/3] 🤖 Generowanie odpowiedzi Roberta Biznesu (Gemini)...", end="", flush=True)
     chat_res = gemini_svc.generate_chat_response(
         user_message=query,
         context_chunks=sources,
         user_name="Uczeń",
     )
+    t_chat = time.time() - t0
+    print(f" ({t_chat:.2f}s)")
 
     model_used = chat_res.get("model", "nieznany")
     reply_text = chat_res.get("reply", "")
@@ -63,16 +71,21 @@ def run_query(query: str, voice: str = "Puck", save_audio: bool = True):
     print(reply_text)
     print("-" * 70)
 
+    t_tts = 0.0
     if save_audio:
-        print(f"\n[3/3] 🔊 Synteza mowy głosem '{voice}' (Gemini 3.8 Flash Lite TTS)...")
+        t0 = time.time()
+        print(f"\n[3/3] 🔊 Synteza mowy głosem '{voice}' (Gemini 3.8 Flash Lite TTS)...", end="", flush=True)
         audio_bytes, mime = gemini_svc.generate_speech(reply_text, voice=voice)
+        t_tts = time.time() - t0
+        print(f" ({t_tts:.2f}s)")
         out_filename = "odpowiedz_roberta.wav"
         out_path = backend_dir / out_filename
         with open(out_path, "wb") as f:
             f.write(audio_bytes)
         print(f"   ✓ Zapisano plik audio: {out_filename} ({len(audio_bytes):,} bajtów, format: {mime})")
 
-    print("\n✓ Test zakończony pomyślnie!\n")
+    t_total = time.time() - t_start
+    print(f"\n✓ Czas całkowity: {t_total:.2f}s (RAG: {t_rag:.2f}s | Gemini: {t_chat:.2f}s | TTS: {t_tts:.2f}s)\n")
 
 
 def interactive_mode(voice: str = "Puck"):
@@ -101,7 +114,7 @@ def main():
     parser.add_argument("query", nargs="?", default="Czym różni się akcja od obligacji i jak działa procent składany?")
     parser.add_argument("--voice", "-v", default="Puck", choices=[v["id"] for v in PREBUILT_VOICES], help="Wybór głosu Gemini TTS")
     parser.add_argument("--interactive", "-i", action="store_true", help="Uruchom tryb interaktywnego dialogu w terminalu")
-    parser.add_argument("--no-audio", action="store_true", help="Nie generuj pliku audio WAV")
+    parser.add_argument("--no-audio", "-n", action="store_true", help="Nie generuj pliku audio WAV")
 
     args = parser.parse_args()
 
