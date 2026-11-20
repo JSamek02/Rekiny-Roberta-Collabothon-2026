@@ -156,3 +156,4 @@ $RECYCLE.BIN/
 /input
 /credentials
 /backend/credentials/
+backend/credentials/database_credentials.json

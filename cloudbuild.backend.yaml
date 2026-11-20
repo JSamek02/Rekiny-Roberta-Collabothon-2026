@@ -5,6 +5,10 @@ steps:
       - --tag=us-east1-docker.pkg.dev/$PROJECT_ID/shark-finance/api:$COMMIT_SHA
       - --file=backend/Dockerfile
       - backend
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - us-east1-docker.pkg.dev/$PROJECT_ID/shark-finance/api:$COMMIT_SHA
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
     entrypoint: gcloud
     args:
