@@ -49,7 +49,8 @@ class LoginSession:
             session.clear()
         response.set_cookie(
             "auth_session", session_token, max_age=timedelta(days=7), httponly=True,
-            secure=current_app.config["SESSION_COOKIE_SECURE"], samesite="Lax",
+            secure=current_app.config["SESSION_COOKIE_SECURE"],
+            samesite=current_app.config["SESSION_COOKIE_SAMESITE"],
         )
         return response
 
@@ -147,7 +148,12 @@ class Logout(MethodView):
                 current_app.logger.exception("Could not revoke user session")
                 return jsonify(error="Database unavailable"), 503
         response = jsonify(status="ok")
-        response.delete_cookie("auth_session", httponly=True, secure=current_app.config["SESSION_COOKIE_SECURE"], samesite="Lax")
+        response.delete_cookie(
+            "auth_session",
+            httponly=True,
+            secure=current_app.config["SESSION_COOKIE_SECURE"],
+            samesite=current_app.config["SESSION_COOKIE_SAMESITE"],
+        )
         return response
 
 

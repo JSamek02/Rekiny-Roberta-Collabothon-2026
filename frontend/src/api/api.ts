@@ -14,15 +14,16 @@ export class ApiClient {
 
   constructor(config: ApiConfig = {}) {
     this.config = {
-      baseUrl: config.baseUrl || '',
-      timeout: config.timeout || Number.parseInt(process.env.NEXT_PUBLIC_API_TIMEOUT),
+      baseUrl: config.baseUrl || process.env.NEXT_PUBLIC_API_BASE_URL || '',
+      timeout: config.timeout || Number.parseInt(process.env.NEXT_PUBLIC_API_TIMEOUT || '10000', 10),
       defaultHeaders: {
         'Content-Type': 'application/json',
         ...config.defaultHeaders,
       },
       defaultOptions: {
+        credentials: 'include',
         next: {
-          revalidate: Number.parseInt(process.env.NEXT_PUBLIC_API_REVALIDATE),
+          revalidate: Number.parseInt(process.env.NEXT_PUBLIC_API_REVALIDATE || '1', 10),
           ...config.defaultOptions?.next,
         },
         ...config.defaultOptions,

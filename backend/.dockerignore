@@ -1,0 +1,13 @@
+.env
+.env.*
+credentials
+.venv
+__pycache__
+*.py[cod]
+.pytest_cache
+.mypy_cache
+.git/
+input
+tests
+README.md
+compose.yaml

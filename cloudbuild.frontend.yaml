@@ -1,0 +1,31 @@
+steps:
+  - name: bash
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        test -n "${_API_URL}"
+        case "${_API_URL}" in https://*) ;; *) exit 1;; esac
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --build-arg=NEXT_PUBLIC_API_BASE_URL=${_API_URL}
+      - --tag=us-east1-docker.pkg.dev/$PROJECT_ID/shark-finance/web:$COMMIT_SHA
+      - --file=frontend/Dockerfile
+      - frontend
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - shark-finance-web
+      - --image=us-east1-docker.pkg.dev/$PROJECT_ID/shark-finance/web:$COMMIT_SHA
+      - --region=us-east1
+      - --allow-unauthenticated
+      - --quiet
+
+images:
+  - us-east1-docker.pkg.dev/$PROJECT_ID/shark-finance/web:$COMMIT_SHA
+
+options:
+  logging: CLOUD_LOGGING_ONLY
