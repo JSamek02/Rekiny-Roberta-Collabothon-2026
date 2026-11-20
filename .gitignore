@@ -154,3 +154,7 @@ $RECYCLE.BIN/
 *.swo
 *~
 /input
+/credentials
+/backend/credentials/
+*.wav
+backend/credentials/database_credentials.json
