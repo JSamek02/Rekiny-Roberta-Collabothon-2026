@@ -98,6 +98,23 @@ class MockLogin(MethodView):
         return LoginSession.create(userinfo, jsonify(status="ok"))
 
 
+def get_authenticated_user(db):
+    token = request.cookies.get("auth_session")
+    if not token:
+        return None
+    token_hash = hashlib.sha256(token.encode()).hexdigest()
+    statement = (
+        select(User).join(UserSession, UserSession.user_id == User.id)
+        .where(
+            UserSession.token_hash == token_hash,
+            UserSession.expires_at > func.now(),
+        )
+    )
+    if current_app.config.get("AUTH_MODE") != "mock":
+        statement = statement.where(User.google_sub != MOCK_SUB)
+    return db.execute(statement).scalar_one_or_none()
+
+
 class CurrentUser(MethodView):
     def get(self):
         token = request.cookies.get("auth_session")
@@ -105,16 +122,7 @@ class CurrentUser(MethodView):
             return jsonify(error="Not authenticated"), 401
         try:
             with database() as db:
-                statement = (
-                    select(User).join(UserSession, UserSession.user_id == User.id)
-                    .where(
-                        UserSession.token_hash == hashlib.sha256(token.encode()).hexdigest(),
-                        UserSession.expires_at > func.now(),
-                    )
-                )
-                if current_app.config["AUTH_MODE"] != "mock":
-                    statement = statement.where(User.google_sub != MOCK_SUB)
-                user = db.execute(statement).scalar_one_or_none()
+                user = get_authenticated_user(db)
                 if not user:
                     return jsonify(error="Not authenticated"), 401
                 return jsonify(user=user.to_dict())

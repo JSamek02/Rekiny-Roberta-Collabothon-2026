@@ -8,6 +8,7 @@ from flask import Flask
 load_dotenv(Path(__file__).with_name(".env"))
 
 from api.auth import auth, oauth
+from api.courses import courses
 from api.health import health
 from database import init_db
 
@@ -24,6 +25,7 @@ app.config.update(
 oauth.init_app(app)
 app.register_blueprint(health)
 app.register_blueprint(auth)
+app.register_blueprint(courses)
 app.cli.add_command(init_db)
 
 
