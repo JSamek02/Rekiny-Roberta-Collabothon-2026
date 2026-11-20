@@ -154,3 +154,5 @@ $RECYCLE.BIN/
 *.swo
 *~
 /input
+/credentials
+/backend/credentials/
