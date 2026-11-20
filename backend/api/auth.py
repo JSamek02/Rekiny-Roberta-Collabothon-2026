@@ -56,6 +56,13 @@ class LoginSession:
 
 
 class GoogleLogin(MethodView):
+    """GET /api/auth/google — starts the Google OAuth flow.
+
+    The endpoint accepts no body and responds with a 302 redirect to Google.
+    It is available only when ``AUTH_MODE`` is ``google``; otherwise it returns
+    404. Missing OAuth configuration produces ``503 {\"error\": ...}``.
+    """
+
     def get(self):
         if current_app.config["AUTH_MODE"] != "google":
             return jsonify(error="Google login is disabled"), 404
@@ -68,6 +75,14 @@ class GoogleLogin(MethodView):
 
 
 class GoogleCallback(MethodView):
+    """GET /api/auth/google/callback — OAuth callback handled by Google.
+
+    Google sends ``code`` and ``state`` query parameters. After a verified
+    identity is stored, the response sets the HttpOnly ``auth_session`` cookie
+    and redirects (302) to ``FRONTEND_URL`` or ``/api/auth/me``. Invalid OAuth
+    data returns 400; unavailable persistence returns 503.
+    """
+
     def get(self):
         if current_app.config["AUTH_MODE"] != "google":
             return jsonify(error="Google login is disabled"), 404
@@ -90,6 +105,13 @@ class GoogleCallback(MethodView):
 
 
 class MockLogin(MethodView):
+    """POST /api/auth/mock — creates the local demo-user session.
+
+    Requires ``X-Requested-With: XMLHttpRequest`` and has no body. Returns
+    ``{\"status\": \"ok\"}`` plus the ``auth_session`` cookie. It is enabled
+    only with ``AUTH_MODE=mock``; production/Google mode returns 404.
+    """
+
     def post(self):
         if current_app.config["AUTH_MODE"] != "mock":
             return jsonify(error="Mock login is disabled"), 404
@@ -117,6 +139,13 @@ def get_authenticated_user(db):
 
 
 class CurrentUser(MethodView):
+    """GET /api/auth/me — returns the current session user.
+
+    Reads the HttpOnly ``auth_session`` cookie. On success the JSON response is
+    ``{\"user\": {id, email, name, picture, created_at}}``; absent, expired or
+    invalid sessions return 401.
+    """
+
     def get(self):
         token = request.cookies.get("auth_session")
         if not token:
@@ -133,6 +162,14 @@ class CurrentUser(MethodView):
 
 
 class Logout(MethodView):
+    """POST /api/auth/logout — revokes the current server-side session.
+
+    Requires ``X-Requested-With: XMLHttpRequest`` to protect against a simple
+    cross-origin form submission. The request body is empty; a successful
+    response is ``{\"status\": \"ok\"}`` and deletes ``auth_session``. A missing
+    header returns 403 and a database failure returns 503.
+    """
+
     def post(self):
         # A cross-origin browser request cannot set this header without CORS permission.
         if request.headers.get("X-Requested-With") != "XMLHttpRequest":

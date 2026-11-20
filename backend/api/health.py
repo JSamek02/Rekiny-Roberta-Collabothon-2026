@@ -10,11 +10,24 @@ health = Blueprint("health", __name__)
 
 
 class HealthCheck(MethodView):
+    """GET /api/health — liveness probe with no dependencies.
+
+    Accepts no parameters and always responds ``200 {\"status\": \"ok\"}`` while
+    the Flask application is running.
+    """
+
     def get(self):
         return jsonify(status="ok")
 
 
 class DatabaseHealthCheck(MethodView):
+    """GET /api/db-health — verifies the database connection.
+
+    Accepts no parameters. It executes ``SELECT 1`` and returns
+    ``200 {\"status\": \"ok\"}`` on success or ``503 {\"status\": \"error\"}``
+    when SQLAlchemy cannot connect.
+    """
+
     def get(self):
         try:
             with database.engine.connect() as connection:

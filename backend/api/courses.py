@@ -50,6 +50,14 @@ def check_course_completed(db, course_id: int, user_id: int) -> bool:
 
 
 class CourseListView(MethodView):
+    """GET /api/courses[?category=<category>] — lists published courses.
+
+    ``category`` is an optional query filter. The response is
+    ``{\"courses\": [...]}``; every course includes its activity and lesson
+    counts. When an ``auth_session`` cookie is valid, each item also contains
+    ``user_progress``. This endpoint is public; database failures return 503.
+    """
+
     def get(self):
         category = request.args.get("category")
         try:
@@ -110,6 +118,15 @@ class CourseListView(MethodView):
 
 
 class CourseDetailView(MethodView):
+    """GET /api/courses/<id-or-slug> — returns a published course tree.
+
+    The route accepts either a numeric course ID or a slug. The response wraps
+    the course in ``{\"course\": ...}`` and includes published lessons, their
+    activity metadata, and optional authenticated ``user_progress``. Activity
+    content itself is retrieved from ``GET /api/activities/<id>``. Missing
+    courses return 404; database failures return 503.
+    """
+
     def get(self, identifier):
         try:
             with database() as db:
@@ -199,6 +216,14 @@ class CourseDetailView(MethodView):
 
 
 class CourseEnrollView(MethodView):
+    """POST /api/courses/<course_id>/enroll — enrols in a published course.
+
+    The request has no body. Returns ``{status, enrolled, course_id,
+    persisted}``. Anonymous callers are accepted for local-storage progress and
+    receive ``persisted: false``; a signed-in caller gets a database enrollment
+    with ``persisted: true``. Missing courses return 404.
+    """
+
     def post(self, course_id: int):
         try:
             with database() as db:
@@ -239,6 +264,14 @@ class CourseEnrollView(MethodView):
 
 
 class LessonDetailView(MethodView):
+    """GET /api/lessons/<lesson_id> — returns one published lesson.
+
+    The JSON response is ``{\"lesson\": ...}`` with activity metadata and
+    ``is_completed`` flags. It is public, while a valid session adds the
+    caller's completion state. Activity content is intentionally omitted here;
+    use the activity-detail endpoint for it. Missing lessons return 404.
+    """
+
     def get(self, lesson_id: int):
         try:
             with database() as db:
@@ -278,6 +311,15 @@ class LessonDetailView(MethodView):
 
 
 class ActivityDetailView(MethodView):
+    """GET /api/activities/<activity_id> — returns activity content.
+
+    The response is ``{\"activity\": ...}``. For a quiz, ``content.questions``
+    exposes only question IDs, prompts, and options; correct answers and
+    explanations stay on the server until submission. Authenticated callers
+    additionally receive ``user_progress`` (or ``null``). Missing activities
+    return 404.
+    """
+
     def get(self, activity_id: int):
         try:
             with database() as db:
@@ -314,6 +356,15 @@ class ActivityDetailView(MethodView):
 
 
 class ActivityCompleteView(MethodView):
+    """POST /api/activities/<activity_id>/complete — completes non-quiz work.
+
+    The request has no body and is intended for articles and videos. It returns
+    ``status``, awarded XP/coins, first-completion status, lesson/course
+    completion flags and ``persisted``. Repeated completion awards zero. Quiz
+    activities return 400 and must use ``/quiz-submit`` instead; anonymous
+    progress returns ``persisted: false`` for client-side storage.
+    """
+
     def post(self, activity_id: int):
         try:
             with database() as db:
@@ -412,6 +463,15 @@ class ActivityCompleteView(MethodView):
 
 
 class QuizSubmitView(MethodView):
+    """POST /api/activities/<activity_id>/quiz-submit — grades a quiz.
+
+    Expected JSON is ``{\"answers\": {\"question_id\": \"option_id\"}}``.
+    The response contains pass/fail, score, threshold, rewards, persistence and
+    a ``review`` with correct options and explanations. XP and coins are only
+    awarded for the first passing completion. Non-quiz activities return 400;
+    anonymous results have ``persisted: false``.
+    """
+
     def post(self, activity_id: int):
         try:
             with database() as db:
@@ -559,6 +619,14 @@ class QuizSubmitView(MethodView):
 
 
 class UserProgressView(MethodView):
+    """GET /api/user/progress — returns aggregate progress for a signed-in user.
+
+    Requires a valid ``auth_session`` cookie; otherwise returns 401. Successful
+    responses are ``{\"progress\": {total_xp, total_coins,
+    completed_activities_count, enrolled_courses}}``. Each enrolled course has
+    its completion counts, percentage, enrollment date, and completion flag.
+    """
+
     def get(self):
         try:
             with database() as db:
@@ -635,6 +703,15 @@ class UserProgressView(MethodView):
 
 
 class UserProgressSyncView(MethodView):
+    """POST /api/user/progress/sync — imports anonymous local progress.
+
+    Requires authentication. Expected JSON contains ``enrolled_course_ids``
+    (an array of IDs) and ``activities`` (objects with ``activity_id`` and
+    optional ``status``, ``passed``, ``quiz_score``). It returns counts of
+    imported enrollments/activities and newly awarded XP/coins. Unknown IDs are
+    ignored; unauthenticated callers receive 401.
+    """
+
     def post(self):
         try:
             with database() as db, db.begin():

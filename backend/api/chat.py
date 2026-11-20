@@ -16,6 +16,15 @@ rag_service = RagService(gemini_service)
 
 
 class ChatMessageView(MethodView):
+    """POST /api/chat/message — generates a RAG-grounded chat reply.
+
+    Expected JSON: ``message`` (required), plus optional ``voice`` (default
+    ``Puck``), ``voice_enabled`` (default ``false``), and conversational
+    ``history``. The response contains ``reply``, model name, sources,
+    suggested lessons and, when voice is enabled, Base64 audio plus its MIME
+    type. An empty message returns 400; this endpoint is otherwise public.
+    """
+
     def post(self):
         data = request.get_json(silent=True) or {}
         user_message = (data.get("message") or "").strip()
@@ -85,6 +94,12 @@ class ChatMessageView(MethodView):
 
 
 class ChatVoicesView(MethodView):
+    """GET /api/chat/voices — returns the supported TTS voice catalogue.
+
+    The public JSON response is ``{\"voices\": [...], \"default_voice\":
+    \"Puck\", \"model\": \"gemini-3.8-flash-tts\"}``.
+    """
+
     def get(self):
         voices = gemini_service.get_voices()
         return jsonify({
@@ -95,6 +110,14 @@ class ChatVoicesView(MethodView):
 
 
 class ChatTTSView(MethodView):
+    """POST /api/chat/tts — synthesizes text with the selected voice.
+
+    Expected JSON: required ``text`` and optional ``voice`` (default ``Puck``)
+    and ``format``. The default ``format: \"audio\"`` returns an ``audio/wav``
+    response body; ``format: \"json\"`` returns ``audio_base64``, ``mime_type``
+    and ``voice``. Missing or blank text returns 400.
+    """
+
     def post(self):
         data = request.get_json(silent=True) or {}
         text = (data.get("text") or "").strip()
@@ -117,6 +140,13 @@ class ChatTTSView(MethodView):
 
 
 class ChatKnowledgeView(MethodView):
+    """GET /api/chat/knowledge — lists public RAG knowledge-base metadata.
+
+    Returns ``{\"count\": number, \"topics\": [...]}``; each topic includes its
+    ID, title, category, keywords, and optional related course slug. It does
+    not expose the full source-document content.
+    """
+
     def get(self):
         curated = [
             {
