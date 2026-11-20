@@ -1,3 +1,13 @@
 {
-  "test": "Testowy polski"
+  "global": {
+    "form": {
+      "validation": {
+        "required": "Pole wymagane",
+        "email-invalid": "Niepoprawny format",
+        "phone-invalid": "Niepoprawny format",
+        "min": "Podaj co najmniej {count, plural, =1 {# znak} few {# znaki} other {# znaków}}",
+        "max": "Podaj maksymalnie {count, plural, =1 {# znak} few {# znaki} other {# znaków}}"
+      }
+    }
+  }
 }
