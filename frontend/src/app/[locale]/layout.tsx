@@ -3,6 +3,7 @@ import { Poppins } from 'next/font/google';
 import './globals.css';
 import { NextIntlClientProvider } from 'next-intl';
 import { Header } from '@/components/header';
+import { BottomNav } from '@/components/bottom-nav/bottom-nav';
 
 const poppinsFont = Poppins({
   variable: '--font-poppins',
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: LayoutProps<'/[locale]'>) {
         <NextIntlClientProvider>
           <Header />
           {children}
+          <BottomNav />
         </NextIntlClientProvider>
       </body>
     </html>

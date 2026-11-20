@@ -1,5 +1,12 @@
 {
   "global": {
+    "routes": {
+      "home": "Strona główna",
+      "learning": "Nauka",
+      "ranking": "Ranking",
+      "stock": "Giełda",
+      "profile": "Profil"
+    },
     "form": {
       "validation": {
         "required": "Pole wymagane",

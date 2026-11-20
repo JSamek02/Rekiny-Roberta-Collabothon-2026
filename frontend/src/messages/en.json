@@ -1,0 +1,20 @@
+{
+  "global": {
+    "routes": {
+      "home": "Home",
+      "learning": "Learning",
+      "ranking": "Ranking",
+      "stock": "Stock",
+      "profile": "Profile"
+    },
+    "form": {
+      "validation": {
+        "required": "Field is required",
+        "email-invalid": "Invalid format",
+        "phone-invalid": "Invalid format",
+        "min": "Enter at least {count, plural, =1 {# character} other {# characters}}",
+        "max": "Enter at most {count, plural, =1 {# character} other {# characters}}"
+      }
+    }
+  }
+}

@@ -11,7 +11,7 @@ type UseTranslation<K extends KeyPath> = ReturnType<typeof useTranslations<K>>;
 /**
  * Type for messages JSON files
  */
-export type I18NMessages =  typeof messagesGlobal;
+export type I18NMessages = typeof messagesGlobal;
 
 /**
  * Type for `t` function. Can be namespaced using generic type
@@ -29,8 +29,8 @@ type RawI18NNesting<Path extends string, T = I18NMessages> = Path extends `${inf
     ? RawI18NNesting<Rest, T[Key]>
     : never
   : Path extends keyof T
-    ? keyof T[Path]
-    : never;
+  ? keyof T[Path]
+  : never;
 
 /** For given translation path return all object keys for this nesting. */
 export type I18NNestedKeys<Path extends NestedKeyOf<I18NMessages>> = RawI18NNesting<Path>;
