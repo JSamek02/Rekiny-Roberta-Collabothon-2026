@@ -8,7 +8,9 @@ from sqlalchemy.orm import Session
 from database.models import Base
 
 
-url = make_url(os.environ.get("DATABASE_URL", "postgresql://app:app@localhost:5432/app"))
+url = make_url(os.environ.get(
+    "DATABASE_URL", "postgresql://UZYTKOWNIK:HASLO@127.0.0.1:5433/NAZWA_BAZY"
+))
 if url.drivername in ("postgres", "postgresql"):
     url = url.set(drivername="postgresql+psycopg")
 
