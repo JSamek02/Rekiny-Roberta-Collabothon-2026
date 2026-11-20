@@ -3,6 +3,39 @@
     "lesson-category-nav-item": {
       "progress": "Progress",
       "lesson-count": "{count}/{total, plural, =1 {# lesson} other {# lessons}}"
+    },
+    "chat-fab": {
+      "cta": "Open chat",
+      "label": "Open Sharkbot chat"
+    },
+    "sharkbot-chat": {
+      "back": "Back",
+      "title-strike": "Chatbot?",
+      "title": "Sharkbot!",
+      "intro": "If you have any questions, feel free to ask me, and I'll answer your hardest questions.",
+      "voice": "Voice",
+      "voice-select": "Choose a voice",
+      "listen": "Listen",
+      "stop": "Stop",
+      "sources": "Sources",
+      "lessons": "Recommended lessons",
+      "placeholder": "Ask about money, stocks, ETFs...",
+      "placeholder-listening": "Listening...",
+      "send": "Send",
+      "mic-start": "Ask by voice",
+      "mic-stop": "Stop recording",
+      "mic-unsupported": "Speech recognition is not supported in this browser. Please type your question.",
+      "waiting-title": "Please wait!",
+      "waiting-subtitle": "We still swimming...",
+      "error": "Oops! The shark hit a technical sandbank. Please try again in a moment.",
+      "suggestions-title": "Try asking",
+      "suggestions": {
+        "stocks-bonds": "What's the difference between stocks and bonds?",
+        "compound-interest": "How does compound interest work?",
+        "emergency-fund": "How do I build an emergency fund?",
+        "etf": "What are ETFs and how do I start?",
+        "ike-ikze": "How do IKE and IKZE work in Poland?"
+      }
     }
   },
   "global": {

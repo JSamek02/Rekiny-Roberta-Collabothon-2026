@@ -1,3 +1,4 @@
+import { ChatFab } from '@/components/chat-fab';
 import { LessonCategoryNavItem } from '@/components/lesson-category-nav-item';
 import { LevelBar } from '@/components/level-bar';
 
@@ -11,6 +12,7 @@ export default async function Home() {
         <LessonCategoryNavItem />
         <LessonCategoryNavItem />
       </div>
+      <ChatFab />
       <p>
         Lorem ipsum dolor sit amet consectetur, adipisicing elit. Rem quo illum inventore quia! Repellat minus dolor,
         atque nobis ullam iusto ab harum quia nihil officiis hic amet impedit maxime corrupti facere deserunt aliquid
