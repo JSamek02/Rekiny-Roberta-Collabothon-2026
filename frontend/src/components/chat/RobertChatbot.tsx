@@ -11,7 +11,9 @@ const DEFAULT_VOICES: VoiceOption[] = [
   { id: 'Kore', name: 'Kore', style: 'Firm', description: 'Zdecydowany i profesjonalny.', gender: 'female', recommended: false },
   { id: 'Zephyr', name: 'Zephyr', style: 'Bright', description: 'Jasny i pogodny.', gender: 'female', recommended: false },
   { id: 'Fenrir', name: 'Fenrir', style: 'Excitable', description: 'Pełen zapału do inwestycji.', gender: 'male', recommended: false },
+  { id: 'Algieba', name: 'Algieba', style: 'Smooth', description: 'Gładki, opanowany i profesjonalny.', gender: 'male', recommended: false },
 ];
+
 
 const SUGGESTIONS = [
   '🦈 Czym się różni akcja od obligacji?',

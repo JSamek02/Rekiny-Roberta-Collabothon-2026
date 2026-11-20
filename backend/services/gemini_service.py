@@ -74,6 +74,14 @@ PREBUILT_VOICES = [
         "gender": "male",
         "recommended": False,
     },
+    {
+        "id": "Algieba",
+        "name": "Algieba",
+        "style": "Smooth",
+        "description": "Gładki, opanowany i profesjonalny ton.",
+        "gender": "male",
+        "recommended": False,
+    },
 ]
 
 
@@ -269,11 +277,11 @@ PYTANIE UCZNIA:
             # Clean text of markdown and keep key sentences for speech synthesis
             clean_text = text.replace("**", "").replace("#", "").replace("*", "")
             sentences = [s.strip() for s in clean_text.split(".") if s.strip()]
-            spoken_text = ". ".join(sentences[:4]) + "." if sentences else clean_text[:400]
-            if len(spoken_text) > 400:
-                spoken_text = spoken_text[:400]
+            spoken_text = ". ".join(sentences[:2]) + "." if sentences else clean_text[:220]
+            if len(spoken_text) > 220:
+                spoken_text = spoken_text[:220]
 
-            for tts_model in ["gemini-3.8-flash-lite-tts", "gemini-3.8-flash-tts"]:
+            for tts_model in ["gemini-3.8-flash-tts", "gemini-3.8-flash-lite-tts"]:
                 try:
                     interaction = self._client.interactions.create(
                         model=tts_model,
