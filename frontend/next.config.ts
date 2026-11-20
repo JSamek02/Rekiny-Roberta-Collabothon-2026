@@ -5,6 +5,7 @@ const withNextIntl = createNextIntlPlugin();
 
 const nextConfig = {
   /* config options here */
+  output: "standalone",
   reactCompiler: true,
   turbopack: {
     rules: {

@@ -19,6 +19,7 @@ from sqlalchemy.pool import StaticPool
 
 from api.auth import oauth
 from app import app
+from database import make_database_url
 from database.models import Base, User, UserSession
 
 
@@ -153,6 +154,19 @@ class ApiTest(unittest.TestCase):
             self.assertEqual(self.client.post("/api/auth/logout", headers=headers).status_code, 200)
             self.assertEqual(self.client.get("/api/auth/me").status_code, 401)
 
+    def test_session_cookie_uses_deployment_cookie_settings(self):
+        headers = {"X-Requested-With": "XMLHttpRequest"}
+        with patch.dict(app.config, {
+            "AUTH_MODE": "mock",
+            "SESSION_COOKIE_SECURE": True,
+            "SESSION_COOKIE_SAMESITE": "None",
+        }):
+            login = self.client.post("/api/auth/mock", headers=headers)
+            logout = self.client.post("/api/auth/logout", headers=headers)
+        self.assertIn("Secure", login.headers["Set-Cookie"])
+        self.assertIn("SameSite=None", login.headers["Set-Cookie"])
+        self.assertIn("SameSite=None", logout.headers["Set-Cookie"])
+
     def test_google_mode_rejects_real_mock_session(self):
         with patch.dict(app.config, {"AUTH_MODE": "mock"}):
             self.client.post("/api/auth/mock", headers={"X-Requested-With": "XMLHttpRequest"})
@@ -226,6 +240,31 @@ with patch("dotenv.load_dotenv", side_effect=load_test_env):
                 env=env, capture_output=True, text=True,
             )
         self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_cloud_run_socket_database_url(self):
+        url = make_database_url({
+            "INSTANCE_UNIX_SOCKET": "/cloudsql/project:region:instance",
+            "DB_USER": "postgres",
+            "DB_PASSWORD": "unsafe/password",
+            "DB_NAME": "postgres",
+        })
+        self.assertEqual(url.drivername, "postgresql+psycopg")
+        self.assertEqual(url.username, "postgres")
+        self.assertEqual(url.password, "unsafe/password")
+        self.assertEqual(url.database, "postgres")
+        self.assertEqual(url.query["host"], "/cloudsql/project:region:instance")
+
+    def test_allows_only_configured_frontend_origin(self):
+        origin = "https://app.example.com"
+        with patch.dict(os.environ, {"FRONTEND_ORIGIN": origin}):
+            response = self.client.options("/api/auth/logout", headers={"Origin": origin})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers["Access-Control-Allow-Origin"], origin)
+        self.assertEqual(response.headers["Access-Control-Allow-Credentials"], "true")
+        self.assertIn("Origin", response.headers["Vary"])
+
+        response = self.client.options("/api/auth/logout", headers={"Origin": "https://other.example"})
+        self.assertNotIn("Access-Control-Allow-Origin", response.headers)
 
 
 if __name__ == "__main__":
