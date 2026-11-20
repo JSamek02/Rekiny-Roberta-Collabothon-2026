@@ -109,6 +109,25 @@ def generate_synthetic_wav(duration_seconds: float = 0.5, freq: float = 440.0) -
     return buffer.getvalue()
 
 
+def pcm_to_wav(pcm: bytes, mime_type: str) -> Tuple[bytes, str]:
+    """Wraps raw 16-bit mono PCM (e.g. audio/L16;rate=24000) in a WAV container so browsers can play it."""
+    rate = 24000
+    for part in mime_type.split(";"):
+        part = part.strip().lower()
+        if part.startswith("rate="):
+            try:
+                rate = int(part[5:])
+            except ValueError:
+                pass
+    buffer = io.BytesIO()
+    with wave.open(buffer, "wb") as wav_file:
+        wav_file.setnchannels(1)
+        wav_file.setsampwidth(2)
+        wav_file.setframerate(rate)
+        wav_file.writeframes(pcm)
+    return buffer.getvalue(), "audio/wav"
+
+
 class GeminiService:
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
@@ -118,7 +137,12 @@ class GeminiService:
                 # Use v1beta for speech generation, voices, and fast interactions
                 self._client = genai.Client(
                     api_key=self.api_key,
-                    http_options={"api_version": "v1beta"},
+                    http_options={
+                        "api_version": "v1beta",
+                        # Fail fast on quota/rate-limit errors so the next model can be tried
+                        "timeout": 30000,
+                        "retry_options": {"attempts": 1},
+                    },
                 )
             except Exception as e:
                 print(f"[GeminiService] Error initializing genai.Client: {e}")
@@ -226,8 +250,18 @@ PYTANIE UCZNIA:
     def generate_speech(self, text: str, voice: str = "Puck") -> Tuple[bytes, str]:
         """
         Synthesizes speech using gemini-3.8-flash-lite-tts or gemini-3.8-flash-tts.
-        Returns (audio_bytes, mime_type).
+        Returns (audio_bytes, mime_type). Falls back to a placeholder tone when
+        real synthesis is unavailable; use try_generate_speech to detect that.
         """
+        result = self.try_generate_speech(text, voice)
+        if result is not None:
+            return result
+        # Return synthetic audio for demonstration if offline or TTS error
+        wav_bytes = generate_synthetic_wav(duration_seconds=0.8, freq=520.0)
+        return wav_bytes, "audio/wav"
+
+    def try_generate_speech(self, text: str, voice: str = "Puck") -> Optional[Tuple[bytes, str]]:
+        """Returns (audio_bytes, mime_type) from Gemini TTS, or None when unavailable."""
         valid_voice_names = {v["id"] for v in PREBUILT_VOICES}
         selected_voice = voice if voice in valid_voice_names else "Puck"
 
@@ -264,13 +298,13 @@ PYTANIE UCZNIA:
                     if interaction.output_audio and interaction.output_audio.data:
                         audio_bytes = base64.b64decode(interaction.output_audio.data)
                         mime_type = interaction.output_audio.mime_type or "audio/wav"
+                        if "l16" in mime_type.lower() or "pcm" in mime_type.lower():
+                            audio_bytes, mime_type = pcm_to_wav(audio_bytes, mime_type)
                         return audio_bytes, mime_type
                 except Exception as e:
                     print(f"[GeminiService] TTS model {tts_model} error: {e}")
 
-        # Return synthetic audio for demonstration if offline or TTS error
-        wav_bytes = generate_synthetic_wav(duration_seconds=0.8, freq=520.0)
-        return wav_bytes, "audio/wav"
+        return None
 
     def _generate_fallback_response(
         self,
