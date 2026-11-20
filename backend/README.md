@@ -33,6 +33,10 @@ API jest dostępne pod adresem `http://127.0.0.1:5000`:
 
 - `GET /api/health` — sprawdza, czy API działa.
 - `GET /api/db-health` — sprawdza połączenie z bazą; zwraca 503, gdy baza jest niedostępna.
+- `POST /api/chat/message` — czat z Robertem Biznesu oparty o RAG i Google Gemini API (`gemini-4-hydrogen`), z opcjonalną syntezą mowy (`gemini-3.8-flash-tts`).
+- `GET /api/chat/voices` — lista dostępnych głosów Gemini TTS (np. Puck, Charon, Kore, Aoede, Zephyr).
+- `POST /api/chat/tts` — bezpośrednia synteza mowy dowolnego tekstu do `audio/wav`.
+- `GET /api/chat/knowledge` — podgląd zaindeksowanych tematów finansowych w bazie RAG.
 
 ## Cloud SQL
 
@@ -95,3 +99,25 @@ await fetch('/api/auth/logout', {
 Sesja trwa siedem dni. Jej losowy identyfikator znajduje się w ciasteczku HttpOnly, a w bazie przechowywany jest tylko jego skrót. Backend nie przechowuje tokenów Google. Frontend powinien korzystać z tego samego originu co API, np. przez proxy serwera developerskiego; CORS nie jest skonfigurowany. Używaj konsekwentnie `localhost`, a nie zamiennie `127.0.0.1`, żeby ciasteczka działały poprawnie.
 
 Opcjonalnie `FRONTEND_URL` określa stały adres przekierowania po logowaniu, a `GOOGLE_REDIRECT_URI` zmienia adres callbacku (musi być również zarejestrowany w Google). W środowisku HTTPS ustaw `COOKIE_SECURE=true` i używaj adresu callbacku HTTPS. Szczegóły konfiguracji OAuth opisuje [dokumentacja Google](https://developers.google.com/identity/openid-connect/openid-connect).
+
+## Chatbot Robert Biznesu & Google Gemini API (RAG + Voice TTS)
+
+Moduł czatu finansowego wykorzystuje oficjalny pakiet `google-genai` (wersja >= 3.2.0):
+
+- **Model konwersacyjny:** `gemini-4-hydrogen` — inteligentny, szybki model zoptymalizowany pod kątem edukacji finansowej.
+- **Silnik RAG (Retrieval-Augmented Generation):**
+  - Wektoryzacja semantyczna z użyciem `gemini-embedding-2` (z hybrydowym wyszukiwaniem leksykalnym i bezpiecznym fallbackiem).
+  - Wyszukiwanie w kuratorowanej Bazie Wiedzy (poduszka finansowa, reguła 50/30/20, akcje vs obligacje, ETF-y, procent składany, inflacja, IKE/IKZE, psychologia inwestowania).
+  - Dynamiczne pobieranie i indeksowanie lekcji oraz artykułów bezpośrednio z bazy danych PostgreSQL.
+  - Zwracanie źródeł (cytowań) oraz rekomendowanych lekcji na platformie powiązanych z pytaniem użytkownika.
+- **Czat głosowy & TTS:**
+  - `gemini-3.8-flash-tts` — ekspresyjna synteza mowy w formacie WAV.
+  - Wybór głosu spośród katalogu głosów Gemini (`Puck`, `Charon`, `Kore`, `Aoede`, `Zephyr`, `Fenrir`, `Achird`, `Sadaltager`).
+
+### Konfiguracja klucza API
+
+W pliku `backend/.env` ustaw:
+```bash
+GEMINI_API_KEY=twoj_klucz_gemini_api
+```
+*(Gdy klucz nie jest ustawiony, moduł automatycznie działa w trybie demonstracyjnym z syntetycznym dźwiękiem WAV i odpowiedziami z bazy wiedzy, dzięki czemu testy i demonstracja działają bez przeszkód).*

@@ -9,5 +9,10 @@
         "max": "Podaj maksymalnie {count, plural, =1 {# znak} few {# znaki} other {# znaków}}"
       }
     }
+  },
+  "chat": {
+    "title": "Robert Biznesu — Mentor Finansowy AI",
+    "subtitle": "Edukacyjny chatbot finansowy z RAG i czatem głosowym",
+    "badge": "Gemini 4 + 3.8 TTS RAG"
   }
 }
