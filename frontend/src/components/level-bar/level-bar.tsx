@@ -1,6 +1,9 @@
 import React from 'react';
+import { getTranslations } from 'next-intl/server';
 
-export const LevelBar = () => {
+export const LevelBar = async () => {
+  const t = await getTranslations('components.level-bar');
+
   return (
     <section>
       <div className="h-11 flex justify-end relative isolate">
@@ -13,7 +16,7 @@ export const LevelBar = () => {
       </div>
       <div className="flex justify-between w-[calc(100%-2.75rem)] -mt-2 text-grey-400">
         <p>8,230</p>
-        <p>Next level 10,000</p>
+        <p>{t('next-level', { points: '10,000' })}</p>
       </div>
     </section>
   );

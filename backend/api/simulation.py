@@ -333,7 +333,15 @@ class SimulationSyncView(MethodView):
                     _persist_session_state(db, user, ev_id, s)
                     synced_count += 1
 
-                return jsonify(status="ok", synced_count=synced_count, persisted=True)
+                db_user = db.scalar(select(User).where(User.id == user.id))
+                user_shark_coins = db_user.shark_coins if db_user else None
+
+                return jsonify(
+                    status="ok",
+                    synced_count=synced_count,
+                    persisted=True,
+                    user_shark_coins=user_shark_coins,
+                )
         except SQLAlchemyError:
             current_app.logger.exception("Could not sync simulation progress")
             return jsonify(error="Database unavailable"), 503

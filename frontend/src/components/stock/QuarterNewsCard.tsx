@@ -23,6 +23,17 @@ export const QuarterNewsCard: React.FC<QuarterNewsCardProps> = ({ quarterData })
   const qReturn = quarterData.quarter_return_pct ?? 0;
   const isPositive = qReturn >= 0;
 
+  const qKey = quarterData.quarter;
+  const headline =
+    (t.has(`quarters.${qKey}.headline` as any) ? t(`quarters.${qKey}.headline` as any) : null) ||
+    quarterData.headline;
+  const context =
+    (t.has(`quarters.${qKey}.context` as any) ? t(`quarters.${qKey}.context` as any) : null) ||
+    quarterData.context;
+  const lesson =
+    (t.has(`quarters.${qKey}.lesson` as any) ? t(`quarters.${qKey}.lesson` as any) : null) ||
+    quarterData.lesson;
+
   return (
     <div className="bg-white rounded-2xl p-4 border border-blue-100 flex flex-col gap-3 shadow-sm">
       {/* Quarter Header & Headline */}
@@ -39,16 +50,16 @@ export const QuarterNewsCard: React.FC<QuarterNewsCardProps> = ({ quarterData })
             {t('portfolio-return', { prefix: isPositive ? '+' : '', value: qReturn.toFixed(2) })}
           </span>
         </div>
-        <h3 className="font-bold text-sm text-blue-950 leading-snug">{quarterData.headline}</h3>
+        <h3 className="font-bold text-sm text-blue-950 leading-snug">{headline}</h3>
       </div>
 
       {/* Historical Context */}
       <p className="text-xs text-grey-600 leading-relaxed bg-blue-50/40 p-2.5 rounded-xl border border-blue-50">
-        {quarterData.context}
+        {context}
       </p>
 
       {/* Robert Biznesu Lesson */}
-      {quarterData.lesson && (
+      {lesson && (
         <div className="flex items-start gap-2.5 bg-blue-50 p-2.5 rounded-xl border border-blue-100">
           <div className="w-8 h-8 shrink-0 relative mt-0.5">
             <Image
@@ -63,7 +74,7 @@ export const QuarterNewsCard: React.FC<QuarterNewsCardProps> = ({ quarterData })
             <span className="text-[10px] font-bold text-blue-900 uppercase tracking-wide block">
               {t('robert-lesson')}
             </span>
-            <p className="text-xs text-blue-950 font-medium leading-relaxed">{quarterData.lesson}</p>
+            <p className="text-xs text-blue-950 font-medium leading-relaxed">{lesson}</p>
           </div>
         </div>
       )}

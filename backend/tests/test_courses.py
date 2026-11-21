@@ -292,7 +292,7 @@ class CoursesApiTest(unittest.TestCase):
         self.assertEqual(res_prog.status_code, 200)
         user_prog = res_prog.get_json()["progress"]
         self.assertEqual(user_prog["total_xp"], 10 + 15 + 25)
-        self.assertEqual(user_prog["total_coins"], 5 + 5 + 10)
+        self.assertEqual(user_prog["total_coins"], 3000 + 5 + 5 + 10)
         self.assertEqual(user_prog["completed_activities_count"], 3)
         self.assertEqual(len(user_prog["enrolled_courses"]), 1)
         self.assertEqual(user_prog["enrolled_courses"][0]["percentage"], 100)

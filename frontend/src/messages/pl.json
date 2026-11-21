@@ -35,6 +35,9 @@
       "progress": "Postęp",
       "lesson-count": "{count}/{total, plural, =1 {# lekcja} few {# lekcje} other {# lekcji}}"
     },
+    "level-bar": {
+      "next-level": "Następny poziom: {points}"
+    },
     "chat-fab": {
       "label": "Otwórz czat z Sharkbotem"
     },
@@ -206,7 +209,8 @@
         "reset-modal-title": "Resetować scenariusz?",
         "reset-modal-desc": "Cały postęp w tym scenariuszu zostanie utracony i zaczniesz od nowa z domyślnym portfelem.",
         "reset-modal-cancel": "Anuluj",
-        "reset-modal-confirm": "Resetuj"
+        "reset-modal-confirm": "Resetuj",
+        "quarters-count": "{count} kwartałów"
       },
       "allocation-sliders": {
         "title-initial": "Ustal Podział Kapitału na Start",
@@ -257,7 +261,154 @@
           "gold": "Złoto",
           "cash": "Gotówka"
         },
-        "cpi-inflation": "Inflacja CPI w tym kwartale:"
+        "cpi-inflation": "Inflacja CPI w tym kwartale:",
+        "quarters": {
+          "2007-Q4": {
+            "headline": "Pierwsze pęknięcia: Bankructwa mniejszych funduszy hipotecznych",
+            "context": "Rynki akcji lekko korygują (-3.8%), ale złoto zyskuje +12.3%, a bezpieczne obligacje skarbowe rosną.",
+            "lesson": "Złoto i obligacje natychmiast reagują na pierwsze sygnały niepewności w sektorze bankowym."
+          },
+          "2008-Q1": {
+            "headline": "Marzec 2008: Upadek i przymusowe przejęcie Bear Stearns",
+            "context": "Piąty co do wielkości bank inwestycyjny na Wall Street staje na krawędzi bankructwa i zostaje przejęty przez JPMorgan przy wsparciu rządu.",
+            "lesson": "Ryzyko w sektorze finansowym rozlewa się szerzej, akcje pogłębiają spadki, a kapitał ucieka do bezpiecznych obligacji."
+          },
+          "2008-Q2": {
+            "headline": "Chwilowa stabilizacja i narastająca presja inflacyjna",
+            "context": "Ceny ropy naftowej biją historyczny rekord ($140 za baryłkę), podbijając inflację, podczas gdy gospodarka gwałtownie zwalnia.",
+            "lesson": "Zjawisko stagflacji (wysoka inflacja + spowolnienie gospodarcze) utrudnia bankom centralnym szybkie ratowanie rynków."
+          },
+          "2008-Q3": {
+            "headline": "Wrzesień 2008: Upadek Lehman Brothers i szok płynnościowy",
+            "context": "15 września 2008 roku 158-letni Lehman Brothers ogłasza upadłość. Banki na całym świecie przestają sobie ufać. Akcje lecą w dół.",
+            "lesson": "Brak poduszki płynnościowej i paniczna sprzedaż w tym momencie to najczęstszy błąd początkujących."
+          },
+          "2008-Q4": {
+            "headline": "Apogeum Paniki: Najgorszy kwartał dla akcji od lat 30.",
+            "context": "Akcje tracą aż -21.9% w zaledwie 3 miesiące. Obligacje skarbowe USA wystrzeliwują w górę o rekordowe +14.8% jako jedyna bezpieczna przystań.",
+            "lesson": "Ten kwartał udowodnił potęgę obligacji rządowych – inwestorzy z 40% w obligacjach ograniczyli stratę z -22% do zaledwie -7%."
+          },
+          "2009-Q1": {
+            "headline": "9 Marca 2009: Historyczne dno kryzysu i skrajny pesymizm",
+            "context": "Indeks S&P 500 osiąga dno na poziomie 666 punktów. W mediach dominują nagłówki o końcu kapitalizmu. Właśnie wtedy zaczyna się największa hossa w historii.",
+            "lesson": "Kupowanie lub trzymanie aktywów, gdy wszyscy wokół panikują (zasada Warrena Buffetta: 'Bądź chciwy, gdy inni się boją'), przynosi najwyższe długoterminowe zyski."
+          },
+          "2009-Q2": {
+            "headline": "Start pakietów ratunkowych i eksplozja odbicia (+15.9%)",
+            "context": "Rządy uruchamiają pakiety TARP, a Fed rozpoczyna bezprecedensowy dodruk (Quantitative Easing). Giełdy gwałtownie odbijają.",
+            "lesson": "Kto sprzedał wszystko w marcu 2009 do gotówki, bezpowrotnie stracił ten ogromny rajd wzrostowy."
+          },
+          "2009-Q3": {
+            "headline": "Kontynuacja hossy i wzrosty złota (+8.5%)",
+            "context": "Gospodarka powoli staje na nogi, a inwestorzy odzyskują zaufanie do spółek technologicznych i przemysłowych.",
+            "lesson": "Dywersyfikacja pozwala korzystać zarówno ze wzrostu akcji, jak i surowców."
+          },
+          "2009-Q4": {
+            "headline": "Powrót zaufania i zakończenie roku zyskiem",
+            "context": "Rok 2009 kończy się spektakularnym odbiciem akcji o ponad 26% w skali całego roku, mimo że zaczynał się od paniki.",
+            "lesson": "Cierpliwość i dyscyplina w inwestowaniu są ważniejsze niż próby przewidywania dołków."
+          },
+          "2010-Q1": {
+            "headline": "Stabilny początek nowego dziesięciolecia",
+            "context": "Spółki raportują poprawiające się wyniki finansowe. Odbicie gospodarcze nabiera realnych kształtów.",
+            "lesson": "Gospodarka stopniowo dostosowuje się do nowych warunków."
+          },
+          "2010-Q2": {
+            "headline": "Maj 2010: Flash Crash i kryzys zadłużeniowy w Grecji",
+            "context": "Błyskawiczne załamanie algorytmiczne (Flash Crash) oraz obawy o bankructwo Grecji wywołują gwałtowną korektę. Złoto rośnie o +11.7%.",
+            "lesson": "Korekty o 10-15% są normalną częścią każdej hossy rynkowej i nie muszą oznaczać powrotu do kryzysu."
+          },
+          "2010-Q3": {
+            "headline": "Zapowiedź QE2 przez Rezerwę Federalną",
+            "context": "Banki centralne gwarantują utrzymanie niskich stóp procentowych, co pobudza inwestycje w akcje i surowce.",
+            "lesson": "Działania polityki monetarnej mają bezpośrednie przełożenie na ceny aktywów."
+          },
+          "2010-Q4": {
+            "headline": "Silna końcówka roku na rynkach światowych",
+            "context": "Zyski przedsiębiorstw osiągają poziomy sprzed kryzysu z 2008 roku.",
+            "lesson": "Inwestowanie w globalną gospodarkę polega na wierze w zdolność firm do innowacji i adaptacji."
+          },
+          "2011-Q1": {
+            "headline": "Trzęsienie ziemi w Fukushimie i Arabski Wiosenny Niepokój",
+            "context": "Mimo wstrząsów geopolitycznych rynki zachowują stabilność, wspierane rosnącą produkcją przemysłową.",
+            "lesson": "Pojedyncze wydarzenia losowe rzadko niszczą długoterminowy trend rynkowy."
+          },
+          "2011-Q2": {
+            "headline": "Ochłodzenie koniunktury i eskalacja kryzysu w strefie euro",
+            "context": "Inwestorzy bacznie obserwują rosnące rentowności obligacji Włoch i Hiszpanii.",
+            "lesson": "Zmienność jest ceną, którą płaci się za wyższą długoterminową stopę zwrotu."
+          },
+          "2011-Q3": {
+            "headline": "Sierpień 2011: Obniżenie ratingu wiarygodności USA przez S&P",
+            "context": "Po raz pierwszy w historii agencja S&P obniża rating kredytowy USA z AAA do AA+. Akcje tracą -13.9%, a obligacje i złoto znowu ratują portfel (+12.9%).",
+            "lesson": "Kolejny dowód na ujemną korelację akcji i obligacji w momentach paniki."
+          },
+          "2011-Q4": {
+            "headline": "Koniec czteroletniej próby ognia: Rynek wychodzi obronną ręką",
+            "context": "Europejski Bank Centralny interweniuje, rynki zamykają 2011 rok mocnym rajdem, potwierdzając koniec kryzysowego cyklu.",
+            "lesson": "Przetrwałeś najgorszy kryzys od Wielkiego Kryzysu z 1929 roku. Zobacz podsumowanie swoich decyzji!"
+          },
+          "2020-Q1": {
+            "headline": "Marzec 2020: Globalny Lockdown i Błyskawiczny Krach (-19.6%)",
+            "context": "Światowa Organizacja Zdrowia ogłasza pandemię. Rynki notują najszybszy 30-procentowy zjazd w historii nowożytnej. Obligacje zyskują +8.2%, a złoto +3.9%.",
+            "lesson": "Szok płynnościowy: w panice inwestorzy wyprzedają wszystko, ale jakość i dywersyfikacja szybko chronią kapitał."
+          },
+          "2020-Q2": {
+            "headline": "Biliony z banków centralnych i eksplozja pracy zdalnej (+20.5%)",
+            "context": "Stopy procentowe spadają do 0%, rządy wysyłają czeki pomocowe, a sektor technologiczny (Zoom, Amazon, Microsoft) bije rekordy przychodów.",
+            "lesson": "Sprzedaż na dnie w marcu zamknęła drogę do tego spektakularnego odbicia."
+          },
+          "2020-Q3": {
+            "headline": "Stopniowe odmrażanie gospodarki i letnia hossa",
+            "context": "Fabryki wznawiają produkcję, zaufanie konsumentów wraca, a złoto bije historyczny rekord przekraczając 2000 USD/oz.",
+            "lesson": "Rynki giełdowe wyprzedzają realną gospodarkę o 6-12 miesięcy."
+          },
+          "2020-Q4": {
+            "headline": "Listopad 2020: Sukces Szczepionki mRNA Pfizera i BioNTech",
+            "context": "Ogłoszenie ponad 90-procentowej skuteczności szczepionki wywołuje euforię. Rozpoczyna się rajd tradycyjnych gałęzi gospodarki.",
+            "lesson": "Przełom technologiczny i naukowy potrafi całkowicie odwrócić nastroje rynkowe w ciągu kilku godzin."
+          },
+          "2021-Q1": {
+            "headline": "Rotacja w stronę tradycyjnej gospodarki i skok rentowności",
+            "context": "Masowe szczepienia ruszają na całym świecie. Oczekiwania silnego wzrostu gospodarczego uderzają w obligacje długoterminowe (-5.7%).",
+            "lesson": "Gdy rynki oczekują boomu gospodarczego, ceny obligacji o stałym oprocentowaniu mogą spadać."
+          },
+          "2021-Q2": {
+            "headline": "Pierwsze symptomy powracającej inflacji (+2.3% w kwartale)",
+            "context": "Pozrywane łańcuchy dostaw, brak mikroprocesorów i ogromny popyt konsumpcyjny podbijają ceny surowców i towarów.",
+            "lesson": "Akcje spółek o silnej pozycji rynkowej (pricing power) potrafią przerzucać rosnące koszty na klientów."
+          },
+          "2021-Q3": {
+            "headline": "Letnie wyczekiwanie i debata o 'przejściowej inflacji'",
+            "context": "Banki centralne utrzymują narrację, że inflacja jest zjawiskiem tymczasowym, rynki poruszają się w trendzie bocznym.",
+            "lesson": "W inwestowaniu okresy uspokojenia są idealnym momentem na weryfikację struktury portfela."
+          },
+          "2021-Q4": {
+            "headline": "Finał pandemicznej hossy: S&P 500 kończy rok blisko szczytu",
+            "context": "Mimo narastających wątpliwości inflacyjnych, rok 2021 kończy się imponującym zyskiem całego rynku akcji.",
+            "lesson": "Dwa lata po wybuchu największej pandemii stulecia zdywersyfikowany inwestor wypracował ponad 30-procentowy zysk."
+          },
+          "2022-Q1": {
+            "headline": "Luty 2022: Inwazja Rosji na Ukrainę i szok surowcowy",
+            "context": "Wojna w Europie wywołuje gwałtowny skok cen ropy, gazu i pszenicy. Złoto zyskuje +5.9%, podczas gdy akcje i obligacje nurkują.",
+            "lesson": "Złoto po raz kolejny potwierdza rolę bezpiecznej przystani w momentach kryzysów geopolitycznych."
+          },
+          "2022-Q2": {
+            "headline": "Agresywne podwyżki stóp przez Fed (+75 bps) i krach 60/40",
+            "context": "Inflacja w USA przekracza 9%, w Polsce bije 15%. Banki centralne gwałtownie podnoszą stopy. Rzadkie zjawisko: akcje tracą -16.1%, a obligacje -5.1%.",
+            "lesson": "Gwałtowny wzrost stóp procentowych uderza w wyceny starszych obligacji o niskim kuponie (tzw. ryzyko stopy procentowej)."
+          },
+          "2022-Q3": {
+            "headline": "Szczyt pesymizmu i mocny dolar wysysający płynność",
+            "context": "Dolar amerykański bije wieloletnie rekordy siły, drenując kapitał z rynków wschodzących i surowców.",
+            "lesson": "W okresach zacieśniania monetarnego wysoka płynność i gotówka dają komfort psychiczny i okazję do późniejszych zakupów."
+          },
+          "2022-Q4": {
+            "headline": "Inflacja zaczyna hamować, złoto wystrzeliwuje w górę (+9.8%)",
+            "context": "Pierwsze odczyty pokazują spadek dynamiki inflacji. Rynki witają to z ulgą, a premia za ryzyko zaczyna powracać.",
+            "lesson": "Najtrudniejszy rok od dekad dobiegł końca. Sprawdź, czy Twój portfel obronił realną wartość!"
+          }
+        }
       },
       "chart": {
         "title": "Wykres Wartości Portfela",
@@ -266,6 +417,8 @@
       },
       "debrief": {
         "crisis-completed": "Kryzys Zakończony",
+        "profit-awarded": "Zysk z inwestycji (+{coins} SC) został dodany do Twojego salda SharkCoins!",
+        "no-profit": "Brak zysku z inwestycji — stan SharkCoins na Twoim profilu nie uległ zmianie.",
         "final-capital": "Kapitał Końcowy",
         "nominal-return": "{prefix}{value}% zwrot nominalny",
         "real-capital": "Wartość Realna (po inflacji)",
@@ -293,7 +446,20 @@
         "verdict-title": "Werdykt Roberta Biznesu:",
         "takeaways-title": "Wnioski na Przyszłość:",
         "play-again": "Zagraj ponownie",
-        "scenarios-list": "Lista scenariuszy"
+        "scenarios-list": "Lista scenariuszy",
+        "verdicts": {
+          "sunglasses_and_suit": "Kapitalna robota, Szefie! Przetrwałeś ten historyczny sztorm z klasą i wysokim zyskiem. Pokazałeś, że rozumiesz mechanizmy rynkowe!",
+          "happy": "Dobra robota! Zakończyłeś na plusie, mimo że rynki przeżywały potężne turbulencje. Najważniejsza lekcja: rynki zawsze odrabiają straty, jeśli dasz im czas.",
+          "supportive_with_lifejacket": "Nie przejmuj się chwilowym minusem – na giełdzie straty są realne dopiero wtedy, gdy sprzedasz w dołku! Wyciągnij wnioski z tego cyklu i zobacz, jak przygotować się na kolejny etap."
+        },
+        "takeaways": {
+          "drawdown-safe": "Znakomita ochrona kapitału! Twój maksymalny spadek wyniósł zaledwie {absDd}%. Dzięki odpowiedniej dywersyfikacji uniknąłeś paniki, która dotyka większość inwestorów.",
+          "drawdown-deep": "Doświadczyłeś głębokiego obsunięcia kapitału ({absDd}%). Na rynkach akcji takie spadki zdarzają się regularnie – kluczem do przetrwania jest horyzont czasowy i poduszka bezpieczeństwa.",
+          "inflation-beat": "Pobiłeś inflację! Twój realny zysk wyniósł +{realPct}%. Oznacza to, że Twoje pieniądze nie tylko urosły w liczbach, ale realnie możesz za nie kupić więcej dóbr.",
+          "inflation-lost": "Inflacja nadszarpnęła siłę nabywczą portfela. Zwróć uwagę, że trzymanie zbyt dużej ilości gotówki gwarantuje powolną, lecz nieuchronną stratę realnej wartości.",
+          "rebalance-none": "Żelazna dyscyplina: nie dokonałeś ani jednej panicznej zmiany w trakcie kryzysu. Zgodnie ze statystykami rynkowymi, brak nerwowych ruchów to jedna z najbardziej zyskownych cech inwestora.",
+          "rebalance-active": "W trakcie cyklu dokonałeś {count} zmian w portfelu. Świadomy rebalancing pozwala dokupować przecenione aktywa, ale pamiętaj, by nie gonić rynku pod wpływem nagłówków prasowych."
+        }
       }
     }
   },

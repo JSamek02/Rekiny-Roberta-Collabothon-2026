@@ -2,13 +2,15 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { SimulationDebrief } from './types';
+import { SimulationDebrief, SimulationSession } from './types';
 import { Trophy, ShieldCheck, TrendingUp, Sparkles, Award, RotateCcw, ArrowRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useSharkCoins } from '@/hooks/use-shark-coins';
 
 interface EventDebriefModalProps {
   debrief: SimulationDebrief;
   eventTitle: string;
+  eventId?: string;
   onRestart: () => void;
   onChooseOther: () => void;
 }
@@ -22,13 +24,69 @@ const BADGE_MAP: Record<string, { key: string; icon: React.ComponentType<{ class
 export const EventDebriefModal: React.FC<EventDebriefModalProps> = ({
   debrief,
   eventTitle,
+  eventId,
   onRestart,
   onChooseOther,
 }) => {
   const t = useTranslations('components.stock.debrief');
+  const { handleInvestmentProfit } = useSharkCoins();
+
+  React.useEffect(() => {
+    const coins = debrief.sharcoins_awarded ?? 0;
+    if (coins > 0 && eventId) {
+      handleInvestmentProfit(coins, {
+        event_id: eventId,
+        status: 'completed',
+        debrief,
+      } as unknown as SimulationSession);
+    }
+  }, [debrief, eventId, handleInvestmentProfit]);
 
   const isProfit = debrief.nominal_return_pct >= 0;
   const isRealProfit = debrief.real_return_pct >= 0;
+  const coinsAwarded = debrief.sharcoins_awarded ?? 0;
+
+  const verdictMessage =
+    (debrief.robert_verdict?.mood && t.has(`verdicts.${debrief.robert_verdict.mood}` as any)
+      ? t(`verdicts.${debrief.robert_verdict.mood}` as any)
+      : null) || debrief.robert_verdict?.message;
+
+  const localizedTakeaways = React.useMemo(() => {
+    const list: string[] = [];
+    const absDd = Math.abs(debrief.max_drawdown_pct);
+    const tAny = t as any;
+    if (debrief.max_drawdown_pct > -15.0) {
+      if (t.has('takeaways.drawdown-safe' as any)) {
+        list.push(tAny('takeaways.drawdown-safe', { absDd }));
+      }
+    } else {
+      if (t.has('takeaways.drawdown-deep' as any)) {
+        list.push(tAny('takeaways.drawdown-deep', { absDd }));
+      }
+    }
+
+    if (debrief.real_return_pct > 0) {
+      if (t.has('takeaways.inflation-beat' as any)) {
+        list.push(tAny('takeaways.inflation-beat', { realPct: debrief.real_return_pct }));
+      }
+    } else {
+      if (t.has('takeaways.inflation-lost' as any)) {
+        list.push(tAny('takeaways.inflation-lost'));
+      }
+    }
+
+    if (debrief.rebalances_count === 0) {
+      if (t.has('takeaways.rebalance-none' as any)) {
+        list.push(tAny('takeaways.rebalance-none'));
+      }
+    } else {
+      if (t.has('takeaways.rebalance-active' as any)) {
+        list.push(tAny('takeaways.rebalance-active', { count: debrief.rebalances_count }));
+      }
+    }
+
+    return list.length === 3 ? list : debrief.educational_takeaways;
+  }, [debrief, t]);
 
   return (
     <div className="bg-white rounded-2xl p-5 border border-blue-200 shadow-xl flex flex-col gap-4 animate-fadeIn">
@@ -50,7 +108,7 @@ export const EventDebriefModal: React.FC<EventDebriefModalProps> = ({
         <div className="h-4 w-px bg-blue-200" />
         <div className="flex items-center gap-1.5">
           <Image src="/img/coin.svg" alt="" width={22} height={22} />
-          <span className="text-xs font-bold text-amber-800">+{debrief.sharcoins_awarded || 150} SharkCoins</span>
+          <span className="text-xs font-bold text-amber-800">+{coinsAwarded.toLocaleString()} SharkCoins</span>
         </div>
       </div>
 
@@ -143,18 +201,18 @@ export const EventDebriefModal: React.FC<EventDebriefModalProps> = ({
               {t('verdict-title')}
             </span>
             <p className="text-xs text-blue-950 font-medium leading-relaxed mt-0.5">
-              &ldquo;{debrief.robert_verdict.message}&rdquo;
+              &ldquo;{verdictMessage}&rdquo;
             </p>
           </div>
         </div>
       )}
 
       {/* Educational Takeaways */}
-      {debrief.educational_takeaways && debrief.educational_takeaways.length > 0 && (
+      {localizedTakeaways && localizedTakeaways.length > 0 && (
         <div className="bg-grey-50 p-3 rounded-xl border border-grey-100">
           <h4 className="text-xs font-bold text-blue-950 mb-1.5">{t('takeaways-title')}</h4>
           <ul className="flex flex-col gap-1.5 text-xs text-grey-700">
-            {debrief.educational_takeaways.map((point, idx) => (
+            {localizedTakeaways.map((point, idx) => (
               <li key={idx} className="flex items-start gap-1.5">
                 <span className="text-blue-500 font-bold mt-0.5">•</span>
                 <span className="leading-snug">{point}</span>

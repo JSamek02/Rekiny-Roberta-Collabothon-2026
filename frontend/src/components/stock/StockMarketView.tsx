@@ -19,6 +19,7 @@ import { AllocationSliders } from './AllocationSliders';
 import { QuarterHistoryChart } from './QuarterHistoryChart';
 import { QuarterNewsCard } from './QuarterNewsCard';
 import { EventDebriefModal } from './EventDebriefModal';
+import { useSharkCoins, clearSessionCredited } from '@/hooks/use-shark-coins';
 import {
   RotateCcw,
   Scale,
@@ -31,6 +32,7 @@ import { useTranslations } from 'next-intl';
 export const StockMarketView: React.FC = () => {
   const t = useTranslations('components.stock.view');
   const tEvents = useTranslations('components.stock.event-selector');
+  const { handleInvestmentProfit } = useSharkCoins();
 
   const [events, setEvents] = useState<SimulationEventSummary[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<SimulationEventSummary | null>(null);
@@ -114,6 +116,13 @@ export const StockMarketView: React.FC = () => {
       setSession(res.full_session);
       setAllocations(res.full_session.allocations);
       setShowRebalance(false);
+
+      if (res.full_session.status === 'completed' && res.full_session.debrief) {
+        const coinsAwarded = res.full_session.debrief.sharcoins_awarded ?? 0;
+        if (coinsAwarded > 0) {
+          handleInvestmentProfit(coinsAwarded, res.full_session);
+        }
+      }
     } catch (err: any) {
       console.error('Error advancing quarter:', err);
       setError(err.message || t('error-advance'));
@@ -128,6 +137,7 @@ export const StockMarketView: React.FC = () => {
 
   const handleResetConfirm = async () => {
     if (!selectedEvent) return;
+    clearSessionCredited(selectedEvent.id);
     setShowResetConfirm(false);
     setIsLoading(true);
     setError(null);
@@ -180,6 +190,14 @@ export const StockMarketView: React.FC = () => {
   }
 
   // View: Awaiting initial investment
+  const selectedEventTitle = selectedEvent
+    ? (tEvents.has(`short-titles.${selectedEvent.id}` as any)
+        ? tEvents(`short-titles.${selectedEvent.id}` as any)
+        : null) ||
+      SHORT_EVENT_TITLES[selectedEvent.id] ||
+      selectedEvent.title
+    : '';
+
   if (session.status === 'awaiting_initial_investment') {
     return (
       <div className="py-4 px-4 flex flex-col gap-4 max-w-md mx-auto w-full">
@@ -200,12 +218,12 @@ export const StockMarketView: React.FC = () => {
         {/* Intro banner */}
         <div className="bg-white rounded-2xl p-4 border border-blue-100 flex flex-col gap-2">
           <h2 className="text-base font-bold text-blue-950">
-            {SHORT_EVENT_TITLES[selectedEvent.id] || selectedEvent.title}
+            {selectedEventTitle}
           </h2>
           <div className="flex items-center gap-2 text-xs font-semibold text-grey-600">
             <span>{selectedEvent.period}</span>
             <span>•</span>
-            <span>{selectedEvent.total_quarters} kwartałów</span>
+            <span>{t('quarters-count', { count: selectedEvent.total_quarters })}</span>
           </div>
           <div className="p-2.5 rounded-xl bg-blue-50/60 border border-blue-100 text-xs text-grey-700 mt-1 leading-relaxed">
             {(tEvents.has(`descriptions.${selectedEvent.id}` as any)
@@ -265,7 +283,8 @@ export const StockMarketView: React.FC = () => {
       <div className="py-4 px-4 flex flex-col gap-4 max-w-md mx-auto w-full">
         <EventDebriefModal
           debrief={session.debrief}
-          eventTitle={SHORT_EVENT_TITLES[selectedEvent.id] || selectedEvent.title}
+          eventTitle={selectedEventTitle}
+          eventId={selectedEvent.id}
           onRestart={handleResetConfirm}
           onChooseOther={handleBackToEvents}
         />
@@ -310,7 +329,7 @@ export const StockMarketView: React.FC = () => {
       <div className="bg-white rounded-2xl p-4 border border-blue-100 flex flex-col gap-2">
         <div className="flex items-center justify-between text-xs">
           <span className="font-bold text-blue-950 truncate max-w-[200px]">
-            {SHORT_EVENT_TITLES[selectedEvent.id] || selectedEvent.title}
+            {selectedEventTitle}
           </span>
           <span className="font-semibold text-blue-600">
             {t('quarter-progress', { current: currentIdx, total: session.total_quarters })}

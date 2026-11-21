@@ -241,9 +241,18 @@ def generate_event_debrief(session: Dict[str, Any]) -> Dict[str, Any]:
             "Wyciągnij wnioski z tego cyklu i zobacz, jak przygotować się na kolejny etap."
         )
 
+    nominal_profit = round(final - initial, 2)
+    real_profit = round(real - initial, 2)
+    # Zysk z inwestycji dodaje się do SharkCoinów już PO INFLACJI (zysk realny).
+    # Np. kapitał początkowy 10 000 zł, wartość realna po inflacji 10 783,67 zł -> zysk 783,67 zł -> 784 SharkCoinów.
+    # Jeśli użytkownik stracił realnie (real_profit <= 0), nic się nie dzieje (0 monet).
+    profit_coins = max(0, int(round(real_profit))) if real_profit > 0 else 0
+
     return {
         "initial_capital": initial,
         "final_capital": final,
+        "nominal_profit": nominal_profit,
+        "real_profit": real_profit,
         "nominal_return_pct": nom_pct,
         "real_capital": real,
         "real_return_pct": real_pct,
@@ -256,5 +265,5 @@ def generate_event_debrief(session: Dict[str, Any]) -> Dict[str, Any]:
         "educational_takeaways": takeaways,
         "badges_earned": badges,
         "xp_awarded": 300,
-        "sharcoins_awarded": 150,
+        "sharcoins_awarded": profit_coins,
     }
