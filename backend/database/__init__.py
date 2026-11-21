@@ -73,6 +73,20 @@ def upgrade_user_profile_columns():
                     "CHECK (role IN ('user', 'creator', 'partner'))"
                 ))
 
+        if "experience_points" not in columns:
+            connection.execute(text(
+                "ALTER TABLE users ADD COLUMN experience_points INTEGER NOT NULL DEFAULT 0"
+            ))
+            connection.execute(text("""
+                UPDATE users
+                SET experience_points = COALESCE(
+                    (SELECT SUM(xp_earned)
+                     FROM user_activity_progress
+                     WHERE user_activity_progress.user_id = users.id),
+                    0
+                )
+            """))
+
 
 def upgrade_content_translation_columns():
     """Add translation containers for courses, lessons, and activities."""

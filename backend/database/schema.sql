@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
     picture TEXT,
     preferred_language VARCHAR(2) NOT NULL DEFAULT 'pl',
     shark_coins INTEGER NOT NULL DEFAULT 0,
+    experience_points INTEGER NOT NULL DEFAULT 0,
     role VARCHAR(16) NOT NULL DEFAULT 'user'
         CONSTRAINT ck_users_role CHECK (role IN ('user', 'creator', 'partner')),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -58,7 +59,7 @@ CREATE TABLE IF NOT EXISTS activities (
     xp_reward INTEGER NOT NULL DEFAULT 10,
     coin_reward INTEGER NOT NULL DEFAULT 5,
     estimated_minutes INTEGER NOT NULL DEFAULT 3,
-    content JSONB NOT NULL DEFAULT '{}'::jsonb,
+    content JSONB NOT NULL DEFAULT '{}'::jsonb, -- article/quiz may include image metadata: url, alt, caption
     translations JSONB NOT NULL DEFAULT '{}'::jsonb,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),

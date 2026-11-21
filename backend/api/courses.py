@@ -547,6 +547,9 @@ class ActivityCompleteView(MethodView):
                     progress.completed_at = now
 
                 user.shark_coins += coins_earned
+                user.experience_points += xp_earned
+                shark_coins = user.shark_coins
+                experience_points = user.experience_points
                 db.flush()
 
                 # Check lesson and course completion
@@ -571,6 +574,8 @@ class ActivityCompleteView(MethodView):
                 activity_id=activity_id,
                 xp_earned=xp_earned,
                 coins_earned=coins_earned,
+                shark_coins=shark_coins,
+                experience_points=experience_points,
                 is_first_completion=is_first_completion,
                 lesson_completed=lesson_completed,
                 course_completed=course_completed,
@@ -698,6 +703,9 @@ class QuizSubmitView(MethodView):
                         progress.completed_at = now
 
                 user.shark_coins += coins_earned
+                user.experience_points += xp_earned
+                shark_coins = user.shark_coins
+                experience_points = user.experience_points
                 db.flush()
 
                 lesson = db.scalar(select(Lesson).where(Lesson.id == activity.lesson_id))
@@ -725,6 +733,8 @@ class QuizSubmitView(MethodView):
                 total_questions=total_questions,
                 xp_earned=xp_earned,
                 coins_earned=coins_earned,
+                shark_coins=shark_coins,
+                experience_points=experience_points,
                 is_first_completion=is_first_completion,
                 lesson_completed=lesson_completed,
                 course_completed=course_completed,
@@ -745,10 +755,6 @@ class UserProgressView(MethodView):
                 if not user:
                     return jsonify(error="Not authenticated"), 401
 
-                total_xp = db.scalar(
-                    select(func.coalesce(func.sum(UserActivityProgress.xp_earned), 0))
-                    .where(UserActivityProgress.user_id == user.id)
-                ) or 0
                 completed_activities_count = db.scalar(
                     select(func.count(UserActivityProgress.id))
                     .where(
@@ -798,7 +804,8 @@ class UserProgressView(MethodView):
 
                 return jsonify(
                     progress={
-                        "total_xp": int(total_xp),
+                        "total_xp": int(user.experience_points),
+                        "experience_points": int(user.experience_points),
                         "total_coins": int(user.shark_coins),
                         "shark_coins": int(user.shark_coins),
                         "completed_activities_count": int(completed_activities_count),
@@ -915,6 +922,7 @@ class UserProgressSyncView(MethodView):
                             enrollment.completed_at = now
 
                 user.shark_coins += total_new_coins
+                user.experience_points += total_new_xp
 
             return jsonify(
                 status="ok",

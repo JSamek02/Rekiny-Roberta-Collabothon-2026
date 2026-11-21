@@ -31,6 +31,20 @@ Wszystkie odpowiedzi poza plikiem MP4 i strumieniem TTS są w JSON-ie. Błędy m
 
 `lesson` ma `id`, `course_id`, `title`, `description`, `order_index`, `xp_reward` i `is_published`. `activity` ma `id`, `lesson_id`, `title`, `activity_type` (`article`, `quiz` lub `video`), `order_index`, `xp_reward`, `coin_reward` i `estimated_minutes`.
 
+### Treść i obrazy aktywności
+
+Treść aktywności jest w `content`, a jej wersje językowe w `translations.<pl|en|de>.content`. Obraz ma postać:
+
+```json
+{"url":"/img/example.png","alt":"Opis alternatywny","caption":"Opcjonalny podpis"}
+```
+
+- `article`: używa `markdown`, opcjonalnego `reading_time_minutes` i opcjonalnego głównego `image`. Dodatkowe obrazy można osadzać jako osobne linie Markdown, np. `![Opis](/img/example.png)`.
+- `quiz`: `content.questions[]` ma `id`, `prompt`, `options[]` oraz opcjonalny `image` w powyższej postaci. Poprawna odpowiedź `correct_option_id` i `explanation` pozostają wyłącznie w bazowej treści.
+- `video`: zachowuje opis i metadane w `content`; sam MP4 jest w `activity_videos`.
+
+Frontend wyświetla adresy obrazów zaczynające się od `/` albo pełne adresy `http(s)`. W danych tłumaczenia pytania i odpowiedzi zachowują te same identyfikatory.
+
 ## Stan aplikacji
 
 ### `GET /api/health`
@@ -108,6 +122,7 @@ Odpowiedź `200`:
     "picture": "https://…",
     "preferred_language": "pl",
     "shark_coins": 25,
+    "experience_points": 120,
     "role": "user",
     "created_at": "2026-11-21T10:00:00+00:00"
   }
@@ -235,8 +250,8 @@ Odpowiedź `200`:
 }
 ```
 
-- Dla `article`, `content` zawiera zwykle `markdown` i opcjonalnie `reading_time_minutes`.
-- Dla `quiz`, `content.questions` zawiera `id`, `prompt` i `options`; poprawna odpowiedź nie jest zwracana przed wysłaniem quizu.
+- Dla `article`, `content` zawiera zwykle `markdown`, opcjonalnie `reading_time_minutes` oraz `image`. Obrazy w samym Markdown są zwracane jako zwykła treść tekstowa.
+- Dla `quiz`, `content.questions` zawiera `id`, `prompt`, `options` oraz opcjonalnie `image`; poprawna odpowiedź nie jest zwracana przed wysłaniem quizu.
 - Dla lokalnie przechowywanego `video`, `content` dostaje `video_url`, `video_filename`, `video_mime_type`, `video_size_bytes` i `video_language`.
 - `user_progress` występuje tylko dla zalogowanego użytkownika i ma pola: `status`, `quiz_score`, `passed`, `attempts_count`, `xp_earned`, `coins_earned`, `completed_at`.
 
@@ -252,6 +267,8 @@ Odpowiedź `200`:
   "activity_id":100,
   "xp_earned":10,
   "coins_earned":5,
+  "shark_coins":25,
+  "experience_points":120,
   "is_first_completion":true,
   "lesson_completed":false,
   "course_completed":false,
@@ -276,7 +293,7 @@ Body JSON:
 }
 ```
 
-Klucz to `id` pytania, a wartość to `id` wybranej opcji. Odpowiedź `200` zawiera `passed`, `score`, `passing_score`, `correct_count`, `total_questions`, `xp_earned`, `coins_earned`, `is_first_completion`, `lesson_completed`, `course_completed`, `persisted` oraz `review`. Każdy element `review` ma `question_id`, `prompt`, `submitted_option`, `correct_option`, `is_correct` i `explanation`.
+Klucz to `id` pytania, a wartość to `id` wybranej opcji. Odpowiedź `200` zawiera `passed`, `score`, `passing_score`, `correct_count`, `total_questions`, `xp_earned`, `coins_earned`, `shark_coins`, `experience_points`, `is_first_completion`, `lesson_completed`, `course_completed`, `persisted` oraz `review`. Każdy element `review` ma `question_id`, `prompt`, `submitted_option`, `correct_option`, `is_correct` i `explanation`.
 
 Gość otrzymuje wynik z `persisted:false`; dla niego `is_first_completion` jest zawsze `true`. `400` oznacza aktywność inną niż quiz, a `404` jej brak.
 
@@ -290,6 +307,7 @@ Odpowiedź `200`:
 {
   "progress": {
     "total_xp": 40,
+    "experience_points": 40,
     "total_coins": 15,
     "shark_coins": 15,
     "completed_activities_count": 2,

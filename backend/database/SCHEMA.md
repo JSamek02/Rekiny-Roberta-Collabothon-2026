@@ -16,11 +16,11 @@ erDiagram
 
 | Tabela | Klucz / relacje | Najważniejsze dane |
 | --- | --- | --- |
-| `users` | `id`, unikalne `google_sub` | profil Google, `preferred_language`, saldo `shark_coins`, typ konta `role` (`user`, `creator`, `partner`) |
+| `users` | `id`, unikalne `google_sub` | profil Google, `preferred_language`, salda `shark_coins` i `experience_points`, typ konta `role` (`user`, `creator`, `partner`) |
 | `user_sessions` | `token_hash`, `user_id → users` | skrót tokenu sesji i jej data wygaśnięcia |
 | `courses` | `id`, unikalne `slug` | dane kursu i JSON `translations` dla `pl/en/de` |
 | `lessons` | `id`, `course_id → courses` | kolejność, XP, publikacja i tłumaczenia |
-| `activities` | `id`, `lesson_id → lessons` | `article`, `quiz` albo `video`; JSON `content` i `translations` |
+| `activities` | `id`, `lesson_id → lessons` | `article`, `quiz` albo `video`; JSON `content` i `translations`, w tym opcjonalne obrazy artykułów oraz pytań |
 | `activity_videos` | `id`, `activity_id → activities`, unikalne `(activity_id, language)` | binarne MP4 (`BYTEA`) i metadane konkretnej wersji językowej |
 | `user_course_enrollments` | `user_id → users`, `course_id → courses`, unikalna para | zapis użytkownika i status ukończenia kursu |
 | `user_activity_progress` | `user_id → users`, `activity_id → activities`, unikalna para | wynik quizu, odpowiedzi, XP, SharkCoiny i ukończenie |
@@ -30,5 +30,7 @@ erDiagram
 - Usunięcie kursu usuwa jego lekcje, aktywności, filmy i zależny postęp przez `ON DELETE CASCADE`.
 - Polski tekst jest w głównych kolumnach; angielski i niemiecki są w `translations` typu `JSONB`.
 - Quiz przechowuje pytania w `activities.content`; poprawne odpowiedzi pozostają po stronie backendu i nie są zwracane przez szczegół aktywności.
+- Pierwsze zaliczenie aktywności zapisuje `user_activity_progress` oraz zwiększa salda `shark_coins` i `experience_points` użytkownika. Kolejne ukończenia nie przyznają nagrody drugi raz.
+- Obraz artykułu jest w `content.image`, a obraz pytania quizu w `content.questions[].image` jako JSON z `url`, `alt` i opcjonalnym `caption`. Dodatkowe obrazy artykułu można zapisać w Markdown (`![opis](url)`).
 - Film ma osobny rekord dla każdego dostępnego języka. Dane MP4 są `deferred` w ORM, więc lista kursów nie odczytuje binariów.
 - Symulacja inwestowania nie ma tabeli: jej stan jest obecnie pamięcią procesu backendu.

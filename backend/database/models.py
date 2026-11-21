@@ -42,6 +42,9 @@ class User(Base):
     shark_coins: Mapped[int] = mapped_column(
         Integer, nullable=False, default=0, server_default="0"
     )
+    experience_points: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0, server_default="0"
+    )
     role: Mapped[str] = mapped_column(
         String(16), nullable=False, default=DEFAULT_USER_ROLE, server_default=DEFAULT_USER_ROLE
     )
@@ -76,7 +79,8 @@ class User(Base):
         return {
             "id": self.id, "email": self.email, "name": self.name,
             "picture": self.picture, "preferred_language": self.preferred_language,
-            "shark_coins": self.shark_coins, "role": self.role, "created_at": self.created_at,
+            "shark_coins": self.shark_coins, "experience_points": self.experience_points,
+            "role": self.role, "created_at": self.created_at,
         }
 
 
@@ -205,8 +209,11 @@ class Activity(Base):
 
     def localized_content(self, language="pl"):
         translation = get_translation(self.translations, language)
-        content = translation.get("content")
-        return content if isinstance(content, dict) else self.content
+        translated_content = translation.get("content")
+        content = dict(self.content or {})
+        if isinstance(translated_content, dict):
+            content.update(translated_content)
+        return content
 
     def to_dict(self, include_content=True, sanitize_quiz=True, language="pl"):
         translation = get_translation(self.translations, language)
@@ -224,13 +231,24 @@ class Activity(Base):
             content = self.localized_content(language)
             content_copy = dict(content) if content else {}
             if self.activity_type == "quiz" and sanitize_quiz and "questions" in content_copy:
+                base_questions = {
+                    str(question.get("id")): question
+                    for question in (self.content or {}).get("questions", [])
+                }
                 sanitized_questions = []
                 for q in content_copy.get("questions", []):
+                    image = q.get("image") or base_questions.get(str(q.get("id")), {}).get("image")
                     sanitized_q = {
                         "id": q.get("id"),
                         "prompt": q.get("prompt"),
                         "options": q.get("options", []),
                     }
+                    if isinstance(image, dict) and isinstance(image.get("url"), str):
+                        sanitized_q["image"] = {
+                            key: image[key]
+                            for key in ("url", "alt", "caption")
+                            if isinstance(image.get(key), str)
+                        }
                     sanitized_questions.append(sanitized_q)
                 content_copy["questions"] = sanitized_questions
             data["content"] = content_copy

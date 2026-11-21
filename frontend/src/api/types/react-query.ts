@@ -1,12 +1,15 @@
 import {
+  QueryKey,
   UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
   UseQueryResult,
 } from '@tanstack/react-query';
 
-export type UseQueryPartialOptions<T> = Partial<UndefinedInitialDataOptions<T, Error, T, string[]>>;
-export type UseMutationPartialOptions<T = void> = Partial<UseMutationOptions<T, Error, unknown, unknown>>;
+export type UseQueryPartialOptions<T> = Partial<UndefinedInitialDataOptions<T, Error, T, QueryKey>>;
+export type UseMutationPartialOptions<TResponse = void, TVariables = unknown> = Partial<
+  UseMutationOptions<TResponse, Error, TVariables, unknown>
+>;
 
 type QueryWithoutParams<TResponse> = (options?: UseQueryPartialOptions<TResponse>) => UseQueryResult<TResponse, Error>;
 type QueryWithParams<TResponse, TRequest> = (
@@ -19,5 +22,5 @@ export type UseReactQuery<TResponse, TRequest = never> = TRequest extends never
   : QueryWithParams<TResponse, TRequest>;
 
 export type UseReactQueryMutation<TResponse, TRequestBody> = (
-  options?: UseMutationPartialOptions<TResponse>,
+  options?: UseMutationPartialOptions<TResponse, TRequestBody>,
 ) => UseMutationResult<TResponse, Error, TRequestBody>;
