@@ -3,11 +3,19 @@
 import { HeaderExperience } from '@/components/header/header-experience';
 import { HeaderUser } from '@/components/header/header-user';
 import { useSharkCoins } from '@/hooks/use-shark-coins';
+import { usePathname } from '@/i18n/navigation';
+import { routes } from '@/utils/routes';
 import Image from 'next/image';
 import React from 'react';
 
 export const Header = () => {
   const { sharkCoins } = useSharkCoins();
+  const pathname = usePathname();
+  const isQuiz = pathname === routes.startingQuiz;
+
+  if (isQuiz) {
+    return null;
+  }
 
   return (
     <header className="w-full px-5 pt-10 pb-4 flex justify-between sticky top-0 z-10 bg-blue-50">
