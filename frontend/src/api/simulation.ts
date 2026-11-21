@@ -5,7 +5,7 @@ import {
   SimulationEventDetailResponse,
   SimulationSession,
   StepQuarterResponse,
-} from './types/simulation';
+} from './services/simulation-service';
 
 export async function getSimulationEvents(): Promise<SimulationEventsResponse> {
   const client = await getApiClient();

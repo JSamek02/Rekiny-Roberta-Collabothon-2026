@@ -1,1 +1,1 @@
-export * from '@/api/types/simulation';
+export * from '@/api/services/simulation-service';
