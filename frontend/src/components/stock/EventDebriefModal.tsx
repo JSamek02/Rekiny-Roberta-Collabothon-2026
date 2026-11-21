@@ -118,8 +118,9 @@ export const EventDebriefModal: React.FC<EventDebriefModalProps> = ({
       <div className="grid grid-cols-2 gap-2 text-xs">
         <div className="p-3 rounded-xl bg-grey-50 border border-grey-100">
           <span className="text-grey-600 block text-[11px]">{t('final-capital')}</span>
-          <span className="text-base font-bold text-blue-950">
-            {debrief.final_capital.toLocaleString(undefined, { minimumFractionDigits: 2 })} zł
+          <span className="text-base font-bold text-blue-950 flex items-center gap-1.5 mt-0.5">
+            <Image src="/img/coin.svg" alt="SC" width={16} height={16} className="inline-block shrink-0" />
+            <span>{debrief.final_capital.toLocaleString(undefined, { minimumFractionDigits: 2 })} SC</span>
           </span>
           <span className={`text-[11px] font-bold block mt-0.5 ${isProfit ? 'text-[#10b981]' : 'text-[#ef4444]'}`}>
             {t('nominal-return', { prefix: isProfit ? '+' : '', value: debrief.nominal_return_pct })}
@@ -128,8 +129,9 @@ export const EventDebriefModal: React.FC<EventDebriefModalProps> = ({
 
         <div className="p-3 rounded-xl bg-grey-50 border border-grey-100">
           <span className="text-grey-600 block text-[11px]">{t('real-capital')}</span>
-          <span className="text-base font-bold text-blue-950">
-            {debrief.real_capital.toLocaleString(undefined, { minimumFractionDigits: 2 })} zł
+          <span className="text-base font-bold text-blue-950 flex items-center gap-1.5 mt-0.5">
+            <Image src="/img/coin.svg" alt="SC" width={16} height={16} className="inline-block shrink-0" />
+            <span>{debrief.real_capital.toLocaleString(undefined, { minimumFractionDigits: 2 })} SC</span>
           </span>
           <span className={`text-[11px] font-bold block mt-0.5 ${isRealProfit ? 'text-[#10b981]' : 'text-[#ef4444]'}`}>
             {t('real-return', { prefix: isRealProfit ? '+' : '', value: debrief.real_return_pct })}

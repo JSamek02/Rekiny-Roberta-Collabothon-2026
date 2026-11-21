@@ -146,13 +146,18 @@ class SimulationEventsListView(MethodView):
 
                 events_summary = []
                 for ev in SIMULATION_EVENTS:
+                    starting_capital = (
+                        float(user.shark_coins)
+                        if (user and user.shark_coins and user.shark_coins > 0)
+                        else float(ev["starting_capital"])
+                    )
                     ev_data = {
                         "id": ev["id"],
                         "order_index": ev["order_index"],
                         "title": ev["title"],
                         "period": ev["period"],
                         "total_quarters": ev["total_quarters"],
-                        "starting_capital": ev["starting_capital"],
+                        "starting_capital": starting_capital,
                         "initial_context": ev["initial_context"],
                     }
                     if user and ev["id"] in user_progress_map:
@@ -165,6 +170,20 @@ class SimulationEventsListView(MethodView):
                             "final_capital": rec.current_capital if rec.status == "completed" else None,
                             "completed_at": rec.completed_at.isoformat() if rec.completed_at else None,
                         }
+                    elif not user:
+                        key = _get_session_key(ev["id"], None)
+                        sim = _SIM_SESSIONS.get(key)
+                        if sim:
+                            ev_data["user_progress"] = {
+                                "status": sim.get("status", "in_progress"),
+                                "current_quarter": sim.get("current_quarter_index", 0),
+                                "total_quarters": sim.get("total_quarters", ev["total_quarters"]),
+                                "is_completed": sim.get("status") == "completed",
+                                "final_capital": sim.get("current_capital") if sim.get("status") == "completed" else None,
+                                "completed_at": None,
+                            }
+                        else:
+                            ev_data["user_progress"] = None
                     else:
                         ev_data["user_progress"] = None
                     events_summary.append(ev_data)
@@ -189,6 +208,11 @@ class SimulationEventDetailView(MethodView):
             with database() as db:
                 user = get_authenticated_user(db)
                 session = _load_session_state(db, user, event_id)
+                starting_capital = (
+                    float(user.shark_coins)
+                    if (user and user.shark_coins and user.shark_coins > 0)
+                    else float(ev["starting_capital"])
+                )
 
                 return jsonify(
                     event={
@@ -197,7 +221,7 @@ class SimulationEventDetailView(MethodView):
                         "title": ev["title"],
                         "period": ev["period"],
                         "total_quarters": ev["total_quarters"],
-                        "starting_capital": ev["starting_capital"],
+                        "starting_capital": starting_capital,
                         "initial_context": ev["initial_context"],
                         "data_sources": DATA_SOURCES_METADATA,
                     },
@@ -217,16 +241,25 @@ class SimulationStartEventView(MethodView):
             return jsonify(error="Event nie istnieje"), 404
 
         payload = request.get_json(silent=True) or {}
-        capital = payload.get("initial_capital", ev["starting_capital"])
-        session = initialize_event_session(event_id, capital)
-
-        initial_alloc = payload.get("allocations")
-        if initial_alloc:
-            session = set_initial_investment(session, initial_alloc)
+        capital = payload.get("initial_capital")
 
         try:
             with database() as db:
                 user = get_authenticated_user(db)
+                if capital is None or capital <= 0:
+                    if user and user.shark_coins and user.shark_coins > 0:
+                        capital = float(user.shark_coins)
+                    else:
+                        capital = float(ev["starting_capital"])
+                else:
+                    capital = float(capital)
+
+                session = initialize_event_session(event_id, capital)
+
+                initial_alloc = payload.get("allocations")
+                if initial_alloc:
+                    session = set_initial_investment(session, initial_alloc)
+
                 key = _get_session_key(event_id, user.id if user else None)
                 _SIM_SESSIONS[key] = session
                 _persist_session_state(db, user, event_id, session)
@@ -324,7 +357,21 @@ class SimulationSyncView(MethodView):
             with database() as db:
                 user = get_authenticated_user(db)
                 if not user:
-                    return jsonify(error="Wymagane zalogowanie, aby zsynchronizować postęp do bazy"), 401
+                    payload = request.get_json(silent=True) or {}
+                    sessions_to_sync = payload.get("sessions", [])
+                    synced_count = 0
+                    for s in sessions_to_sync:
+                        ev_id = s.get("event_id")
+                        if not ev_id or not get_event_by_id(ev_id):
+                            continue
+                        key = _get_session_key(ev_id, None)
+                        _SIM_SESSIONS[key] = s
+                        synced_count += 1
+                    return jsonify(
+                        status="ok",
+                        synced_count=synced_count,
+                        persisted=False,
+                    )
 
                 payload = request.get_json(silent=True) or {}
                 sessions_to_sync = payload.get("sessions", [])

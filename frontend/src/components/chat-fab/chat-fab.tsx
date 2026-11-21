@@ -10,7 +10,7 @@ export const ChatFab = () => {
   const t = useTranslations('components.chat-fab');
   const pathname = usePathname();
 
-  if (([routes.learning, routes.chat, routes.cakeGame] as string[]).includes(pathname)) {
+  if (([routes.learning, routes.chat, routes.startingQuiz, routes.cakeGame] as string[]).includes(pathname)) {
     return null;
   }
 

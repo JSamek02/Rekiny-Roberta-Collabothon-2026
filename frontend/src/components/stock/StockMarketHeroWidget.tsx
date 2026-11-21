@@ -1,10 +1,12 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import { routes } from '@/utils/routes';
 import { useTranslations } from 'next-intl';
-import { CoinsIcon } from '@/icons/coins';
 import { SparklesIcon } from '@/icons/sparkles';
+import { useSharkCoins } from '@/hooks/use-shark-coins';
 
 interface StockMarketHeroWidgetProps {
   isLink?: boolean;
@@ -12,6 +14,8 @@ interface StockMarketHeroWidgetProps {
 
 export const StockMarketHeroWidget: React.FC<StockMarketHeroWidgetProps> = ({ isLink = true }) => {
   const t = useTranslations('components.stock.hero-widget');
+  const { sharkCoins } = useSharkCoins();
+  const displayCoins = sharkCoins && sharkCoins > 0 ? sharkCoins : 3000;
 
   const content = (
     <div className="relative overflow-hidden bg-blue-500 rounded-xl p-3 text-white shadow-xs h-[102px] flex flex-col justify-between">
@@ -25,8 +29,8 @@ export const StockMarketHeroWidget: React.FC<StockMarketHeroWidgetProps> = ({ is
         </div>
 
         <div className="flex items-center gap-1.5 text-[11px] font-semibold bg-white/15 px-2 py-0.5 rounded-lg w-fit">
-          <CoinsIcon className="w-3.5 h-3.5 text-white" />
-          <span>{t('starting-capital', { amount: '10 000' })}</span>
+          <Image src="/img/coin.svg" alt="SC" width={14} height={14} />
+          <span>{t('starting-capital', { amount: displayCoins.toLocaleString('pl-PL') })}</span>
         </div>
       </div>
 

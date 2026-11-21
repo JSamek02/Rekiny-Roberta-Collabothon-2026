@@ -114,13 +114,18 @@
         "badge": "Robert empfiehlt",
         "title": "Börsensimulator",
         "description": "Verwalte dein Portfolio in realen historischen Krisen. Schlage die Inflation und rette dein Kapital!",
-        "starting-capital": "Startkapital: {amount} PLN"
+        "starting-capital": "Dein Budget: {amount} SC"
       },
       "event-selector": {
         "heading": "Wähle ein Reales Szenario",
         "scenarios-count": "{count, plural, =1 {# Szenario} other {# Szenarien}}",
         "quarters-count": "{count, plural, =1 {# Quartal} other {# Quartale}}",
+        "quarters-progress": "{current}/{total} Quartale",
+        "quarters-completed": "{total}/{total} Quartale",
         "play": "Spielen",
+        "continue": "Fortsetzen",
+        "play-again": "Erneut spielen",
+        "completed-badge": "Abgeschlossen",
         "expand": "Ausklappen",
         "collapse": "Einklappen",
         "fallback-desc": "Historische Marktsimulation.",
@@ -136,9 +141,9 @@
           "inflation_2022": "Inflationsschock 2022"
         },
         "descriptions": {
-          "gfc_2008": "Es ist das 4. Quartal 2007. Die Weltwirtschaft wächst seit Jahren stabil und die Aktienmärkte erreichen Allzeithochs. Du hast 10.000 PLN in bar und keine Investitionen. In den Medien tauchen erste beunruhigende Berichte über 'faule Subprime-Hypotheken' in den USA auf, doch die meisten Analysten wiegeln ab. Entscheide, wie du dein Kapital anlegst!",
-          "covid_2020": "Es ist Januar 2020. Die Finanzmärkte steigen und Technologieunternehmen brechen Rekorde. Erste Berichte über ein neuartiges Virus in China tauchen auf. Du startest diese Etappe mit 10.000 PLN in reinem Bargeld. Wähle, wie du dein Startkapital verteilst!",
-          "inflation_2022": "Es ist Januar 2022. Die Verbraucherpreise steigen rasant und die Zentralbanken läuten das Ende des billigen Geldes ein. Du startest mit 10.000 PLN in bar. Dein Ziel ist es, deine reale Kaufkraft in einem der schwierigsten Marktjahre zu verteidigen!"
+          "gfc_2008": "Es ist das 4. Quartal 2007. Die Weltwirtschaft wächst seit Jahren stabil und die Aktienmärkte erreichen Allzeithochs. Du betrittst den Markt mit deinem SharkCoins (SC) Wallet in bar und ohne Investitionen. In den Medien tauchen erste beunruhigende Berichte über 'faule Subprime-Hypotheken' in den USA auf, doch die meisten Analysten wiegeln ab. Entscheide, wie du dein Kapital anlegst!",
+          "covid_2020": "Es ist Januar 2020. Die Finanzmärkte steigen und Technologieunternehmen brechen Rekorde. Erste Berichte über ein neuartiges Virus in China tauchen auf. Du startest diese Etappe mit deinem SharkCoins (SC) Wallet in bar. Wähle, wie du dein Startkapital verteilst!",
+          "inflation_2022": "Es ist Januar 2022. Die Verbraucherpreise steigen rasant und die Zentralbanken läuten das Ende des billigen Geldes ein. Du startest mit deinem SharkCoins (SC) Wallet in bar. Dein Ziel ist es, deine reale Kaufkraft in einem der schwierigsten Marktjahre zu verteidigen!"
         },
         "tags": {
           "gfc_2008": "Lehman Brothers & Hausse",
@@ -176,7 +181,9 @@
         "reset-modal-desc": "Der gesamte Fortschritt geht verloren und du startest neu mit dem Standardportfolio.",
         "reset-modal-cancel": "Abbrechen",
         "reset-modal-confirm": "Zurücksetzen",
-        "quarters-count": "{count} Quartale"
+        "quarters-count": "{count} Quartale",
+        "chronicle-title": "Krisenchronik",
+        "chronicle-hint": "Quartal wählen, um Geschichte zu lesen"
       },
       "allocation-sliders": {
         "title-initial": "Startkapital verteilen",
@@ -206,7 +213,7 @@
           },
           "gold": {
             "name": "Physisches Gold",
-            "subname": "Spot-Gold in USD",
+            "subname": "Spot-Gold in EUR",
             "description": "Schutz vor Währungsabwertung, Inflation und geopolitischen Schocks."
           },
           "cash": {
@@ -219,6 +226,7 @@
       "quarter-news": {
         "quarter-badge": "QUARTAL: {quarter}",
         "portfolio-return": "Dein Portfolio: {prefix}{value}%",
+        "world-events-title": "Was in der Welt geschah:",
         "robert-lesson": "Roberts Lektion:",
         "asset-returns-title": "Renditen der Anlageklassen in diesem Quartal:",
         "assets": {
@@ -231,7 +239,7 @@
         "quarters": {
           "2007-Q4": {
             "headline": "Erste Risse: Insolvenzen kleinerer Hypothekenfonds",
-            "context": "Die Aktienmärkte korrigieren leicht (-3,8 %), während Gold +12,3 % gewinnt und sichere Staatsanleihen steigen.",
+            "context": "Im August 2007 friert BNP Paribas Fonds wegen der US-Subprime-Krise ein. In Großbritannien kommt es bei Northern Rock zum ersten Bankrun seit Jahrzehnten. Zentralbanken pumpen Notfall-Liquidität in den Markt.",
             "lesson": "Gold und Anleihen reagieren sofort auf erste Unsicherheiten im Bankensektor."
           },
           "2008-Q1": {
@@ -326,7 +334,7 @@
           },
           "2020-Q3": {
             "headline": "Schrittweise Wiedereröffnung und Sommer-Hausse",
-            "context": "Fabriken öffnen wieder, Zuversicht kehrt zurück und Gold durchbricht erstmals die Marke von 2.000 USD/Unze.",
+            "context": "Fabriken öffnen wieder, Zuversicht kehrt zurück und Gold durchbricht erstmals die Marke von 2.000 USD/Unze (über 1.700 €/Unze).",
             "lesson": "Aktienmärkte nehmen die reale wirtschaftliche Erholung um 6 bis 12 Monate vorweg."
           },
           "2020-Q4": {
@@ -425,6 +433,99 @@
           "inflation-lost": "Die Inflation hat an der Kaufkraft deines Portfolios genagt. Zu viel Bargeld führt schleichend, aber unausweichlich zu realem Wertverlust.",
           "rebalance-none": "Eiserne Disziplin: Du hast während der Krise keine einzige panische Umschichtung vorgenommen. Nervenruhe ist historisch eine der profitabelsten Eigenschaften an der Börse.",
           "rebalance-active": "Im Verlauf des Zyklus hast du {count} Umschichtungen vorgenommen. Gezieltes Rebalancing ermöglicht Nachkäufe günstiger Werte – hüte dich aber davor, Schlagzeilen hinterherzujagen."
+        }
+      }
+    },
+    "starting-quiz": {
+      "skip": "Überspringen",
+      "back": "Zurück",
+      "next": "Weiter",
+      "finish": "Lernen starten",
+      "step-progress": "Schritt {current} von {total}",
+      "modal-title": "Start-Umfrage",
+      "thank-you": {
+        "title": "Vielen Dank fürs Ausfüllen!",
+        "description": "Dein Profil wurde eingerichtet. Wir haben personalisierte Lektionen und Herausforderungen für dich vorbereitet.",
+        "benefit-plan": "Lernplan abgestimmt auf deine Ziele",
+        "benefit-difficulty": "Passender Schwierigkeitsgrad von Beginn an",
+        "cta": "Zum Hauptbildschirm"
+      },
+      "steps": {
+        "goal": {
+          "title": "Was ist dein wichtigstes finanzielles Ziel?",
+          "subtitle": "Wähle eine oder mehrere Optionen, damit wir deine Einstiegslektionen anpassen.",
+          "options": {
+            "budget_basics": {
+              "title": "Grundlagen & Haushaltsbudget",
+              "description": "Notgroschen aufbauen und Ausgaben kontrollieren"
+            },
+            "first_investments": {
+              "title": "Erste Investitionen",
+              "description": "Sicherer Einstieg: ETFs, Staatsanleihen und Börse"
+            },
+            "big_expense": {
+              "title": "Großes finanzielles Ziel",
+              "description": "Eigenkapital, Immobilienkauf oder größere Anschaffung"
+            },
+            "long_term_capital": {
+              "title": "Langfristiges Vermögen",
+              "description": "Altersvorsorge und die Kraft des Zinseszinses"
+            }
+          }
+        },
+        "level": {
+          "title": "Wie schätzt du dein Finanzwissen ein?",
+          "subtitle": "Wir passen den Schwierigkeitsgrad der Lerninhalte an.",
+          "options": {
+            "level_beginner": {
+              "title": "Ich fange bei Null an",
+              "description": "Begriffe wie Anleihen oder ETFs sind mir völlig fremd"
+            },
+            "level_intermediate": {
+              "title": "Ich kenne die Grundlagen",
+              "description": "Ich verstehe Inflation und Sparen, aber mir fehlt die Sicherheit"
+            },
+            "level_advanced": {
+              "title": "Erste Schritte gemacht",
+              "description": "Ich investiere bereits und möchte meine Strategie systematisieren"
+            }
+          }
+        },
+        "format": {
+          "title": "Wie lernst du am liebsten?",
+          "subtitle": "Wähle dein bevorzugtes Lernformat.",
+          "options": {
+            "format_quiz": {
+              "title": "Kurze Quizze & Herausforderungen",
+              "description": "Interaktive Fragen, Missionen und Punkte sammeln"
+            },
+            "format_articles": {
+              "title": "Kompakte Wissenshappen",
+              "description": "Prägnante Artikel und Infografiken im eigenen Tempo"
+            },
+            "format_ai": {
+              "title": "Gespräch mit SharkBot",
+              "description": "KI-Assistent, der deine Fragen in Echtzeit beantwortet"
+            }
+          }
+        },
+        "commitment": {
+          "title": "Wie viel Zeit möchtest du täglich investieren?",
+          "subtitle": "Finde dein Tempo, um eine regelmäßige Serie aufzubauen.",
+          "options": {
+            "time_5m": {
+              "title": "5 Minuten pro Tag",
+              "description": "Entspannt – 1 schneller Wissenshappen am Tag"
+            },
+            "time_10m": {
+              "title": "10 Minuten pro Tag",
+              "description": "Regelmäßig – 1 Lektion + schnelles Quiz"
+            },
+            "time_15m": {
+              "title": "15+ Minuten pro Tag",
+              "description": "Ambitioniert – komplette Missionen und maximale Belohnungen"
+            }
+          }
         }
       }
     }

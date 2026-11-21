@@ -1,6 +1,7 @@
 import { ChatbotBanner } from '@/components/chatbot-banner';
 import { LessonCategoryNavItem } from '@/components/lesson-category-nav-item';
 import { LevelBar } from '@/components/level-bar';
+import { StartingQuizModal } from '@/components/starting-quiz';
 import { StockMarketHeroWidget } from '@/components/stock/StockMarketHeroWidget';
 import { BankIcon } from '@/icons/bank';
 import { DollarIcon } from '@/icons/dollar';
@@ -14,6 +15,7 @@ export default async function Home() {
 
   return (
     <main className="flex-1 flex flex-col px-3 py-6 gap-6 overflow-x-clip overflow-y-clip">
+      <StartingQuizModal />
       <LevelBar />
       <div className="grid grid-cols-2 gap-2">
         <LessonCategoryNavItem

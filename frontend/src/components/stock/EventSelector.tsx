@@ -1,15 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
-import { SimulationEventSummary } from './types';
+import { SimulationEventSummary, SimulationSession } from './types';
 import { StockMarketHeroWidget } from './StockMarketHeroWidget';
-import { ArrowRight, Building2, Activity, Flame, TrendingUp } from 'lucide-react';
+import { ArrowRight, Building2, Activity, Flame, TrendingUp, Check, RotateCcw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { getGuestSimulationSessions } from '@/hooks/use-shark-coins';
 
 interface EventSelectorProps {
   events: SimulationEventSummary[];
   onSelectEvent: (event: SimulationEventSummary) => void;
   isLoading?: boolean;
+  guestSessions?: Record<string, SimulationSession>;
 }
 
 export const SHORT_EVENT_TITLES: Record<string, string> = {
@@ -54,7 +56,7 @@ const DEFAULT_DIFFICULTY: EventDifficulty = {
   bars: ['#f59e0b', '#f59e0b', 'rgba(156, 163, 175, 0.3)'],
 };
 
-export const EventSelector: React.FC<EventSelectorProps> = ({ events, onSelectEvent, isLoading }) => {
+export const EventSelector: React.FC<EventSelectorProps> = ({ events, onSelectEvent, isLoading, guestSessions }) => {
   const t = useTranslations('components.stock.event-selector');
   const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({});
 
@@ -98,16 +100,55 @@ export const EventSelector: React.FC<EventSelectorProps> = ({ events, onSelectEv
           const DiffIcon = diff.icon;
           const isExpanded = !!expandedIds[ev.id];
 
+          const userProgress = ev.user_progress;
+          const guestSession =
+            guestSessions?.[ev.id] ||
+            (typeof window !== 'undefined' ? getGuestSimulationSessions()[ev.id] : undefined);
+          const isCompleted = Boolean(
+            userProgress?.is_completed ||
+            userProgress?.status === 'completed' ||
+            guestSession?.status === 'completed'
+          );
+          const currentQuarter =
+            userProgress?.current_quarter ??
+            guestSession?.current_quarter_index ??
+            0;
+          const totalQuarters =
+            userProgress?.total_quarters ||
+            guestSession?.total_quarters ||
+            ev.total_quarters;
+          const isInProgress = !isCompleted && Boolean(
+            userProgress?.status === 'in_progress' ||
+            userProgress?.status === 'awaiting_initial_investment' ||
+            guestSession?.status === 'in_progress' ||
+            guestSession?.status === 'awaiting_initial_investment' ||
+            currentQuarter > 0
+          );
+
           return (
             <div
               key={ev.id}
-              className="bg-white rounded-2xl p-4 border border-blue-100 hover:border-blue-500 hover:shadow-xs transition-all flex flex-col gap-2.5 text-left"
+              className={`bg-white rounded-2xl p-4 transition-all flex flex-col gap-2.5 text-left ${
+                isCompleted
+                  ? 'border-2 border-green-500 shadow-xs hover:border-green-600'
+                  : isInProgress
+                  ? 'border-2 border-blue-500 shadow-xs'
+                  : 'border border-blue-100 hover:border-blue-500 hover:shadow-xs'
+              }`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
-                  <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold mb-1 ${tagColor}`}>
-                    {tagLabel}
-                  </span>
+                  <div className="flex items-center gap-1.5 flex-wrap mb-1">
+                    <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold ${tagColor}`}>
+                      {tagLabel}
+                    </span>
+                    {isCompleted && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-green-50 text-green-500 border border-green-500/20">
+                        <Check className="w-3 h-3 stroke-[3]" />
+                        <span>{t('completed-badge')}</span>
+                      </span>
+                    )}
+                  </div>
                   <h4 className="font-bold text-sm text-blue-950 leading-snug">{shortTitle}</h4>
                 </div>
 
@@ -156,21 +197,47 @@ export const EventSelector: React.FC<EventSelectorProps> = ({ events, onSelectEv
 
               {/* Footer with period and quarters */}
               <div className="flex items-center justify-between text-xs text-grey-600 pt-2 border-t border-grey-100">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                   <span className="font-medium text-grey-600">
                     {ev.period}
                   </span>
-                  <span className="font-medium text-blue-950">
-                    {t('quarters-count', { count: ev.total_quarters })}
-                  </span>
+                  <span>•</span>
+                  {isInProgress ? (
+                    <span className="font-bold text-blue-500 bg-blue-50 px-2 py-0.5 rounded-md text-[11px]">
+                      {t('quarters-progress', { current: currentQuarter, total: totalQuarters })}
+                    </span>
+                  ) : isCompleted ? (
+                    <span className="font-bold text-green-500 bg-green-50 px-2 py-0.5 rounded-md text-[11px] flex items-center gap-1">
+                      <Check className="w-3 h-3 stroke-[2.5]" />
+                      <span>{t('quarters-completed', { total: totalQuarters })}</span>
+                    </span>
+                  ) : (
+                    <span className="font-medium text-blue-950">
+                      {t('quarters-count', { count: ev.total_quarters })}
+                    </span>
+                  )}
                 </div>
                 <button
                   onClick={() => onSelectEvent(ev)}
                   disabled={isLoading}
-                  className="px-3.5 py-1.5 bg-blue-500 hover:opacity-90 text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-xs active:scale-95 cursor-pointer"
+                  className={`px-3.5 py-1.5 text-white rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 shadow-xs active:scale-95 cursor-pointer ${
+                    isCompleted
+                      ? 'bg-green-500 hover:bg-green-600'
+                      : 'bg-blue-500 hover:bg-blue-950'
+                  }`}
                 >
-                  <span>{t('play')}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <span>
+                    {isCompleted
+                      ? t('play-again')
+                      : isInProgress
+                      ? t('continue')
+                      : t('play')}
+                  </span>
+                  {isCompleted ? (
+                    <RotateCcw className="w-3.5 h-3.5" />
+                  ) : (
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  )}
                 </button>
               </div>
             </div>
