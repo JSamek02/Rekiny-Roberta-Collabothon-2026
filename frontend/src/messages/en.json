@@ -39,6 +39,14 @@
     "level-bar": {
       "next-level": "Next level {points}"
     },
+    "rewards": {
+      "title": "Rewards",
+      "category-hats": "Shark hats",
+      "hat": "Hat {number}",
+      "buy": "Buy · {price} SC",
+      "owned": "Owned",
+      "open-with-balance": "Open Rewards. Balance: {balance} SharkCoins"
+    },
     "chat-fab": {
       "label": "Open Sharkbot chat"
     },

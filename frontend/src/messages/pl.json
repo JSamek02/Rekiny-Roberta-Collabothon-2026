@@ -39,6 +39,14 @@
     "level-bar": {
       "next-level": "Następny poziom: {points}"
     },
+    "rewards": {
+      "title": "Nagrody",
+      "category-hats": "Czapki rekinów",
+      "hat": "Czapka {number}",
+      "buy": "Kup · {price} SC",
+      "owned": "Posiadane",
+      "open-with-balance": "Otwórz Nagrody. Saldo: {balance} SharkCoinów"
+    },
     "chat-fab": {
       "label": "Otwórz czat z Sharkbotem"
     },

@@ -33,6 +33,14 @@
     "level-bar": {
       "next-level": "Nächstes Level {points}"
     },
+    "rewards": {
+      "title": "Belohnungen",
+      "category-hats": "Haie-Hüte",
+      "hat": "Hut {number}",
+      "buy": "Kaufen · {price} SC",
+      "owned": "Besessen",
+      "open-with-balance": "Belohnungen öffnen. Guthaben: {balance} SharkCoins"
+    },
     "chat-fab": {
       "label": "Sharkbot-Chat öffnen"
     },
