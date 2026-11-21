@@ -17,8 +17,7 @@ export const LessonsList = async ({ category, lessons }: LessonsListProps) => {
   const nextLesson = lessons.findIndex((lesson) => lesson.status !== 'read');
 
   return (
-    <section aria-label={t('roadmap')} className="relative mx-auto w-full max-w-lg pb-6">
-      <h2 className="px-1 text-xs font-semibold uppercase tracking-[0.12em] text-grey-600">{t('roadmap')}</h2>
+    <section aria-label={t('roadmap')} className="relative isolate mx-auto w-full max-w-lg pb-6">
       <ol className="relative mt-1 flex flex-col">
         {lessons.map((lesson, index) => (
           <LessonItem
