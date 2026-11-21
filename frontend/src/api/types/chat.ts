@@ -1,59 +1,66 @@
-export type VoiceOption = {
-  id: string;
-  name: string;
-  style: string;
-  description: string;
-  gender: 'male' | 'female';
-  recommended: boolean;
-};
+import { ApiRequest } from '@/api/types/common';
 
-export type ChatSource = {
-  id: string;
-  title: string;
-  category: string;
-  score?: number;
-  related_course_slug?: string;
-};
+export namespace ApiPostChatMessage {
+  type ChatSource = {
+    id: string;
+    title: string;
+    category: string;
+    score?: number;
+    related_course_slug?: string;
+  };
 
-export type SuggestedLesson = {
-  slug: string;
-  title: string;
-  category: string;
-};
+  type SuggestedLesson = {
+    slug: string;
+    title: string;
+    category: string;
+  };
 
-export type ChatMessage = {
-  id: string;
-  sender: 'user' | 'assistant';
-  text: string;
-  timestamp: string;
-  sources?: ChatSource[];
-  suggested_lessons?: SuggestedLesson[];
-  audio_base64?: string | null;
-  mime_type?: string | null;
-  voice?: string;
-  model?: string;
-};
+  export type Body = {
+    message: string;
+    voice?: string;
+    voice_enabled?: boolean;
+    history?: { role: string; content: string }[];
+  };
 
-export type ChatRequest = {
-  message: string;
-  voice?: string;
-  voice_enabled?: boolean;
-  history?: { role: string; content: string }[];
-};
+  export type Request = ApiRequest<never, never, never, Body>;
 
-export type ChatResponse = {
-  reply: string;
-  model: string;
-  voice: string;
-  voice_enabled: boolean;
-  audio_base64?: string | null;
-  mime_type?: string | null;
-  sources: ChatSource[];
-  suggested_lessons: SuggestedLesson[];
-};
+  export type Response = {
+    reply: string;
+    model: string;
+    voice: string;
+    voice_enabled: boolean;
+    audio_base64?: string | null;
+    mime_type?: string | null;
+    sources: ChatSource[];
+    suggested_lessons: SuggestedLesson[];
+  };
+}
 
-export type VoicesResponse = {
-  voices: VoiceOption[];
-  default_voice: string;
-  model: string;
-};
+export namespace ApiGetChatVoices {
+  type VoiceOption = {
+    id: string;
+    name: string;
+    style: string;
+    description: string;
+    gender: 'male' | 'female';
+    recommended: boolean;
+  };
+
+  export type Response = {
+    voices: VoiceOption[];
+    default_voice: string;
+    model: string;
+  };
+}
+
+export namespace ApiSynthesizeTTS {
+  export type Body = {
+    text: string;
+    voice: string;
+    format: string;
+  };
+
+  export type Request = ApiRequest<never, never, never, Body>;
+
+  export type Response = Blob;
+}
