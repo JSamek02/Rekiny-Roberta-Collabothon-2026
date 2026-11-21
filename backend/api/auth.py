@@ -171,6 +171,28 @@ class UserPreferences(MethodView):
             return jsonify(error="Database unavailable"), 503
 
 
+GAME_COIN_REWARD = 5
+
+
+class GameCoin(MethodView):
+    """Credits the signed-in user with the fixed reward for a SharkCoin caught in the mini-game."""
+
+    def post(self):
+        if request.headers.get("X-Requested-With") != "XMLHttpRequest":
+            return jsonify(error="Missing X-Requested-With header"), 403
+        try:
+            with database() as db:
+                user = get_authenticated_user(db)
+                if not user:
+                    return jsonify(error="Not authenticated"), 401
+                user.shark_coins = (user.shark_coins or 0) + GAME_COIN_REWARD
+                db.commit()
+                return jsonify(shark_coins=int(user.shark_coins), reward=GAME_COIN_REWARD)
+        except SQLAlchemyError:
+            current_app.logger.exception("Could not credit game coin")
+            return jsonify(error="Database unavailable"), 503
+
+
 class Logout(MethodView):
     def post(self):
         # A cross-origin browser request cannot set this header without CORS permission.
@@ -202,4 +224,5 @@ auth.add_url_rule("/api/auth/mock", view_func=MockLogin.as_view("mock_login"))
 auth.add_url_rule("/api/auth/me", view_func=CurrentUser.as_view("current_user"))
 auth.add_url_rule("/api/auth/config", view_func=AuthConfig.as_view("auth_config"))
 auth.add_url_rule("/api/auth/preferences", view_func=UserPreferences.as_view("user_preferences"))
+auth.add_url_rule("/api/auth/game-coin", view_func=GameCoin.as_view("game_coin"))
 auth.add_url_rule("/api/auth/logout", view_func=Logout.as_view("logout"))

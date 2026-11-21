@@ -45,6 +45,13 @@ export namespace ApiPostMockLogin {
   };
 }
 
+export namespace ApiPostGameCoin {
+  export type Response = {
+    shark_coins: number;
+    reward: number;
+  };
+}
+
 export namespace ApiPostLogout {
   export type Response = {
     status: 'ok';

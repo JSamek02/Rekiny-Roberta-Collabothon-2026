@@ -480,6 +480,27 @@
       "empty": "Nobody is in the ranking yet. Complete a lesson to be the first!",
       "error": "Could not load the ranking. Make sure the backend is running.",
       "retry": "Try again"
+    },
+    "cake-game": {
+      "kicker": "Secret mini-game",
+      "title": "Robert's Catch",
+      "instructions": "Catch cream cakes with the shark's mouth - each restores one life. Catch SharkCoins (+5 to your account), because every missed coin costs a life. A sea mine also costs a life. You have 3 lives!",
+      "lives": "Lives: {lives}",
+      "controls": "Move with your finger or mouse, or use the ← → arrow keys.",
+      "points": "+{points} pts",
+      "avoid": "Avoid!",
+      "start": "Play",
+      "loading": "Loading the game...",
+      "load-error": "Could not load the game.",
+      "retry": "Try again",
+      "score": "Score",
+      "best": "Best",
+      "boom": "Boom!",
+      "game-over": "Game over",
+      "new-best": "New best score!",
+      "caught": "Caught: {cakes, plural, =1 {# cake} other {# cakes}} and {coins, plural, =1 {# SharkCoin} other {# SharkCoins}}",
+      "play-again": "Play again",
+      "back": "Back"
     }
   },
   "pages": {
