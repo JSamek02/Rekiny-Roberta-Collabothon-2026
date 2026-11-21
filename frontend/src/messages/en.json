@@ -135,6 +135,166 @@
       "log-out": "Log out",
       "config-error": "Could not connect to the server. Make sure the backend is running.",
       "error": "Something went wrong. Please try again."
+    },
+    "stock": {
+      "meta": {
+        "title": "Stock Market — Investment Simulator | Finance Sharks",
+        "description": "Historical stock market simulation and portfolio allocation with Robert Business"
+      },
+      "hero-widget": {
+        "badge": "Robert's Pick",
+        "title": "Stock Simulator",
+        "description": "Manage your portfolio through real historical crises. See if you can beat inflation and preserve capital!",
+        "starting-capital": "Starting capital: {amount} PLN"
+      },
+      "event-selector": {
+        "heading": "Choose Real Scenario",
+        "scenarios-count": "{count, plural, =1 {# scenario} other {# scenarios}}",
+        "quarters-count": "{count, plural, =1 {# quarter} other {# quarters}}",
+        "play": "Play",
+        "expand": "Expand",
+        "collapse": "Collapse",
+        "fallback-desc": "Historical market simulation.",
+        "difficulty-label": "Difficulty level: {label}",
+        "difficulty": {
+          "easy": "Easy",
+          "medium": "Medium",
+          "hard": "Hard"
+        },
+        "short-titles": {
+          "gfc_2008": "Financial Crisis 2008",
+          "covid_2020": "COVID-19 Crash",
+          "inflation_2022": "Inflation Shock 2022"
+        },
+        "descriptions": {
+          "gfc_2008": "It is Q4 2007. The global economy has been growing steadily for years, and stock markets are reaching all-time highs. You have 10,000 PLN in cash and zero investments. The media carries the first troubling reports of 'subprime mortgage loans' in the US, but most analysts downplay the risk. Decide where to allocate your capital!",
+          "covid_2020": "It is January 2020. Financial markets are climbing, and tech companies are breaking records. The first news of a new virus in China begins to emerge. You start this stage with 10,000 PLN in pure cash. Choose how to distribute your capital at the start!",
+          "inflation_2022": "It is January 2022. Prices in stores are skyrocketing, and central banks announce the end of the free-money era. You start with 10,000 PLN in cash. Your goal is to defend real purchasing power during one of the most challenging years for financial markets!"
+        },
+        "tags": {
+          "gfc_2008": "Lehman Brothers & Bull Market",
+          "covid_2020": "Lockdown & Tech Boom",
+          "inflation_2022": "Inflation & Interest Rates",
+          "default": "Scenario"
+        }
+      },
+      "view": {
+        "loading": "Loading stock market scenarios...",
+        "error-connection": "Failed to connect to the stock simulation engine. Make sure the backend is running.",
+        "error-init": "Failed to initialize scenario.",
+        "error-allocation": "Failed to submit initial allocation.",
+        "error-advance": "Failed to advance quarter.",
+        "error-reset": "Failed to reset simulation.",
+        "back-to-events": "Other scenarios",
+        "back-to-events-short": "Scenarios",
+        "step-1-title": "Step 1: Capital Allocation",
+        "starting-budget": "Your starting budget:",
+        "submit-portfolio": "Confirm portfolio and enter market",
+        "starting": "Starting...",
+        "reset": "Reset",
+        "quarter-progress": "Quarter {current} / {total}",
+        "portfolio-value": "Portfolio Value",
+        "real-value": "Real value (after inflation):",
+        "max-drawdown": "Max Drawdown:",
+        "next-quarter-allocation": "Next quarter allocation",
+        "allocation-summary": "Stocks: {stocks}% | Bonds: {bonds}% | Gold: {gold}% | Cash: {cash}%",
+        "change": "Change",
+        "cancel": "Cancel",
+        "change-weights-title": "Adjust weights before next quarter",
+        "advance-quarter": "Advance to next quarter",
+        "calculating-returns": "Calculating returns...",
+        "reset-modal-title": "Reset scenario?",
+        "reset-modal-desc": "All progress in this scenario will be lost and you will start over with the default portfolio.",
+        "reset-modal-cancel": "Cancel",
+        "reset-modal-confirm": "Reset"
+      },
+      "allocation-sliders": {
+        "title-initial": "Set Initial Capital Allocation",
+        "title-rebalance": "Adjust Portfolio Allocation (Rebalancing)",
+        "subtitle": "Distribute 100% of your capital across 4 asset classes.",
+        "sum": "Total: {total}%",
+        "sum-error": "Total must equal 100% (currently {total}%)",
+        "normalize-btn": "Balance",
+        "quick-strategies": "Quick investment strategies:",
+        "presets": {
+          "classic-60-40": "60/40 Classic",
+          "all-weather": "All-Weather (Dalio)",
+          "aggressive-100-stocks": "100% Stocks (Aggressive)",
+          "defensive-shield": "Defensive / Shield",
+          "pure-cash": "Pure Cash"
+        },
+        "assets": {
+          "stocks": {
+            "name": "Stocks (S&P 500)",
+            "subname": "500 largest US companies index",
+            "description": "High growth potential, but high volatility during bear markets."
+          },
+          "bonds": {
+            "name": "Treasury Bonds 10Y",
+            "subname": "10-year US government bonds",
+            "description": "Stable yield and traditional shelter during equity crashes."
+          },
+          "gold": {
+            "name": "Physical Gold",
+            "subname": "Spot gold in USD",
+            "description": "Hedge against currency devaluation, inflation, and geopolitical shocks."
+          },
+          "cash": {
+            "name": "Safe Cash",
+            "subname": "3-month Treasury Bills (T-Bills)",
+            "description": "100% liquidity and zero nominal loss risk, but loses to inflation."
+          }
+        }
+      },
+      "quarter-news": {
+        "quarter-badge": "QUARTER: {quarter}",
+        "portfolio-return": "Your portfolio: {prefix}{value}%",
+        "robert-lesson": "Robert's Lesson:",
+        "asset-returns-title": "Asset class returns this quarter:",
+        "assets": {
+          "stocks": "Stocks",
+          "bonds": "Bonds",
+          "gold": "Gold",
+          "cash": "Cash"
+        },
+        "cpi-inflation": "CPI inflation this quarter:"
+      },
+      "chart": {
+        "title": "Portfolio Value Chart",
+        "nominal-legend": "Nominal portfolio",
+        "real-legend": "Real (after inflation)"
+      },
+      "debrief": {
+        "crisis-completed": "Crisis Completed",
+        "final-capital": "Final Capital",
+        "nominal-return": "{prefix}{value}% nominal return",
+        "real-capital": "Real Value (after inflation)",
+        "real-return": "{prefix}{value}% real return",
+        "max-drawdown": "Max Drawdown:",
+        "rebalances-count": "Rebalances count:",
+        "badges-title": "Earned Investment Badges:",
+        "badges": {
+          "shield": {
+            "name": "Safety Shield",
+            "desc": "Maximum portfolio drawdown kept under 15%"
+          },
+          "inflation": {
+            "name": "Inflation Slayer",
+            "desc": "Real return higher than CPI inflation"
+          },
+          "diamond": {
+            "name": "Diamond Fins",
+            "desc": "Iron discipline with no panic selling"
+          },
+          "default": {
+            "desc": "Capital management achievement"
+          }
+        },
+        "verdict-title": "Robert's Verdict:",
+        "takeaways-title": "Key Takeaways:",
+        "play-again": "Play again",
+        "scenarios-list": "Scenarios list"
+      }
     }
   },
   "global": {
