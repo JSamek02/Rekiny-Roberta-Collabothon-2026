@@ -66,6 +66,19 @@ psql "$DATABASE_URL" -f database/seed.sql
 
 Plik `database/seed.sql` jest przeznaczony dla PostgreSQL i można go uruchamiać wielokrotnie — nie usuwa danych użytkowników ani nie nadpisuje istniejących kursów. Dodaje przykładowe kursy, lekcje, artykuły, quizy, tłumaczenia oraz postęp konta `mock:demo`. Zasila także cztery istniejące roadmapy frontendu (`stocks-bonds`, `investing`, `budgeting`, `economics`): każda dostaje pięć lekcji, a każda lekcja artykuł, quiz i aktywność wideo. Wydarzenia giełdowe pozostają w `services/simulation_data.py`, ponieważ aktualny moduł symulacji odczytuje je wyłącznie z pamięci, a nie z bazy danych.
 
+### Mockowe roadmapy
+
+`database/mock_courses.sql` jest przeznaczony do odtworzenia danych dla widoków roadmapy. Trwale usuwa wyłącznie dane edukacyjne: kursy, lekcje, aktywności, pliki MP4, zapisy na kursy i postęp aktywności; nie usuwa użytkowników ani sesji. Nie zeruje też sald XP ani SharkCoinów, ponieważ mogą pochodzić z innych modułów. Następnie tworzy cztery kursy pod slugami używanymi przez frontend: `stocks-bonds-roadmap`, `investing-roadmap`, `budgeting-roadmap` i `economics-roadmap`. Każdy ma pięć lekcji z rozwiniętym artykułem, trzy-pytaniowym quizem i miejscem na film.
+
+```bash
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f database/mock_courses.sql
+```
+
+To polecenie uruchom w terminalu. W Google Cloud SQL Studio wklej zawartość
+samego pliku `database/mock_courses.sql` i wybierz **Run** — `psql ...` jest
+poleceniem powłoki, a nie instrukcją SQL. Uruchom cały skrypt, nie pojedynczy
+fragment jego zapytania `WITH`.
+
 Jeżeli chcesz wyczyścić całą bazę aplikacji i załadować od nowa dane demonstracyjne w Google Cloud SQL Studio, najpierw wykonaj `database/cloud_sql_reset.sql`, a następnie `database/seed.sql`. Pierwszy skrypt trwale usuwa także użytkowników i sesje.
 
 ## Tryb demonstracyjny bez Google
