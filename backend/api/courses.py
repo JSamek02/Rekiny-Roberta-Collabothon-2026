@@ -16,6 +16,7 @@ from database.models import (
 )
 
 courses = Blueprint("courses", __name__)
+VIDEO_CACHE_MAX_AGE = 60 * 60 * 24 * 365
 
 
 def request_content_language() -> str:
@@ -54,12 +55,20 @@ def add_stored_video_details(video: ActivityVideo | None, activity_data: dict) -
 
     content = activity_data.setdefault("content", {})
     content.update({
-        "video_url": f"/api/activities/{video.activity_id}/video?language={video.language}",
+        "video_url": (
+            f"/api/activities/{video.activity_id}/video?language={video.language}"
+            f"&v={video_cache_version(video)}"
+        ),
         "video_filename": video.filename,
         "video_mime_type": video.mime_type,
         "video_size_bytes": video.size_bytes,
         "video_language": video.language,
     })
+
+
+def video_cache_version(video: ActivityVideo) -> str:
+    """Change the URL and ETag whenever an administrator replaces the MP4."""
+    return f"{video.id}-{int(video.updated_at.timestamp() * 1_000_000)}"
 
 
 def is_content_admin() -> bool:
@@ -404,15 +413,22 @@ class ActivityVideoView(MethodView):
                 video = get_stored_video(db, activity.id, language)
                 if not video:
                     return jsonify(error="Video not found"), 404
+                # shortcut: MP4s stay in the database; move them to object storage when traffic outgrows app workers.
                 video_data = video.data
 
-                return send_file(
+                response = send_file(
                     BytesIO(video_data),
                     mimetype="video/mp4",
                     as_attachment=False,
                     download_name=video.filename,
                     conditional=True,
+                    etag=video_cache_version(video),
+                    max_age=VIDEO_CACHE_MAX_AGE,
                 )
+                response.headers["Cache-Control"] = (
+                    f"public, max-age={VIDEO_CACHE_MAX_AGE}, immutable"
+                )
+                return response
         except SQLAlchemyError:
             current_app.logger.exception("Could not load activity video")
             return jsonify(error="Database unavailable"), 503
@@ -464,13 +480,17 @@ class ActivityVideoView(MethodView):
                 video.mime_type = "video/mp4"
                 video.size_bytes = len(video_data)
                 video.data = video_data
+                video.updated_at = datetime.now(timezone.utc)
                 db.commit()
 
                 return jsonify(
                     status="ok",
                     activity_id=activity.id,
                     video={
-                        "url": f"/api/activities/{activity.id}/video?language={video.language}",
+                        "url": (
+                            f"/api/activities/{activity.id}/video?language={video.language}"
+                            f"&v={video_cache_version(video)}"
+                        ),
                         "language": video.language,
                         "filename": video.filename,
                         "mime_type": video.mime_type,

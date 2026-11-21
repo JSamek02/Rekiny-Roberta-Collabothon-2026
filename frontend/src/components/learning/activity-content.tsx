@@ -69,7 +69,13 @@ export const ActivityContent = ({
     <div className="flex flex-col gap-5">
       {content.description && <p className="text-sm leading-7 text-grey-600">{content.description}</p>}
       {content.video_url ? (
-        <video className="w-full rounded-xl bg-blue-950" controls preload="metadata" onEnded={isCompleted ? undefined : onComplete}>
+        <video
+          className="aspect-video w-full rounded-xl bg-blue-950"
+          controls
+          playsInline
+          preload="metadata"
+          onEnded={isCompleted ? undefined : onComplete}
+        >
           <source src={toApiUrl(content.video_url)} type={content.video_mime_type || 'video/mp4'} />
           {t('video-not-supported')}
         </video>

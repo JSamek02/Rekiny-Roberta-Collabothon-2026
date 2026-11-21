@@ -252,7 +252,7 @@ Odpowiedź `200`:
 
 - Dla `article`, `content` zawiera zwykle `markdown`, opcjonalnie `reading_time_minutes` oraz `image`. Obrazy w samym Markdown są zwracane jako zwykła treść tekstowa.
 - Dla `quiz`, `content.questions` zawiera `id`, `prompt`, `options` oraz opcjonalnie `image`; poprawna odpowiedź nie jest zwracana przed wysłaniem quizu.
-- Dla lokalnie przechowywanego `video`, `content` dostaje `video_url`, `video_filename`, `video_mime_type`, `video_size_bytes` i `video_language`.
+- Dla lokalnie przechowywanego `video`, `content` dostaje `video_url`, `video_filename`, `video_mime_type`, `video_size_bytes` i `video_language`. URL ma parametr `v`, który zmienia się po podmianie pliku, dzięki czemu może być bezpiecznie cache'owany przez przeglądarkę i CDN.
 - `user_progress` występuje tylko dla zalogowanego użytkownika i ma pola: `status`, `quiz_score`, `passed`, `attempts_count`, `xp_earned`, `coins_earned`, `completed_at`.
 
 ### `POST /api/activities/:activityId/complete`
@@ -371,7 +371,7 @@ Odpowiedź `200`:
 
 Zwraca binarny plik MP4 dla aktywności typu `video`. Parametr query `language` przyjmuje `pl`, `en` lub `de`; gdy go nie ma, wybór następuje z `Accept-Language`. Brak `en` lub `de` powoduje fallback do polskiej wersji.
 
-Odpowiedź `200` ma `Content-Type: video/mp4` i obsługuje żądania zakresów HTTP (odtwarzanie i przewijanie). `400` oznacza zły język, `404` brak aktywności, zły typ albo brak pliku.
+Odpowiedź `200` ma `Content-Type: video/mp4`, cache HTTP na rok (`Cache-Control: public, max-age=31536000, immutable`) i obsługuje żądania zakresów HTTP (odtwarzanie i przewijanie). Parametr `v` w URL-u jest wersją pliku, więc upload nowej wersji nie użyje starego cache'u. `400` oznacza zły język, `404` brak aktywności, zły typ albo brak pliku.
 
 ### `POST /api/activities/:activityId/video`
 
