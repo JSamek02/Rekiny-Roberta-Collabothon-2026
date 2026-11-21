@@ -8,6 +8,7 @@ import { buttonVariants } from '@/ui';
 import { routes } from '@/utils/routes';
 import { useTranslations } from 'next-intl';
 
+const HATS_ORDER = [1, 3, 4, 2, 3, 1, 3, 2, 1, 3, 4, 1, 2, 1, 4] as const;
 const RANKING_LIMIT = 50;
 
 export const RankingView = () => {
@@ -84,11 +85,12 @@ export const RankingView = () => {
 
           {data && data.ranking.length > 0 && (
             <ol className="flex flex-col gap-2">
-              {data.ranking.map((entry) => (
+              {data.ranking.map((entry, i) => (
                 <RankingRow
                   key={entry.user_id}
                   entry={entry}
                   isCurrentUser={currentUserInList && entry.user_id === currentUser?.user_id}
+                  forceHat={HATS_ORDER[i]}
                 />
               ))}
             </ol>
