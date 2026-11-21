@@ -7,14 +7,6 @@ const nextConfig = {
   /* config options here */
   output: "standalone",
   reactCompiler: true,
-  turbopack: {
-    rules: {
-      "*.css": {
-        loaders: ["@tailwindcss/turbopack"],
-        as: "*.css",
-      },
-    },
-  },
   async rewrites() {
     return [
       {

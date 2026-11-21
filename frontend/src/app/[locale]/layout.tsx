@@ -7,6 +7,7 @@ import { BottomNav } from '@/components/bottom-nav';
 
 const poppinsFont = Poppins({
   variable: '--font-poppins',
+  subsets: ['latin', 'latin-ext'],
   weight: ['400', '500', '600'],
 });
 
