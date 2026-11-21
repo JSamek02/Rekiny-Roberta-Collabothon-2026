@@ -1,0 +1,101 @@
+<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Subtle Halo / Sparkle Glow -->
+  <g opacity="0.85">
+    <circle cx="120" cy="125" r="95" fill="url(#haloGlow)" />
+    <!-- 4-point Sparkles -->
+    <path d="M205 75 L207.5 83 L215 85.5 L207.5 88 L205 96 L202.5 88 L195 85.5 L202.5 83 Z" fill="#FFD700" stroke="#000E56" stroke-width="1.5" />
+    <path d="M35 85 L37 94 L46 96 L37 98 L35 107 L33 98 L24 96 L33 94 Z" fill="#FFE8AE" stroke="#000E56" stroke-width="1.5" />
+    <path d="M198 165 L199.5 171 L205.5 172.5 L199.5 174 L198 180 L196.5 174 L190.5 172.5 L196.5 171 Z" fill="#FFD700" stroke="#000E56" stroke-width="1.2" />
+    <path d="M48 160 L49.5 165 L54.5 166.5 L49.5 168 L48 173 L46.5 168 L41.5 166.5 L46.5 165 Z" fill="#FFE8AE" stroke="#000E56" stroke-width="1.2" />
+  </g>
+
+  <!-- Cake Drop Shadow -->
+  <ellipse cx="120" cy="202" rx="78" ry="16" fill="#000E56" fill-opacity="0.16" />
+
+  <!-- KREMÓWKA CAKE SLICE (Isometric 3D slice - Clean without flag) -->
+
+  <!-- Bottom Pastry Crust Base -->
+  <g>
+    <!-- Base front & side -->
+    <path d="M45 152 L120 182 L195 152 L195 164 L120 195 L45 164 Z" fill="#C4781B" stroke="#000E56" stroke-width="3" stroke-linejoin="round" />
+    <!-- Flaky texture lines on base -->
+    <path d="M68 163 L98 174 M142 175 L175 162" stroke="#8E4E02" stroke-width="2" stroke-linecap="round" />
+  </g>
+
+  <!-- Massive Custard Cream Layer (Krem budyniowy / waniliowy) -->
+  <g>
+    <!-- Cream left side (light) -->
+    <path d="M45 106 L120 138 L120 182 L45 152 Z" fill="#FFEA9F" stroke="#000E56" stroke-width="3" stroke-linejoin="round" />
+    <!-- Cream right side (shadow) -->
+    <path d="M120 138 L195 106 L195 152 L120 182 Z" fill="#FFDF73" stroke="#000E56" stroke-width="3" stroke-linejoin="round" />
+    
+    <!-- Cream Swirls & Waves -->
+    <!-- Left side highlights/waves -->
+    <path d="M56 122 Q84 132 110 143" stroke="#FFF7D1" stroke-width="3.5" stroke-linecap="round" fill="none" />
+    <path d="M58 138 Q85 147 110 159" stroke="#F6D058" stroke-width="2.5" stroke-linecap="round" fill="none" />
+    
+    <!-- Right side shadow waves -->
+    <path d="M130 145 Q158 132 184 120" stroke="#F6D058" stroke-width="2.5" stroke-linecap="round" fill="none" />
+    <path d="M130 161 Q158 148 184 136" stroke="#E5B932" stroke-width="2.5" stroke-linecap="round" fill="none" />
+
+    <!-- Vanilla bean specks -->
+    <circle cx="78" cy="128" r="1.3" fill="#7C4A15" opacity="0.6" />
+    <circle cx="96" cy="146" r="1.3" fill="#7C4A15" opacity="0.6" />
+    <circle cx="68" cy="140" r="1.3" fill="#7C4A15" opacity="0.6" />
+    <circle cx="146" cy="135" r="1.3" fill="#7C4A15" opacity="0.6" />
+    <circle cx="168" cy="126" r="1.3" fill="#7C4A15" opacity="0.6" />
+    <circle cx="152" cy="156" r="1.3" fill="#7C4A15" opacity="0.6" />
+    <circle cx="178" cy="144" r="1.3" fill="#7C4A15" opacity="0.6" />
+  </g>
+
+  <!-- Top Puff Pastry (Ciasto francuskie) -->
+  <g>
+    <!-- Top pastry edge front/sides -->
+    <path d="M42 101 L120 133 L198 101 L198 111 L120 143 L42 111 Z" fill="#C4781B" stroke="#000E56" stroke-width="3" stroke-linejoin="round" />
+    
+    <!-- Top puff pastry surface -->
+    <path d="M42 101 L120 70 L198 101 L120 133 Z" fill="#E59838" stroke="#000E56" stroke-width="3" stroke-linejoin="round" />
+    
+    <!-- Flaky crispy pastry facets / blisters -->
+    <path d="M64 99 L104 84 L126 95 L86 110 Z" fill="#F6BA55" opacity="0.85" />
+    <path d="M126 95 L164 81 L183 97 L145 111 Z" fill="#D38520" opacity="0.75" />
+    <path d="M88 115 L120 101 L148 114 L115 129 Z" fill="#FAD17D" opacity="0.9" />
+
+    <!-- Flaky crust crack lines -->
+    <path d="M72 100 Q94 89 116 97" stroke="#9E5806" stroke-width="1.8" stroke-linecap="round" fill="none" />
+    <path d="M126 97 Q148 106 170 95" stroke="#9E5806" stroke-width="1.8" stroke-linecap="round" fill="none" />
+  </g>
+
+  <!-- Generous Layer of Powdered Sugar (Cukier Puder) on top -->
+  <g>
+    <!-- Sugar patches -->
+    <ellipse cx="120" cy="102" rx="60" ry="22" fill="#FFFFFF" fill-opacity="0.9" />
+    <path d="M66 104 Q82 95 104 101 Q126 90 153 100 Q174 97 181 102 Q154 116 120 124 Q83 116 66 104 Z" fill="#FFFFFF" />
+    
+    <!-- Dusted sugar dots / powdery drift -->
+    <circle cx="56" cy="106" r="2.5" fill="#FFFFFF" />
+    <circle cx="78" cy="92" r="2.2" fill="#FFFFFF" />
+    <circle cx="108" cy="85" r="3" fill="#FFFFFF" />
+    <circle cx="138" cy="87" r="2.5" fill="#FFFFFF" />
+    <circle cx="164" cy="94" r="2" fill="#FFFFFF" />
+    <circle cx="184" cy="103" r="2.2" fill="#FFFFFF" />
+    <circle cx="120" cy="113" r="3" fill="#FFFFFF" />
+    <circle cx="95" cy="111" r="2.5" fill="#FFFFFF" />
+    <circle cx="145" cy="109" r="2.2" fill="#FFFFFF" />
+    <circle cx="120" cy="96" r="2.5" fill="#FFFFFF" />
+    
+    <!-- Sugar sparkles -->
+    <path d="M98 94 L100 99 L105 101 L100 103 L98 108 L96 103 L91 101 L96 99 Z" fill="#FFFFFF" />
+    <path d="M145 95 L146.5 99 L150.5 100.5 L146.5 102 L145 106 L143.5 102 L139.5 100.5 L143.5 99 Z" fill="#FFFFFF" />
+    <path d="M120 84 L121.5 88 L125.5 89.5 L121.5 91 L120 95 L118.5 91 L114.5 89.5 L118.5 88 Z" fill="#FFFFFF" />
+  </g>
+
+  <!-- Gradients -->
+  <defs>
+    <radialGradient id="haloGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(120 125) rotate(90) scale(95)">
+      <stop offset="0%" stop-color="#FFE8AE" stop-opacity="0.6" />
+      <stop offset="65%" stop-color="#FFE8AE" stop-opacity="0.18" />
+      <stop offset="100%" stop-color="#FFE8AE" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+</svg>
