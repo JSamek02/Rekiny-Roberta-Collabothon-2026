@@ -2,7 +2,7 @@ import { Link } from '@/i18n/navigation';
 import { routes } from '@/utils/routes';
 import { getTranslations } from 'next-intl/server';
 
-/** Floating chat-bubble button on the home view that opens the Sharkbot chat view. */
+/** Floating chat-bubble button that opens the Sharkbot chat view. */
 export const ChatFab = async () => {
   const t = await getTranslations('components.chat-fab');
 

@@ -4,6 +4,7 @@ import './globals.css';
 import { NextIntlClientProvider } from 'next-intl';
 import { Header } from '@/components/header';
 import { BottomNav } from '@/components/bottom-nav';
+import { ChatFab } from '@/components/chat-fab';
 import { QueryClientProvider } from '@/components/query-client-provider/query-client-provider';
 
 const poppinsFont = Poppins({
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <QueryClientProvider>
             <Header />
             {children}
+            <ChatFab />
             <BottomNav />
           </QueryClientProvider>
         </NextIntlClientProvider>
