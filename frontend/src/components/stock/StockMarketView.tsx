@@ -1,11 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
 import {
   AssetAllocations,
-  QuarterHistoryEntry,
-  SimulationDebrief,
   SimulationEventSummary,
   SimulationSession,
 } from './types';
@@ -24,15 +21,16 @@ import { QuarterNewsCard } from './QuarterNewsCard';
 import { EventDebriefModal } from './EventDebriefModal';
 import {
   RotateCcw,
-  TrendingUp,
-  TrendingDown,
   Scale,
   ArrowRight,
   ArrowLeft,
   Loader2,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export const StockMarketView: React.FC = () => {
+  const t = useTranslations('components.stock.view');
+
   const [events, setEvents] = useState<SimulationEventSummary[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<SimulationEventSummary | null>(null);
   const [session, setSession] = useState<SimulationSession | null>(null);
@@ -62,7 +60,7 @@ export const StockMarketView: React.FC = () => {
       setEvents(data.events || []);
     } catch (err: any) {
       console.error('Failed to load events:', err);
-      setError('Nie udało się połączyć z silnikiem symulacji giełdowej. Upewnij się, że backend jest uruchomiony.');
+      setError(t('error-connection'));
     } finally {
       setIsLoading(false);
     }
@@ -84,7 +82,7 @@ export const StockMarketView: React.FC = () => {
       }
     } catch (err: any) {
       console.error('Error starting event session:', err);
-      setError(err.message || 'Błąd inicjalizacji scenariusza.');
+      setError(err.message || t('error-init'));
     } finally {
       setIsLoading(false);
     }
@@ -99,7 +97,7 @@ export const StockMarketView: React.FC = () => {
       setSession(res.session);
     } catch (err: any) {
       console.error('Error setting investment:', err);
-      setError(err.message || 'Błąd zatwierdzania alokacji początkowej.');
+      setError(err.message || t('error-allocation'));
     } finally {
       setIsLoading(false);
     }
@@ -117,7 +115,7 @@ export const StockMarketView: React.FC = () => {
       setShowRebalance(false);
     } catch (err: any) {
       console.error('Error advancing quarter:', err);
-      setError(err.message || 'Błąd przeskoku kwartału.');
+      setError(err.message || t('error-advance'));
     } finally {
       setIsStepping(false);
     }
@@ -140,7 +138,7 @@ export const StockMarketView: React.FC = () => {
       setShowRebalance(false);
     } catch (err: any) {
       console.error('Error resetting session:', err);
-      setError(err.message || 'Błąd resetowania symulacji.');
+      setError(err.message || t('error-reset'));
     } finally {
       setIsLoading(false);
     }
@@ -160,8 +158,8 @@ export const StockMarketView: React.FC = () => {
   if (isLoading && !selectedEvent) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-3">
-        <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-xs font-semibold text-blue-950">Ładowanie scenariuszy giełdowych...</p>
+        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+        <p className="text-xs font-semibold text-blue-950">{t('loading')}</p>
       </div>
     );
   }
@@ -171,7 +169,7 @@ export const StockMarketView: React.FC = () => {
     return (
       <div className="py-4 px-4 flex flex-col gap-4 max-w-md mx-auto w-full">
         {error && (
-          <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700">
+          <div className="p-3 rounded-xl bg-red-50 border border-red-300 text-xs text-red-800">
             {error}
           </div>
         )}
@@ -188,12 +186,13 @@ export const StockMarketView: React.FC = () => {
         <div className="flex items-center justify-between">
           <button
             onClick={handleBackToEvents}
-            className="flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800"
+            className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 cursor-pointer"
           >
-            ← Inne scenariusze
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>{t('back-to-events')}</span>
           </button>
           <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-900">
-            Krok 1: Alokacja Kapitału
+            {t('step-1-title')}
           </span>
         </div>
 
@@ -211,9 +210,9 @@ export const StockMarketView: React.FC = () => {
             {selectedEvent.initial_context?.description}
           </div>
           <div className="flex items-center justify-between pt-2 border-t border-grey-100 mt-1">
-            <span className="text-xs text-grey-600">Twój budżet startowy:</span>
-            <span className="text-sm font-bold text-emerald-600 font-mono">
-              {session.initial_capital.toLocaleString('pl-PL')} zł
+            <span className="text-xs text-grey-600">{t('starting-budget')}</span>
+            <span className="text-sm font-bold text-[#10b981] font-mono">
+              {session.initial_capital.toLocaleString(undefined)} zł
             </span>
           </div>
         </div>
@@ -227,7 +226,7 @@ export const StockMarketView: React.FC = () => {
         />
 
         {error && (
-          <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700">
+          <div className="p-3 rounded-xl bg-red-50 border border-red-300 text-xs text-red-800">
             {error}
           </div>
         )}
@@ -239,9 +238,19 @@ export const StockMarketView: React.FC = () => {
             isLoading ||
             Math.round((allocations.stocks + allocations.bonds + allocations.gold + allocations.cash) * 100) !== 100
           }
-          className="w-full py-3 px-4 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-bold text-sm shadow-md transition-all disabled:opacity-40 flex items-center justify-center gap-2 active:scale-98"
+          className="w-full py-3 px-4 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-bold text-sm shadow-md transition-all disabled:opacity-40 flex items-center justify-center gap-2 active:scale-98 cursor-pointer"
         >
-          {isLoading ? 'Rozpoczynanie...' : 'Zatwierdź portfel i wejdź na giełdę ➔'}
+          {isLoading ? (
+            <span className="flex items-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>{t('starting')}</span>
+            </span>
+          ) : (
+            <span className="flex items-center gap-1.5">
+              <span>{t('submit-portfolio')}</span>
+              <ArrowRight className="w-4 h-4" />
+            </span>
+          )}
         </button>
       </div>
     );
@@ -279,16 +288,18 @@ export const StockMarketView: React.FC = () => {
       <div className="flex items-center justify-between">
         <button
           onClick={handleBackToEvents}
-          className="flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800"
+          className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 cursor-pointer"
         >
-          ← Scenariusze
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>{t('back-to-events-short')}</span>
         </button>
         <button
           onClick={handleResetRequest}
           disabled={isStepping}
-          className="text-[11px] font-medium text-grey-600 hover:text-blue-500 transition-colors cursor-pointer"
+          className="text-[11px] font-medium text-grey-600 hover:text-blue-500 transition-colors cursor-pointer flex items-center gap-1"
         >
-          Resetuj 🔄
+          <span>{t('reset')}</span>
+          <RotateCcw className="w-3 h-3" />
         </button>
       </div>
 
@@ -299,7 +310,7 @@ export const StockMarketView: React.FC = () => {
             {SHORT_EVENT_TITLES[selectedEvent.id] || selectedEvent.title}
           </span>
           <span className="font-semibold text-blue-600">
-            Kwartał {currentIdx} / {session.total_quarters}
+            {t('quarter-progress', { current: currentIdx, total: session.total_quarters })}
           </span>
         </div>
         <div className="h-2 w-full rounded-full bg-grey-200 overflow-hidden">
@@ -315,15 +326,15 @@ export const StockMarketView: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <span className="text-[11px] font-semibold text-grey-600 uppercase tracking-wide">
-              Wartość Portfela
+              {t('portfolio-value')}
             </span>
             <div className="text-2xl font-bold text-blue-950 font-mono">
-              {session.current_capital.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} zł
+              {session.current_capital.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} zł
             </div>
           </div>
           <div
             className={`px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1 ${
-              isNominalProfit ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+              isNominalProfit ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
             }`}
           >
             <span>{isNominalProfit ? '▲ +' : '▼ '}</span>
@@ -333,14 +344,14 @@ export const StockMarketView: React.FC = () => {
 
         <div className="grid grid-cols-2 gap-2 pt-2 border-t border-grey-100 text-xs">
           <div>
-            <span className="text-[10px] text-grey-600 block">Wartość realna (po inflacji):</span>
+            <span className="text-[10px] text-grey-600 block">{t('real-value')}</span>
             <span className="font-bold text-blue-950 font-mono">
-              {realCapital.toLocaleString('pl-PL', { minimumFractionDigits: 2 })} zł
+              {realCapital.toLocaleString(undefined, { minimumFractionDigits: 2 })} zł
             </span>
           </div>
           <div className="text-right">
-            <span className="text-[10px] text-grey-600 block">Maks. Obsunięcie (Drawdown):</span>
-            <span className="font-bold text-red-600 font-mono">
+            <span className="text-[10px] text-grey-600 block">{t('max-drawdown')}</span>
+            <span className="font-bold text-[#ef4444] font-mono">
               {session.max_drawdown_pct}%
             </span>
           </div>
@@ -361,12 +372,12 @@ export const StockMarketView: React.FC = () => {
       {showRebalance ? (
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-blue-950">Zmień wagi przed kolejnym kwartałem</span>
+            <span className="text-xs font-bold text-blue-950">{t('change-weights-title')}</span>
             <button
               onClick={() => setShowRebalance(false)}
-              className="text-xs text-blue-600 hover:underline"
+              className="text-xs text-blue-600 hover:underline cursor-pointer"
             >
-              Anuluj
+              {t('cancel')}
             </button>
           </div>
           <AllocationSliders
@@ -379,25 +390,30 @@ export const StockMarketView: React.FC = () => {
       ) : (
         <div className="bg-white rounded-2xl p-3 border border-blue-100 flex items-center justify-between text-xs">
           <div className="flex items-center gap-2">
-            <span className="text-lg">⚖️</span>
+            <Scale className="w-5 h-5 text-blue-500 shrink-0" />
             <div>
-              <span className="font-bold text-blue-950 block">Alokacja na kolejny kwartał</span>
+              <span className="font-bold text-blue-950 block">{t('next-quarter-allocation')}</span>
               <span className="text-[10px] text-grey-600">
-                Akcje: {Math.round(allocations.stocks * 100)}% | Obligacje: {Math.round(allocations.bonds * 100)}% | Złoto: {Math.round(allocations.gold * 100)}% | Gotówka: {Math.round(allocations.cash * 100)}%
+                {t('allocation-summary', {
+                  stocks: Math.round(allocations.stocks * 100),
+                  bonds: Math.round(allocations.bonds * 100),
+                  gold: Math.round(allocations.gold * 100),
+                  cash: Math.round(allocations.cash * 100),
+                })}
               </span>
             </div>
           </div>
           <button
             onClick={() => setShowRebalance(true)}
-            className="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg font-semibold text-xs hover:bg-blue-100 transition-colors"
+            className="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg font-semibold text-xs hover:bg-blue-100 transition-colors cursor-pointer"
           >
-            Zmień
+            {t('change')}
           </button>
         </div>
       )}
 
       {error && (
-        <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700">
+        <div className="p-3 rounded-xl bg-red-50 border border-red-300 text-xs text-red-800">
           {error}
         </div>
       )}
@@ -406,15 +422,18 @@ export const StockMarketView: React.FC = () => {
       <button
         onClick={handleStepQuarter}
         disabled={isStepping}
-        className="w-full py-3.5 px-4 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-bold text-sm shadow-md transition-all disabled:opacity-50 flex items-center justify-center gap-2 active:scale-98"
+        className="w-full py-3.5 px-4 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-bold text-sm shadow-md transition-all disabled:opacity-50 flex items-center justify-center gap-2 active:scale-98 cursor-pointer"
       >
         {isStepping ? (
           <>
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            <span>Przeliczanie stóp zwrotu...</span>
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>{t('calculating-returns')}</span>
           </>
         ) : (
-          <span>Przejdź do kolejnego kwartału ➔</span>
+          <span className="flex items-center gap-1.5">
+            <span>{t('advance-quarter')}</span>
+            <ArrowRight className="w-4 h-4" />
+          </span>
         )}
       </button>
 
@@ -430,12 +449,12 @@ export const StockMarketView: React.FC = () => {
           <div className="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl p-6 flex flex-col gap-5 border border-blue-100">
             {/* Icon + Title */}
             <div className="flex flex-col items-center gap-2 text-center">
-              <div className="w-12 h-12 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-2xl">
-                🔄
+              <div className="w-12 h-12 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center">
+                <RotateCcw className="w-6 h-6 text-blue-500" />
               </div>
-              <h3 className="text-base font-bold text-blue-950">Resetować scenariusz?</h3>
+              <h3 className="text-base font-bold text-blue-950">{t('reset-modal-title')}</h3>
               <p className="text-xs text-grey-600 leading-relaxed">
-                Cały postęp w tym scenariuszu zostanie utracony i zaczniesz od nowa z domyślnym portfelem.
+                {t('reset-modal-desc')}
               </p>
             </div>
             {/* Actions */}
@@ -445,14 +464,14 @@ export const StockMarketView: React.FC = () => {
                 onClick={handleResetCancel}
                 className="flex-1 py-3 px-4 rounded-xl bg-blue-50 border border-blue-100 text-sm font-semibold text-blue-950 hover:bg-blue-100 transition-colors cursor-pointer text-center"
               >
-                Anuluj
+                {t('reset-modal-cancel')}
               </button>
               <button
                 type="button"
                 onClick={handleResetConfirm}
-                className="flex-1 py-3 px-4 rounded-xl bg-blue-500 text-white text-sm font-bold shadow-md hover:opacity-90 active:scale-98 transition-all cursor-pointer text-center"
+                className="flex-1 py-3 px-4 rounded-xl bg-blue-500 text-white text-sm font-bold shadow-md hover:bg-blue-600 active:scale-98 transition-all cursor-pointer text-center"
               >
-                Resetuj
+                {t('reset-modal-confirm')}
               </button>
             </div>
           </div>

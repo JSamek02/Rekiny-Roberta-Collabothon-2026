@@ -2,12 +2,14 @@
 
 import React, { useState } from 'react';
 import { QuarterHistoryEntry } from './types';
+import { useTranslations } from 'next-intl';
 
 interface QuarterHistoryChartProps {
   history: QuarterHistoryEntry[];
 }
 
 export const QuarterHistoryChart: React.FC<QuarterHistoryChartProps> = ({ history }) => {
+  const t = useTranslations('components.stock.chart');
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   if (!history || history.length === 0) {
@@ -57,13 +59,13 @@ export const QuarterHistoryChart: React.FC<QuarterHistoryChartProps> = ({ histor
     <div className="bg-white rounded-2xl p-4 border border-blue-100 flex flex-col gap-2">
       <div className="flex items-center justify-between">
         <div>
-          <h4 className="font-bold text-xs text-blue-950">Wykres Wartości Portfela</h4>
+          <h4 className="font-bold text-xs text-blue-950">{t('title')}</h4>
           <div className="flex items-center gap-3 text-[10px] mt-0.5">
             <span className="flex items-center gap-1 font-medium text-blue-600">
-              <span className="w-2.5 h-0.5 bg-blue-500 rounded-full inline-block" /> Portfel nominalny
+              <span className="w-2.5 h-0.5 bg-blue-500 rounded-full inline-block" /> {t('nominal-legend')}
             </span>
-            <span className="flex items-center gap-1 font-medium text-emerald-600">
-              <span className="w-2.5 h-0.5 border-b border-dashed border-emerald-500 inline-block" /> Realny (po inflacji)
+            <span className="flex items-center gap-1 font-medium text-[#10b981]">
+              <span className="w-2.5 h-0.5 border-b border-dashed border-[#10b981] inline-block" /> {t('real-legend')}
             </span>
           </div>
         </div>
@@ -71,7 +73,7 @@ export const QuarterHistoryChart: React.FC<QuarterHistoryChartProps> = ({ histor
           <div className="text-right">
             <span className="text-[10px] text-grey-600 block">{hoveredData.quarter}</span>
             <span className="text-xs font-bold text-blue-950">
-              {hoveredData.portfolio_value.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} zł
+              {hoveredData.portfolio_value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} zł
             </span>
           </div>
         )}
@@ -111,66 +113,51 @@ export const QuarterHistoryChart: React.FC<QuarterHistoryChartProps> = ({ histor
             stroke="#e2e2e2"
           />
 
-          {/* Y-axis labels */}
-          <text x={paddingX - 4} y={paddingY + 3} textAnchor="end" className="text-[8px] fill-grey-400 font-mono">
-            {Math.round(maxVal)}
-          </text>
-          <text x={paddingX - 4} y={paddingY + chartH / 2 + 3} textAnchor="end" className="text-[8px] fill-grey-400 font-mono">
-            {Math.round((minVal + maxVal) / 2)}
-          </text>
-          <text x={paddingX - 4} y={paddingY + chartH + 3} textAnchor="end" className="text-[8px] fill-grey-400 font-mono">
-            {Math.round(minVal)}
-          </text>
-
           {/* Area fill */}
-          {pointsNominal.length > 1 && <path d={areaNominal} fill="url(#nominalGradient)" />}
+          <path d={areaNominal} fill="url(#nominalGradient)" />
 
-          {/* Real value line (dashed) */}
-          {pointsReal.length > 1 && (
-            <path
-              d={pathReal}
-              fill="none"
-              stroke="#10b981"
-              strokeWidth="2"
-              strokeDasharray="4 3"
-              strokeLinecap="round"
-            />
-          )}
+          {/* Real line (dashed green) */}
+          <path
+            d={pathReal}
+            fill="none"
+            stroke="#10b981"
+            strokeWidth="2"
+            strokeDasharray="3 3"
+            strokeLinecap="round"
+          />
 
-          {/* Nominal value line */}
-          {pointsNominal.length > 1 && (
-            <path
-              d={pathNominal}
-              fill="none"
-              stroke="#3b5cff"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          )}
+          {/* Nominal line (solid blue) */}
+          <path
+            d={pathNominal}
+            fill="none"
+            stroke="#3b5cff"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          />
 
-          {/* Data points */}
-          {pointsNominal.map((p, idx) => (
-            <g key={idx} className="cursor-pointer" onMouseEnter={() => setHoveredIndex(idx)}>
-              <circle
-                cx={p.x}
-                cy={p.y}
-                r={hoveredIndex === idx ? 4.5 : 3}
-                fill="#ffffff"
-                stroke="#3b5cff"
-                strokeWidth={hoveredIndex === idx ? 2.5 : 1.5}
-                className="transition-all"
-              />
-            </g>
-          ))}
+          {/* Points */}
+          {pointsNominal.map((p, idx) => {
+            const isHovered = hoveredIndex === idx;
+            return (
+              <g key={idx} className="cursor-pointer" onMouseEnter={() => setHoveredIndex(idx)} onMouseLeave={() => setHoveredIndex(null)}>
+                <circle
+                  cx={p.x}
+                  cy={p.y}
+                  r={isHovered ? 5 : 3}
+                  className="fill-white stroke-blue-500 transition-all duration-150"
+                  strokeWidth="2"
+                />
+                <circle
+                  cx={p.x}
+                  cy={pointsReal[idx].y}
+                  r={isHovered ? 4 : 2}
+                  className="fill-white stroke-[#10b981] transition-all duration-150"
+                  strokeWidth="1.5"
+                />
+              </g>
+            );
+          })}
         </svg>
-      </div>
-
-      {/* X-axis key dates */}
-      <div className="flex justify-between text-[9px] text-grey-400 font-mono px-6">
-        <span>{history[0]?.quarter}</span>
-        {history.length > 2 && <span>{history[Math.floor(history.length / 2)]?.quarter}</span>}
-        <span>{history[history.length - 1]?.quarter}</span>
       </div>
     </div>
   );

@@ -135,6 +135,161 @@
       "log-out": "Wyloguj",
       "config-error": "Brak połączenia z serwerem. Sprawdź, czy backend działa.",
       "error": "Coś poszło nie tak. Spróbuj ponownie."
+    },
+    "stock": {
+      "meta": {
+        "title": "Giełda — Symulator Inwestycyjny | Rekiny Finansów",
+        "description": "Historyczna symulacja giełdowa i alokacja portfela z Robertem Biznesu"
+      },
+      "hero-widget": {
+        "badge": "Robert Biznesu poleca",
+        "title": "Symulator Giełdowy",
+        "description": "Zarządzaj portfelem w realnych, historycznych kryzysach. Sprawdź, czy pokonasz inflację i ocalisz kapitał!",
+        "starting-capital": "Kapitał startowy: {amount} zł"
+      },
+      "event-selector": {
+        "heading": "Wybierz Realny scenariusz",
+        "scenarios-count": "{count, plural, =1 {# scenariusz} few {# scenariusze} other {# scenariuszy}}",
+        "quarters-count": "{count, plural, =1 {# kwartał} few {# kwartały} other {# kwartałów}}",
+        "play": "Zagraj",
+        "expand": "Rozwiń",
+        "collapse": "Zwiń",
+        "fallback-desc": "Historyczna symulacja rynkowa.",
+        "difficulty-label": "Poziom trudności: {label}",
+        "difficulty": {
+          "easy": "Łatwy",
+          "medium": "Średni",
+          "hard": "Trudny"
+        },
+        "short-titles": {
+          "gfc_2008": "Kryzys Finansowy 2008",
+          "covid_2020": "Krach COVID-19",
+          "inflation_2022": "Szok Inflacyjny 2022"
+        },
+        "tags": {
+          "gfc_2008": "Lehman Brothers & Hossa",
+          "covid_2020": "Lockdown & Boom Tech",
+          "inflation_2022": "Inflacja & Stopy %",
+          "default": "Scenariusz"
+        }
+      },
+      "view": {
+        "loading": "Ładowanie scenariuszy giełdowych...",
+        "error-connection": "Nie udało się połączyć z silnikiem symulacji giełdowej. Upewnij się, że backend jest uruchomiony.",
+        "error-init": "Błąd inicjalizacji scenariusza.",
+        "error-allocation": "Błąd zatwierdzania alokacji początkowej.",
+        "error-advance": "Błąd przeskoku kwartału.",
+        "error-reset": "Błąd resetowania symulacji.",
+        "back-to-events": "Inne scenariusze",
+        "back-to-events-short": "Scenariusze",
+        "step-1-title": "Krok 1: Alokacja Kapitału",
+        "starting-budget": "Twój budżet startowy:",
+        "submit-portfolio": "Zatwierdź portfel i wejdź na giełdę",
+        "starting": "Rozpoczynanie...",
+        "reset": "Resetuj",
+        "quarter-progress": "Kwartał {current} / {total}",
+        "portfolio-value": "Wartość Portfela",
+        "real-value": "Wartość realna (po inflacji):",
+        "max-drawdown": "Maks. Obsunięcie (Drawdown):",
+        "next-quarter-allocation": "Alokacja na kolejny kwartał",
+        "allocation-summary": "Akcje: {stocks}% | Obligacje: {bonds}% | Złoto: {gold}% | Gotówka: {cash}%",
+        "change": "Zmień",
+        "cancel": "Anuluj",
+        "change-weights-title": "Zmień wagi przed kolejnym kwartałem",
+        "advance-quarter": "Przejdź do kolejnego kwartału",
+        "calculating-returns": "Przeliczanie stóp zwrotu...",
+        "reset-modal-title": "Resetować scenariusz?",
+        "reset-modal-desc": "Cały postęp w tym scenariuszu zostanie utracony i zaczniesz od nowa z domyślnym portfelem.",
+        "reset-modal-cancel": "Anuluj",
+        "reset-modal-confirm": "Resetuj"
+      },
+      "allocation-sliders": {
+        "title-initial": "Ustal Podział Kapitału na Start",
+        "title-rebalance": "Dostosuj Alokację Portfela (Rebalancing)",
+        "subtitle": "Rozdziel 100% kapitału pomiędzy 4 klasy aktywów.",
+        "sum": "Suma: {total}%",
+        "sum-error": "Suma musi wynosić 100% (obecnie {total}%)",
+        "normalize-btn": "Wyrównaj",
+        "quick-strategies": "Szybkie strategie inwestycyjne:",
+        "presets": {
+          "classic-60-40": "60/40 Klasyk",
+          "all-weather": "All-Weather (Dalio)",
+          "aggressive-100-stocks": "100% Akcje (Agresywny)",
+          "defensive-shield": "Defensywny / Tarcza",
+          "pure-cash": "Czysta Gotówka"
+        },
+        "assets": {
+          "stocks": {
+            "name": "Akcje (S&P 500)",
+            "subname": "Indeks 500 największych spółek USA",
+            "description": "Wysoki potencjał wzrostu, ale duża zmienność w bessie."
+          },
+          "bonds": {
+            "name": "Obligacje Skarbowe 10Y",
+            "subname": "10-letnie obligacje rządowe USA",
+            "description": "Stabilne odsetki i tradycyjna ochrona podczas krachów akcji."
+          },
+          "gold": {
+            "name": "Złoto Kruszcowe",
+            "subname": "Fizyczne złoto spot w USD",
+            "description": "Ochrona przed dewaluacją walut, inflacją i szokami geopolitycznymi."
+          },
+          "cash": {
+            "name": "Bezpieczna Gotówka",
+            "subname": "3-miesięczne bony skarbowe (T-Bill)",
+            "description": "100% płynności i zero ryzyka spadku nominalnego, ale traci na inflacji."
+          }
+        }
+      },
+      "quarter-news": {
+        "quarter-badge": "KWARTAŁ: {quarter}",
+        "portfolio-return": "Twój portfel: {prefix}{value}%",
+        "robert-lesson": "Lekcja Roberta Biznesu:",
+        "asset-returns-title": "Stopy zwrotu klas aktywów w tym kwartale:",
+        "assets": {
+          "stocks": "Akcje",
+          "bonds": "Obligacje",
+          "gold": "Złoto",
+          "cash": "Gotówka"
+        },
+        "cpi-inflation": "Inflacja CPI w tym kwartale:"
+      },
+      "chart": {
+        "title": "Wykres Wartości Portfela",
+        "nominal-legend": "Portfel nominalny",
+        "real-legend": "Realny (po inflacji)"
+      },
+      "debrief": {
+        "crisis-completed": "Kryzys Zakończony",
+        "final-capital": "Kapitał Końcowy",
+        "nominal-return": "{prefix}{value}% zwrot nominalny",
+        "real-capital": "Wartość Realna (po inflacji)",
+        "real-return": "{prefix}{value}% realny zysk",
+        "max-drawdown": "Maksymalny spadek (Drawdown):",
+        "rebalances-count": "Liczba rebalancingów:",
+        "badges-title": "Zdobyte Odznaki Inwestycyjne:",
+        "badges": {
+          "shield": {
+            "name": "Tarcza Bezpieczeństwa",
+            "desc": "Maksymalne obsunięcie portfela poniżej 15%"
+          },
+          "inflation": {
+            "name": "Pogromca Inflacji",
+            "desc": "Realny zysk przewyższający inflację CPI"
+          },
+          "diamond": {
+            "name": "Diamentowe Płetwy",
+            "desc": "Żelazna dyscyplina i brak panicznej sprzedaży"
+          },
+          "default": {
+            "desc": "Sukces w zarządzaniu kapitałem"
+          }
+        },
+        "verdict-title": "Werdykt Roberta Biznesu:",
+        "takeaways-title": "Wnioski na Przyszłość:",
+        "play-again": "Zagraj ponownie",
+        "scenarios-list": "Lista scenariuszy"
+      }
     }
   },
   "global": {

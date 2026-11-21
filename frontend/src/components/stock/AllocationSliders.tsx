@@ -2,6 +2,8 @@
 
 import React from 'react';
 import { AssetAllocations, AssetKey } from './types';
+import { TrendingUp, Landmark, Coins, Banknote, Minus, Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface AllocationSlidersProps {
   allocations: AssetAllocations;
@@ -13,72 +15,52 @@ interface AllocationSlidersProps {
 const ASSET_CONFIG: Record<
   AssetKey,
   {
-    name: string;
-    subname: string;
-    icon: string;
-    color: string;
+    icon: React.ComponentType<{ className?: string }>;
     barColor: string;
     textColor: string;
-    description: string;
   }
 > = {
   stocks: {
-    name: 'Akcje (S&P 500)',
-    subname: 'Indeks 500 największych spółek USA',
-    icon: '📈',
-    color: 'bg-blue-500',
+    icon: TrendingUp,
     barColor: '#3b5cff',
-    textColor: 'text-blue-600',
-    description: 'Wysoki potencjał wzrostu, ale duża zmienność w bessie.',
+    textColor: 'text-blue-500',
   },
   bonds: {
-    name: 'Obligacje Skarbowe 10Y',
-    subname: '10-letnie obligacje rządowe USA',
-    icon: '📜',
-    color: 'bg-emerald-500',
+    icon: Landmark,
     barColor: '#10b981',
-    textColor: 'text-emerald-600',
-    description: 'Stabilne odsetki i tradycyjna ochrona podczas krachów akcji.',
+    textColor: 'text-[#10b981]',
   },
   gold: {
-    name: 'Złoto Kruszcowe',
-    subname: 'Fizyczne złoto spot w USD',
-    icon: '🪙',
-    color: 'bg-amber-500',
+    icon: Coins,
     barColor: '#f59e0b',
-    textColor: 'text-amber-600',
-    description: 'Ochrona przed dewaluacją walut, inflacją i szokami geopolitycznymi.',
+    textColor: 'text-[#f59e0b]',
   },
   cash: {
-    name: 'Bezpieczna Gotówka',
-    subname: '3-miesięczne bony skarbowe (T-Bill)',
-    icon: '💵',
-    color: 'bg-slate-500',
+    icon: Banknote,
     barColor: '#64748b',
-    textColor: 'text-slate-600',
-    description: '100% płynności i zero ryzyka spadku nominalnego, ale traci na inflacji.',
+    textColor: 'text-[#64748b]',
   },
 };
 
-const PRESETS: Array<{ name: string; alloc: AssetAllocations }> = [
+const PRESETS: Array<{ key: string; alloc: AssetAllocations }> = [
   {
-    name: '60/40 Klasyk',
+    key: 'classic-60-40',
     alloc: { stocks: 0.6, bonds: 0.4, gold: 0.0, cash: 0.0 },
   },
   {
-    name: 'All-Weather (Dalio)',
+    key: 'all-weather',
     alloc: { stocks: 0.3, bonds: 0.4, gold: 0.15, cash: 0.15 },
   },
   {
-    name: '100% Akcje (Agresywny)',
+    key: 'aggressive-100-stocks',
     alloc: { stocks: 1.0, bonds: 0.0, gold: 0.0, cash: 0.0 },
   },
   {
-    name: 'Defensywny / Tarcza',
+    key: 'defensive-shield',
     alloc: { stocks: 0.15, bonds: 0.35, gold: 0.3, cash: 0.2 },
   },
   {
-    name: 'Czysta Gotówka',
+    key: 'pure-cash',
     alloc: { stocks: 0.0, bonds: 0.0, gold: 0.0, cash: 1.0 },
   },
 ];
@@ -89,6 +71,8 @@ export const AllocationSliders: React.FC<AllocationSlidersProps> = ({
   isInitial = false,
   disabled = false,
 }) => {
+  const t = useTranslations('components.stock.allocation-sliders');
+
   // Sum percentage (rounded to 1 decimal)
   const totalPct = Math.round(
     (allocations.stocks + allocations.bonds + allocations.gold + allocations.cash) * 100
@@ -128,18 +112,18 @@ export const AllocationSliders: React.FC<AllocationSlidersProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="font-bold text-sm text-blue-950">
-            {isInitial ? 'Ustal Podział Kapitału na Start' : 'Dostosuj Alokację Portfela (Rebalancing)'}
+            {t(isInitial ? 'title-initial' : 'title-rebalance')}
           </h3>
-          <p className="text-xs text-grey-600">Rozdziel 100% kapitału pomiędzy 4 klasy aktywów.</p>
+          <p className="text-xs text-grey-600">{t('subtitle')}</p>
         </div>
         <div
           className={`px-2.5 py-1 rounded-full text-xs font-bold ${
             totalPct === 100
-              ? 'bg-emerald-100 text-emerald-800'
-              : 'bg-red-100 text-red-800 animate-pulse'
+              ? 'bg-green-50 text-green-800 border border-green-500/20'
+              : 'bg-red-50 text-red-800 border border-red-300 animate-pulse'
           }`}
         >
-          Suma: {totalPct}%
+          {t('sum', { total: totalPct })}
         </div>
       </div>
 
@@ -147,39 +131,39 @@ export const AllocationSliders: React.FC<AllocationSlidersProps> = ({
       <div className="h-3 w-full rounded-full overflow-hidden flex bg-grey-200">
         <div
           style={{ width: `${Math.round(allocations.stocks * 100)}%`, backgroundColor: ASSET_CONFIG.stocks.barColor }}
-          title={`Akcje: ${Math.round(allocations.stocks * 100)}%`}
+          title={`${t('assets.stocks.name')}: ${Math.round(allocations.stocks * 100)}%`}
           className="transition-all duration-300"
         />
         <div
           style={{ width: `${Math.round(allocations.bonds * 100)}%`, backgroundColor: ASSET_CONFIG.bonds.barColor }}
-          title={`Obligacje: ${Math.round(allocations.bonds * 100)}%`}
+          title={`${t('assets.bonds.name')}: ${Math.round(allocations.bonds * 100)}%`}
           className="transition-all duration-300"
         />
         <div
           style={{ width: `${Math.round(allocations.gold * 100)}%`, backgroundColor: ASSET_CONFIG.gold.barColor }}
-          title={`Złoto: ${Math.round(allocations.gold * 100)}%`}
+          title={`${t('assets.gold.name')}: ${Math.round(allocations.gold * 100)}%`}
           className="transition-all duration-300"
         />
         <div
           style={{ width: `${Math.round(allocations.cash * 100)}%`, backgroundColor: ASSET_CONFIG.cash.barColor }}
-          title={`Gotówka: ${Math.round(allocations.cash * 100)}%`}
+          title={`${t('assets.cash.name')}: ${Math.round(allocations.cash * 100)}%`}
           className="transition-all duration-300"
         />
       </div>
 
       {/* Quick Presets */}
       <div>
-        <p className="text-[11px] font-semibold text-grey-600 mb-1.5">Szybkie strategie inwestycyjne:</p>
+        <p className="text-[11px] font-semibold text-grey-600 mb-1.5">{t('quick-strategies')}</p>
         <div className="flex flex-wrap gap-1.5">
           {PRESETS.map((p) => (
             <button
-              key={p.name}
+              key={p.key}
               type="button"
               disabled={disabled}
               onClick={() => onChange(p.alloc)}
-              className="px-2 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-950 text-[11px] font-medium transition-colors border border-blue-100 active:scale-95"
+              className="px-2 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-950 text-[11px] font-medium transition-colors border border-blue-100 active:scale-95 cursor-pointer disabled:opacity-50"
             >
-              {p.name}
+              {t(`presets.${p.key}` as any)}
             </button>
           ))}
         </div>
@@ -189,17 +173,18 @@ export const AllocationSliders: React.FC<AllocationSlidersProps> = ({
       <div className="flex flex-col gap-3 pt-1">
         {(Object.keys(ASSET_CONFIG) as AssetKey[]).map((key) => {
           const cfg = ASSET_CONFIG[key];
+          const Icon = cfg.icon;
           const pct = Math.round(allocations[key] * 100);
 
           return (
             <div key={key} className="flex flex-col gap-1 p-2 rounded-xl bg-grey-50/50 border border-grey-100">
               <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-1.5">
-                  <span>{cfg.icon}</span>
-                  <span className="font-semibold text-blue-950">{cfg.name}</span>
+                  <Icon className={`w-4 h-4 ${cfg.textColor}`} />
+                  <span className="font-semibold text-blue-950">{t(`assets.${key}.name` as any)}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={`font-bold ${cfg.textColor}`}>{pct}%</span>
+                  <span className={`font-bold font-mono ${cfg.textColor}`}>{pct}%</span>
                 </div>
               </div>
 
@@ -208,9 +193,10 @@ export const AllocationSliders: React.FC<AllocationSlidersProps> = ({
                   type="button"
                   disabled={disabled || pct <= 0}
                   onClick={() => handleSliderChange(key, pct - 5)}
-                  className="w-6 h-6 rounded bg-white border border-grey-200 text-xs font-bold text-grey-600 hover:bg-blue-50 flex items-center justify-center disabled:opacity-40"
+                  className="w-6 h-6 rounded bg-white border border-grey-200 text-xs font-bold text-grey-600 hover:bg-blue-50 flex items-center justify-center disabled:opacity-40 cursor-pointer"
+                  aria-label="Decrease percentage"
                 >
-                  -
+                  <Minus className="w-3 h-3" />
                 </button>
                 <input
                   type="range"
@@ -226,27 +212,28 @@ export const AllocationSliders: React.FC<AllocationSlidersProps> = ({
                   type="button"
                   disabled={disabled || pct >= 100}
                   onClick={() => handleSliderChange(key, pct + 5)}
-                  className="w-6 h-6 rounded bg-white border border-grey-200 text-xs font-bold text-grey-600 hover:bg-blue-50 flex items-center justify-center disabled:opacity-40"
+                  className="w-6 h-6 rounded bg-white border border-grey-200 text-xs font-bold text-grey-600 hover:bg-blue-50 flex items-center justify-center disabled:opacity-40 cursor-pointer"
+                  aria-label="Increase percentage"
                 >
-                  +
+                  <Plus className="w-3 h-3" />
                 </button>
               </div>
 
-              <span className="text-[10px] text-grey-600 mt-0.5">{cfg.description}</span>
+              <span className="text-[10px] text-grey-600 mt-0.5">{t(`assets.${key}.description` as any)}</span>
             </div>
           );
         })}
       </div>
 
       {totalPct !== 100 && (
-        <div className="flex items-center justify-between p-2.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700">
-          <span>Suma musi wynosić 100% (obecnie {totalPct}%)</span>
+        <div className="flex items-center justify-between p-2.5 rounded-xl bg-red-50 border border-red-300 text-xs text-red-800">
+          <span>{t('sum-error', { total: totalPct })}</span>
           <button
             type="button"
             onClick={normalizeTo100}
-            className="px-2.5 py-1 bg-red-600 text-white rounded text-xs font-semibold hover:bg-red-700 transition-colors"
+            className="px-2.5 py-1 bg-[#ef4444] text-white rounded text-xs font-semibold hover:bg-[#dc2626] transition-colors cursor-pointer"
           >
-            Wyrównaj
+            {t('normalize-btn')}
           </button>
         </div>
       )}

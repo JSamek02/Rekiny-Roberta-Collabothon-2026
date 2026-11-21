@@ -101,6 +101,161 @@
         "etf": "Was sind ETFs und wie fange ich an?",
         "ike-ikze": "Wie funktionieren IKE und IKZE in Polen?"
       }
+    },
+    "stock": {
+      "meta": {
+        "title": "Börse — Investitionssimulator | Finanzhaie",
+        "description": "Historische Börsensimulation und Portfolioallokation mit Robert Business"
+      },
+      "hero-widget": {
+        "badge": "Robert empfiehlt",
+        "title": "Börsensimulator",
+        "description": "Verwalte dein Portfolio in realen historischen Krisen. Schlage die Inflation und rette dein Kapital!",
+        "starting-capital": "Startkapital: {amount} PLN"
+      },
+      "event-selector": {
+        "heading": "Wähle ein Reales Szenario",
+        "scenarios-count": "{count, plural, =1 {# Szenario} other {# Szenarien}}",
+        "quarters-count": "{count, plural, =1 {# Quartal} other {# Quartale}}",
+        "play": "Spielen",
+        "expand": "Ausklappen",
+        "collapse": "Einklappen",
+        "fallback-desc": "Historische Marktsimulation.",
+        "difficulty-label": "Schwierigkeitsgrad: {label}",
+        "difficulty": {
+          "easy": "Einfach",
+          "medium": "Mittel",
+          "hard": "Schwer"
+        },
+        "short-titles": {
+          "gfc_2008": "Finanzkrise 2008",
+          "covid_2020": "COVID-19-Crash",
+          "inflation_2022": "Inflationsschock 2022"
+        },
+        "tags": {
+          "gfc_2008": "Lehman Brothers & Hausse",
+          "covid_2020": "Lockdown & Tech-Boom",
+          "inflation_2022": "Inflation & Zinsen",
+          "default": "Szenario"
+        }
+      },
+      "view": {
+        "loading": "Börsenszenarien werden geladen...",
+        "error-connection": "Verbindung zur Simulations-Engine fehlgeschlagen. Stelle sicher, dass das Backend läuft.",
+        "error-init": "Initialisierung des Szenarios fehlgeschlagen.",
+        "error-allocation": "Bestätigung der Anfangsallokation fehlgeschlagen.",
+        "error-advance": "Quartalssprung fehlgeschlagen.",
+        "error-reset": "Zurücksetzen der Simulation fehlgeschlagen.",
+        "back-to-events": "Andere Szenarien",
+        "back-to-events-short": "Szenarien",
+        "step-1-title": "Schritt 1: Kapitalallokation",
+        "starting-budget": "Dein Startbudget:",
+        "submit-portfolio": "Portfolio bestätigen und an die Börse",
+        "starting": "Wird gestartet...",
+        "reset": "Zurücksetzen",
+        "quarter-progress": "Quartal {current} / {total}",
+        "portfolio-value": "Portfoliowert",
+        "real-value": "Realer Wert (nach Inflation):",
+        "max-drawdown": "Max. Verlust (Drawdown):",
+        "next-quarter-allocation": "Allokation für nächstes Quartal",
+        "allocation-summary": "Aktien: {stocks}% | Anleihen: {bonds}% | Gold: {gold}% | Bargeld: {cash}%",
+        "change": "Ändern",
+        "cancel": "Abbrechen",
+        "change-weights-title": "Gewichte vor dem nächsten Quartal anpassen",
+        "advance-quarter": "Zum nächsten Quartal",
+        "calculating-returns": "Renditen werden berechnet...",
+        "reset-modal-title": "Szenario zurücksetzen?",
+        "reset-modal-desc": "Der gesamte Fortschritt geht verloren und du startest neu mit dem Standardportfolio.",
+        "reset-modal-cancel": "Abbrechen",
+        "reset-modal-confirm": "Zurücksetzen"
+      },
+      "allocation-sliders": {
+        "title-initial": "Startkapital verteilen",
+        "title-rebalance": "Portfolioallokation anpassen (Rebalancing)",
+        "subtitle": "Verteile 100% des Kapitals auf 4 Anlageklassen.",
+        "sum": "Summe: {total}%",
+        "sum-error": "Summe muss 100% betragen (aktuell {total}%)",
+        "normalize-btn": "Ausgleichen",
+        "quick-strategies": "Schnelle Anlagestrategien:",
+        "presets": {
+          "classic-60-40": "60/40 Klassiker",
+          "all-weather": "All-Weather (Dalio)",
+          "aggressive-100-stocks": "100% Aktien (Aggressiv)",
+          "defensive-shield": "Defensiv / Schild",
+          "pure-cash": "Reines Bargeld"
+        },
+        "assets": {
+          "stocks": {
+            "name": "Aktien (S&P 500)",
+            "subname": "Index der 500 größten US-Unternehmen",
+            "description": "Hohes Wachstumspotenzial, aber hohe Volatilität im Bärenmarkt."
+          },
+          "bonds": {
+            "name": "Staatsanleihen 10Y",
+            "subname": "10-jährige US-Staatsanleihen",
+            "description": "Stabile Erträge und traditioneller Schutz bei Aktienkursstürzen."
+          },
+          "gold": {
+            "name": "Physisches Gold",
+            "subname": "Spot-Gold in USD",
+            "description": "Schutz vor Währungsabwertung, Inflation und geopolitischen Schocks."
+          },
+          "cash": {
+            "name": "Sicheres Bargeld",
+            "subname": "3-Monats-Schatzanweisungen (T-Bills)",
+            "description": "100% Liquidität und kein nominales Verlustrisiko, verliert aber durch Inflation."
+          }
+        }
+      },
+      "quarter-news": {
+        "quarter-badge": "QUARTAL: {quarter}",
+        "portfolio-return": "Dein Portfolio: {prefix}{value}%",
+        "robert-lesson": "Roberts Lektion:",
+        "asset-returns-title": "Renditen der Anlageklassen in diesem Quartal:",
+        "assets": {
+          "stocks": "Aktien",
+          "bonds": "Anleihen",
+          "gold": "Gold",
+          "cash": "Bargeld"
+        },
+        "cpi-inflation": "VPI-Inflation in diesem Quartal:"
+      },
+      "chart": {
+        "title": "Portfolio-Verlaufsgrafik",
+        "nominal-legend": "Nominales Portfolio",
+        "real-legend": "Real (nach Inflation)"
+      },
+      "debrief": {
+        "crisis-completed": "Krise Beendet",
+        "final-capital": "Endkapital",
+        "nominal-return": "{prefix}{value}% nominale Rendite",
+        "real-capital": "Realer Wert (nach Inflation)",
+        "real-return": "{prefix}{value}% reale Rendite",
+        "max-drawdown": "Maximaler Rückgang (Drawdown):",
+        "rebalances-count": "Anzahl Rebalancings:",
+        "badges-title": "Verdiente Anlage-Abzeichen:",
+        "badges": {
+          "shield": {
+            "name": "Sicherheitsschild",
+            "desc": "Maximaler Portfolio-Rückgang unter 15%"
+          },
+          "inflation": {
+            "name": "Inflationsbezwinger",
+            "desc": "Reale Rendite höher als VPI-Inflation"
+          },
+          "diamond": {
+            "name": "Diamantflossen",
+            "desc": "Eiserne Disziplin ohne Panikverkäufe"
+          },
+          "default": {
+            "desc": "Erfolg im Kapitalmanagement"
+          }
+        },
+        "verdict-title": "Roberts Urteil:",
+        "takeaways-title": "Wichtigste Erkenntnisse:",
+        "play-again": "Nochmal spielen",
+        "scenarios-list": "Szenarienliste"
+      }
     }
   },
   "global": {
