@@ -1,4 +1,5 @@
 export type ActivityType = 'article' | 'quiz' | 'video';
+export type ActivityProgressStatus = 'not_started' | 'started' | 'completed';
 
 export type ContentImage = {
   url: string;
@@ -88,6 +89,7 @@ export type ActivitySummary = {
   coin_reward: number;
   estimated_minutes: number;
   is_completed: boolean;
+  progress_status?: ActivityProgressStatus;
 };
 
 export type LessonActivities = {

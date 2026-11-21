@@ -192,7 +192,7 @@ Zwykłe odczyty kursów nie pobierają plików binarnych. Przy `GET /api/activit
   "activity": {
     "activity_type": "video",
     "content": {
-      "video_url": "/api/activities/42/video?language=en",
+      "video_url": "/api/activities/42/video?language=en&v=12-1735689600000000",
       "video_filename": "podstawy-gieldy-en.mp4",
       "video_mime_type": "video/mp4",
       "video_size_bytes": 18432590,
@@ -202,7 +202,7 @@ Zwykłe odczyty kursów nie pobierają plików binarnych. Przy `GET /api/activit
 }
 ```
 
-`GET /api/activities/:activityId/video` zwraca właściwy MP4 jako `video/mp4`. Adres zwrócony w szczegółach aktywności zawiera już wybrany język; przy ręcznym wywołaniu bez parametru `language` backend wybiera wersję z `Accept-Language` i ewentualnie wraca do polskiej.
+`GET /api/activities/:activityId/video` zwraca właściwy MP4 jako `video/mp4`. Adres zwrócony w szczegółach aktywności zawiera już wybrany język i wersję pliku (`v`), dlatego MP4 jest cache'owany przez przeglądarkę/CDN przez rok i nowy upload nie użyje starego cache'u. Przy ręcznym wywołaniu bez parametru `language` backend wybiera wersję z `Accept-Language` i ewentualnie wraca do polskiej.
 
 Do zapisu filmów ustaw w `backend/.env` osobny, losowy sekret `CONTENT_ADMIN_TOKEN` oraz opcjonalny limit `MAX_VIDEO_UPLOAD_BYTES` (domyślnie `104857600`, czyli 100 MiB). Następnie administrator wysyła `multipart/form-data` z polem pliku `video` i opcjonalnym polem `language` (`pl` domyślnie):
 

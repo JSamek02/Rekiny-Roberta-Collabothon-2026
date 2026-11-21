@@ -1,20 +1,14 @@
 import { LessonItem } from '@/components/lessons-list/lesson-item';
-import { getTranslations } from 'next-intl/server';
-
-export type LessonListItem = {
-  slug: string;
-  title: string;
-  status?: 'read' | 'unread';
-};
+import { type LessonListItem } from '@/components/lessons-list/lesson-roadmap-types';
+import { useTranslations } from 'next-intl';
 
 type LessonsListProps = {
   category: string;
   lessons: LessonListItem[];
 };
 
-export const LessonsList = async ({ category, lessons }: LessonsListProps) => {
-  const t = await getTranslations('components.learning-category');
-  const nextLesson = lessons.findIndex((lesson) => lesson.status !== 'read');
+export const LessonsList = ({ category, lessons }: LessonsListProps) => {
+  const t = useTranslations('components.learning-category');
 
   return (
     <section aria-label={t('roadmap')} className="relative isolate mx-auto w-full max-w-lg pb-6">
@@ -27,8 +21,7 @@ export const LessonsList = async ({ category, lessons }: LessonsListProps) => {
             title={lesson.title}
             number={index + 1}
             side={index % 2 === 0 ? 'left' : 'right'}
-            status={lesson.status || 'unread'}
-            isNext={index === nextLesson}
+            status={lesson.status}
             isLast={index === lessons.length - 1}
           />
         ))}

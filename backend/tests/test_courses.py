@@ -9,7 +9,7 @@ from sqlalchemy.pool import StaticPool
 
 from app import app
 from database.models import (
-    Activity, Base, Course, Lesson, User, UserActivityProgress,
+    Activity, ActivityVideo, Base, Course, Lesson, User, UserActivityProgress,
     UserCourseEnrollment, UserSession
 )
 
@@ -171,11 +171,28 @@ class CoursesApiTest(unittest.TestCase):
         self.assertEqual(c["id"], self.course_id)
         self.assertEqual(len(c["lessons"]), 1)
         self.assertEqual(len(c["lessons"][0]["activities"]), 3)
+        self.assertEqual(c["lessons"][0]["activities"][0]["progress_status"], "not_started")
 
         # By Slug
         res_slug = self.client.get("/api/courses/podstawy-gieldy")
         self.assertEqual(res_slug.status_code, 200)
         self.assertEqual(res_slug.get_json()["course"]["id"], self.course_id)
+
+    def test_course_detail_includes_started_activity_progress(self):
+        self.set_auth_cookie()
+        with Session(self.engine) as db:
+            db.add(UserActivityProgress(
+                user_id=self.user_id,
+                activity_id=self.quiz_id,
+                status="started",
+            ))
+            db.commit()
+
+        res = self.client.get(f"/api/courses/{self.course_id}")
+        self.assertEqual(res.status_code, 200)
+        activities = res.get_json()["course"]["lessons"][0]["activities"]
+        self.assertEqual(activities[0]["progress_status"], "not_started")
+        self.assertEqual(activities[2]["progress_status"], "started")
 
     def test_course_enroll(self):
         # Unauthenticated: allowed for local storage tracking
@@ -221,6 +238,39 @@ class CoursesApiTest(unittest.TestCase):
             self.assertNotIn("explanation", q)
             self.assertIn("prompt", q)
             self.assertIn("options", q)
+
+    def test_stored_video_is_versioned_cached_and_supports_ranges(self):
+        with Session(self.engine) as db:
+            db.add(ActivityVideo(
+                activity_id=self.video_id,
+                language="pl",
+                filename="test.mp4",
+                mime_type="video/mp4",
+                size_bytes=16,
+                data=b"\x00\x00\x00\x18ftypmp42test",
+            ))
+            db.commit()
+
+        detail = self.client.get(f"/api/activities/{self.video_id}")
+        video_url = detail.get_json()["activity"]["content"]["video_url"]
+        self.assertIn("language=pl&v=", video_url)
+
+        response = self.client.get(video_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.headers["Cache-Control"],
+            "public, max-age=31536000, immutable",
+        )
+        self.assertIn("ETag", response.headers)
+
+        cached = self.client.get(
+            video_url, headers={"If-None-Match": response.headers["ETag"]}
+        )
+        self.assertEqual(cached.status_code, 304)
+
+        partial = self.client.get(video_url, headers={"Range": "bytes=0-3"})
+        self.assertEqual(partial.status_code, 206)
+        self.assertEqual(partial.data, b"\x00\x00\x00\x18")
 
     def test_complete_article_and_video(self):
         self.set_auth_cookie()
