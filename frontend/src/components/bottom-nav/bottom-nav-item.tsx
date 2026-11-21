@@ -11,7 +11,6 @@ type BottomNavItemProps = {
 
 export const BottomNavItem = ({ href, children }: BottomNavItemProps) => {
   const pathname = usePathname();
-
   const isActive =
     pathname === href ||
     (href === '/' && (pathname === '' || pathname === '/')) ||
