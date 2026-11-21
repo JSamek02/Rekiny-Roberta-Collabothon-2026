@@ -4,6 +4,7 @@ import './globals.css';
 import { NextIntlClientProvider } from 'next-intl';
 import { Header } from '@/components/header';
 import { BottomNav } from '@/components/bottom-nav';
+import { QueryClientProvider } from '@/components/query-client-provider/query-client-provider';
 
 const poppinsFont = Poppins({
   variable: '--font-poppins',
@@ -21,9 +22,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${poppinsFont.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-blue-50 font-sans isolate">
         <NextIntlClientProvider>
-          <Header />
-          {children}
-          <BottomNav />
+          <QueryClientProvider>
+            <Header />
+            {children}
+            <BottomNav />
+          </QueryClientProvider>
         </NextIntlClientProvider>
       </body>
     </html>

@@ -3,9 +3,11 @@ import { SharkbotChatMessage } from '@/components/sharkbot-chat/sharkbot-chat-ty
 import { Link } from '@/i18n/navigation';
 import { SpeakerIcon } from '@/icons/speaker';
 import clsx from 'clsx';
+import { Lottie } from 'lottie-react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { RefObject } from 'react';
+import sharkLoadingAnimation from '../../../public/lottie/shark-loading.json';
 
 const SUGGESTION_KEYS = ['stocks-bonds', 'compound-interest', 'emergency-fund', 'etf', 'ike-ikze'] as const;
 
@@ -71,10 +73,7 @@ export const SharkbotChatMessages = ({
                   <p className="text-xs font-medium text-grey-600">{t('sources')}</p>
                   <div className="flex flex-wrap gap-1.5">
                     {message.sources.map((source) => (
-                      <span
-                        key={source.id}
-                        className="rounded-md bg-blue-50 px-2 py-0.5 text-[11px] text-blue-950"
-                      >
+                      <span key={source.id} className="rounded-md bg-blue-50 px-2 py-0.5 text-[11px] text-blue-950">
                         {source.title}
                       </span>
                     ))}
@@ -104,9 +103,7 @@ export const SharkbotChatMessages = ({
                   onClick={() => onListen(message)}
                   className={clsx(
                     'flex w-fit items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer',
-                    playingId === message.id
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-blue-50 text-blue-500 hover:bg-blue-100',
+                    playingId === message.id ? 'bg-blue-500 text-white' : 'bg-blue-50 text-blue-500 hover:bg-blue-100',
                   )}
                 >
                   <SpeakerIcon className="text-base stroke-[1.5]" />
@@ -119,12 +116,14 @@ export const SharkbotChatMessages = ({
         ),
       )}
 
-      {isLoading && (
-        <div className="relative flex flex-col gap-1 overflow-hidden rounded-xl border border-blue-100 bg-white p-4 pb-16">
-          <p className="text-2xl font-medium text-[#617bff]">{t('waiting-title')}</p>
-          <p className="text-base text-[#061d8d]">{t('waiting-subtitle')}</p>
-          <div className="absolute inset-x-0 bottom-0 h-14 animate-pulse">
-            <Image src="/img/waves.svg" alt="" fill className="object-cover object-top" />
+      {!isLoading && (
+        <div className="flex items-end gap-3 rounded-xl border border-blue-100 bg-white p-4 isolate relative aspect-390/250 overflow-hidden">
+          <div className="flex min-w-0 flex-1 flex-col gap-1 z-10 text-shadow-md">
+            <p className="text-2xl font-medium text-white">{t('waiting-title')}</p>
+            <p className="text-base text-white">{t('waiting-subtitle')}</p>
+          </div>
+          <div className="absolute inset-0">
+            <Lottie src={sharkLoadingAnimation} loop autoplay aria-hidden />
           </div>
         </div>
       )}
