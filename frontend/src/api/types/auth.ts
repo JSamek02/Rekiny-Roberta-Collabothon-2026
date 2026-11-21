@@ -15,6 +15,7 @@ export type AuthUser = {
   picture: string | null;
   preferred_language: string;
   shark_coins: number;
+  experience_points: number;
   role: UserRole;
   created_at: string;
 };

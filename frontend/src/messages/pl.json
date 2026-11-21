@@ -120,7 +120,9 @@
         "user": "Zalogowany",
         "creator": "Twórca",
         "partner": "Partner"
-      }
+      },
+      "xp": "XP",
+      "experience": "Twoje punkty doświadczenia (EXP)"
     },
     "login-view": {
       "kicker": "Witaj na pokładzie!",

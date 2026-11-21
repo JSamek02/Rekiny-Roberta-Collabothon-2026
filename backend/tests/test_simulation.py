@@ -269,6 +269,38 @@ class SimulationApiTest(unittest.TestCase):
             self.assertEqual(record.status, "in_progress")
             self.assertEqual(record.current_capital, 9150.0)
 
+    def test_completed_event_awards_experience_and_coins_once(self):
+        self._login()
+        self.client.post("/api/simulation/events/covid_2020/start", json={"initial_capital": 10000.0})
+        self.client.post("/api/simulation/events/covid_2020/invest", json={"allocations": {"stocks": 0.7, "bonds": 0.3}})
+        for _ in range(8):
+            step_res = self.client.post("/api/simulation/events/covid_2020/step-quarter", json={})
+        session = step_res.get_json()["full_session"]
+        xp_awarded = session["debrief"]["xp_awarded"]
+        coins_awarded = session["debrief"]["sharcoins_awarded"]
+        self.assertGreater(xp_awarded, 0)
+
+        me = self.client.get("/api/auth/me").get_json()["user"]
+        self.assertEqual(me["experience_points"], xp_awarded)
+        self.assertEqual(me["shark_coins"], 100 + coins_awarded)
+
+        # Stepping past the end and re-syncing the finished session must not award it again.
+        self.client.post("/api/simulation/events/covid_2020/step-quarter", json={})
+        self.client.post("/api/simulation/sync", json={"sessions": [session]})
+        me = self.client.get("/api/auth/me").get_json()["user"]
+        self.assertEqual(me["experience_points"], xp_awarded)
+        self.assertEqual(me["shark_coins"], 100 + coins_awarded)
+
+    def test_guest_completion_does_not_change_any_account(self):
+        headers = {"X-Simulation-Session-Id": "guest_xp_check"}
+        self.client.post("/api/simulation/events/covid_2020/start", headers=headers, json={"initial_capital": 10000.0})
+        self.client.post("/api/simulation/events/covid_2020/invest", headers=headers, json={"allocations": {"stocks": 1.0}})
+        for _ in range(8):
+            self.client.post("/api/simulation/events/covid_2020/step-quarter", headers=headers, json={})
+        with Session(self.engine) as db:
+            user = db.scalar(select(User).where(User.id == self.user_id))
+            self.assertEqual((user.experience_points, user.shark_coins), (0, 100))
+
 
 if __name__ == "__main__":
     unittest.main()

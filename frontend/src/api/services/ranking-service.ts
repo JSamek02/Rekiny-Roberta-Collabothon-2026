@@ -5,6 +5,7 @@ import { UseReactQuery } from '@/api/types/react-query';
 import { useQuery } from '@tanstack/react-query';
 
 export const RANKING_QUERY_KEYS = {
+  root: ['ranking'],
   ranking: (limit?: number) => ['ranking', String(limit ?? 'default')],
 };
 

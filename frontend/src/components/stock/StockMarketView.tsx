@@ -14,9 +14,9 @@ import {
   getSimulationEvent,
   startSimulation,
   submitInitialInvestment,
-  stepSimulationQuarter,
   resetSimulation,
 } from '@/api/simulation';
+import { useStepSimulationQuarterMutation } from '@/api/services/simulation-service';
 import { EventSelector, SHORT_EVENT_TITLES } from './EventSelector';
 import { AllocationSliders } from './AllocationSliders';
 import { QuarterHistoryChart } from './QuarterHistoryChart';
@@ -39,6 +39,7 @@ export const StockMarketView: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showRebalance, setShowRebalance] = useState<boolean>(false);
   const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
+  const stepQuarterMutation = useStepSimulationQuarterMutation();
 
   // Load available events on mount
   useEffect(() => {
@@ -102,7 +103,7 @@ export const StockMarketView: React.FC = () => {
     setError(null);
     try {
       const newAlloc = showRebalance ? allocations : undefined;
-      const res = await stepSimulationQuarter(selectedEvent.id, newAlloc);
+      const res = await stepQuarterMutation.mutateAsync({ eventId: selectedEvent.id, newAllocations: newAlloc });
       setSession(res.full_session);
       setAllocations(res.full_session.allocations);
       setShowRebalance(false);
