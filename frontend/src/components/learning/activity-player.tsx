@@ -105,7 +105,7 @@ export const ActivityPlayer = ({ activityId }: ActivityPlayerProps) => {
     <section className="mx-auto flex w-full max-w-2xl flex-col gap-5 px-4 py-6">
       <Button variant="ghost" size="sm" className="w-fit border-0 px-0 text-sm uppercase" onClick={() => router.back()}>
         <ArrowLeftIcon className="text-2xl stroke-[1.5]" />
-        <span>{t('back-to-lesson')}</span>
+        <span><ArrowLeftIcon></ArrowLeftIcon></span>
       </Button>
 
       <header className="rounded-2xl border border-blue-100 bg-white p-5">

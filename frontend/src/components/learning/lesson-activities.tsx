@@ -68,7 +68,6 @@ export const LessonActivities = ({ category, lessonSlug }: LessonActivitiesProps
     <section className="mx-auto flex w-full max-w-lg flex-col gap-5 px-3 py-6">
       <Link href={routes.learningCategory(category)} className="flex w-fit items-center gap-1 text-sm font-semibold text-blue-500 hover:text-blue-950">
         <ArrowLeftIcon className="text-2xl stroke-[1.5]" />
-        <span>{t('back-to-category')}</span>
       </Link>
 
       <header>
