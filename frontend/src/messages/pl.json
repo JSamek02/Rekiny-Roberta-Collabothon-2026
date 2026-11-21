@@ -488,6 +488,27 @@
       "empty": "Nikogo jeszcze nie ma w rankingu. Ukończ lekcję, aby być pierwszym!",
       "error": "Nie udało się wczytać rankingu. Sprawdź, czy backend działa.",
       "retry": "Spróbuj ponownie"
+    },
+    "cake-game": {
+      "kicker": "Sekretna minigra",
+      "title": "Łowy Roberta",
+      "instructions": "Łap kremówki pyskiem rekina - każda odnawia jedno życie. Łap SharkCoiny (+5 na konto), bo każda ominięta moneta kosztuje życie. Mina to też minus jedno życie. Masz 3 życia!",
+      "lives": "Życia: {lives}",
+      "controls": "Przesuwaj palcem lub myszką, albo użyj strzałek ← →.",
+      "points": "+{points} pkt",
+      "avoid": "Unikaj!",
+      "start": "Graj",
+      "loading": "Ładowanie gry...",
+      "load-error": "Nie udało się wczytać gry.",
+      "retry": "Spróbuj ponownie",
+      "score": "Wynik",
+      "best": "Rekord",
+      "boom": "Bum!",
+      "game-over": "Koniec gry",
+      "new-best": "Nowy rekord!",
+      "caught": "Złapane: {cakes, plural, =1 {# ciasto} few {# ciasta} other {# ciast}} i {coins, plural, =1 {# SharkCoin} few {# SharkCoiny} other {# SharkCoinów}}",
+      "play-again": "Jeszcze raz",
+      "back": "Wróć"
     }
   },
   "pages": {

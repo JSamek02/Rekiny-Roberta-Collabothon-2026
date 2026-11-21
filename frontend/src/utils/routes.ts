@@ -12,4 +12,5 @@ export const routes = {
   startingQuiz: '/starting-quiz',
   chat: '/chat',
   login: '/login',
+  cakeGame: '/cake-game',
 } as const;

@@ -171,6 +171,36 @@ class ChatApiTest(unittest.TestCase):
         self.assertIn("gemini", resp["model"])
         mock_client.interactions.create.assert_called_once()
 
+    def test_message_too_long_rejected(self):
+        long_message = "A" * 1001
+        resp = self.client.post("/api/chat/message", json={"message": long_message})
+        self.assertEqual(resp.status_code, 400)
+        data = resp.get_json()
+        self.assertIn("zbyt długa", data.get("error", "").lower())
+
+    def test_tts_text_too_long_rejected(self):
+        long_text = "T" * 501
+        resp = self.client.post("/api/chat/tts", json={"text": long_text, "voice": "Puck"})
+        self.assertEqual(resp.status_code, 400)
+        data = resp.get_json()
+        self.assertIn("zbyt długi", data.get("error", "").lower())
+
+    def test_rate_limiting_chat(self):
+        from api.chat import chat_limiter
+        client_ip = "192.168.1.100"
+        # Temporarily fill the rate limiter bucket
+        chat_limiter._requests[client_ip] = [9999999999.0] * 35
+        resp = self.client.post(
+            "/api/chat/message",
+            json={"message": "Czym są akcje?"},
+            environ_overrides={"REMOTE_ADDR": client_ip},
+        )
+        self.assertEqual(resp.status_code, 429)
+        data = resp.get_json()
+        self.assertIn("zbyt wiele zapytań", data.get("error", "").lower())
+        # Clean up
+        chat_limiter._requests.pop(client_ip, None)
+
 
 if __name__ == "__main__":
     unittest.main()

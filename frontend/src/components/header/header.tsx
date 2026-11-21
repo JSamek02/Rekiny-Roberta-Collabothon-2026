@@ -23,7 +23,7 @@ export const Header = () => {
       <div className="flex items-center gap-4">
         <HeaderExperience />
         <div className="flex items-center gap-1">
-          <Image src="/img/coin.svg" alt="" width={24} height={24} />
+          <Image src="/img/SharkCoin.svg" alt="" width={24} height={24} />
           <p className="text-sm font-medium">{sharkCoins.toLocaleString()} SC</p>
         </div>
       </div>

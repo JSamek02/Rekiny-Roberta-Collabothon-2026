@@ -4,6 +4,7 @@ import { RANKING_QUERY_KEYS } from '@/api/services/ranking-service';
 import {
   ApiGetAuthConfig,
   ApiGetCurrentUser,
+  ApiPostGameCoin,
   ApiPostLogout,
   ApiPostMockLogin,
   AuthUser,
@@ -94,6 +95,16 @@ export const useMockLoginMutation: UseReactQueryMutation<ApiPostMockLogin.Respon
     ...options,
   });
 };
+
+/** Credits the signed-in user with the reward for a SharkCoin caught in the mini-game. */
+export async function apiPostGameCoin(): Promise<ApiPostGameCoin.Response> {
+  const client = await getApiClient();
+  const res = await client.post<ApiPostGameCoin.Response>('/api/auth/game-coin', undefined, {
+    ...WITH_SESSION,
+    headers: AJAX_HEADERS,
+  });
+  return res.data;
+}
 
 export async function apiLogout(): Promise<ApiPostLogout.Response> {
   const client = await getApiClient();

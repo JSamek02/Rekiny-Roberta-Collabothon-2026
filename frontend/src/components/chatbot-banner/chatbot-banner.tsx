@@ -1,11 +1,10 @@
 import { getTranslations } from 'next-intl/server';
-import sharkWaveAnimation from '../../../public/lottie/shark-wave.json';
-import { Lottie } from 'lottie-react';
 import { buttonVariants } from '@/ui';
 import { ChatsIcon } from '@/icons/chats';
 import { Link } from '@/i18n/navigation';
 import clsx from 'clsx';
 import { routes } from '@/utils/routes';
+import { SharkWaveEasterEgg } from './shark-wave-easter-egg';
 
 export const ChatbotBanner = async () => {
   const t = await getTranslations('components.chatbot-banner');
@@ -25,13 +24,7 @@ export const ChatbotBanner = async () => {
         </Link>
       </div>
       <div className="-z-10">
-        <Lottie
-          src={sharkWaveAnimation}
-          loop
-          autoplay
-          aria-hidden
-          className="aspect-square scale-175 translate-x-8 translate-y-4"
-        />
+        <SharkWaveEasterEgg />
       </div>
     </section>
   );
