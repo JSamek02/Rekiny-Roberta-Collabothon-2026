@@ -123,7 +123,7 @@ export const SharkbotChatMessages = ({
             <p className="text-base text-white">{t('waiting-subtitle')}</p>
           </div>
           <div className="absolute inset-0">
-            <Lottie src={sharkLoadingAnimation} loop autoplay aria-hidden />
+            <Lottie src={sharkLoadingAnimation} loop autoplay aria-hidden className="translate-y-8" />
           </div>
         </div>
       )}
