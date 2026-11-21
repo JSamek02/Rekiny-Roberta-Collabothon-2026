@@ -3,6 +3,7 @@
 API we Flasku z bazą PostgreSQL w Google Cloud SQL. Docker Compose uruchamia Cloud SQL Auth Proxy; API działa lokalnie.
 
 Pełny opis endpointów (wejścia, odpowiedzi i kody błędów) znajduje się w [API.md](API.md).
+Aktualny układ tabel i relacji opisuje [database/SCHEMA.md](database/SCHEMA.md).
 
 ## Struktura
 
@@ -63,7 +64,9 @@ Po utworzeniu schematu załaduj przykładowe kursy, lekcje i aktywności:
 psql "$DATABASE_URL" -f database/seed.sql
 ```
 
-Plik `database/seed.sql` jest przeznaczony dla PostgreSQL i można go uruchamiać wielokrotnie — nie usuwa danych użytkowników ani nie nadpisuje istniejących kursów. Zawiera fixture’y z testów kursów i czatu. Wydarzenia giełdowe pozostają w `services/simulation_data.py`, ponieważ aktualny moduł symulacji odczytuje je wyłącznie z pamięci, a nie z bazy danych.
+Plik `database/seed.sql` jest przeznaczony dla PostgreSQL i można go uruchamiać wielokrotnie — nie usuwa danych użytkowników ani nie nadpisuje istniejących kursów. Dodaje przykładowe kursy, lekcje, artykuły, quizy, tłumaczenia oraz postęp konta `mock:demo`. Wydarzenia giełdowe pozostają w `services/simulation_data.py`, ponieważ aktualny moduł symulacji odczytuje je wyłącznie z pamięci, a nie z bazy danych.
+
+Jeżeli chcesz wyczyścić całą bazę aplikacji i załadować od nowa dane demonstracyjne w Google Cloud SQL Studio, najpierw wykonaj `database/cloud_sql_reset.sql`, a następnie `database/seed.sql`. Pierwszy skrypt trwale usuwa także użytkowników i sesje.
 
 ## Tryb demonstracyjny bez Google
 
