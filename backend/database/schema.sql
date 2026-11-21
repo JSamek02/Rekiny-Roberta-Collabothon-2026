@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
     name TEXT,
     picture TEXT,
     preferred_language VARCHAR(2) NOT NULL DEFAULT 'pl',
-    shark_coins INTEGER NOT NULL DEFAULT 0,
+    shark_coins INTEGER NOT NULL DEFAULT 3000,
     experience_points INTEGER NOT NULL DEFAULT 0,
     role VARCHAR(16) NOT NULL DEFAULT 'user'
         CONSTRAINT ck_users_role CHECK (role IN ('user', 'creator', 'partner')),

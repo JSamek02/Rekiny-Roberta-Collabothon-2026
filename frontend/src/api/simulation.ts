@@ -70,3 +70,14 @@ export async function resetSimulation(eventId: string): Promise<{ status: string
   );
   return response.data;
 }
+
+export async function syncSimulationSessions(
+  sessions: SimulationSession[]
+): Promise<{ status: string; synced_count: number; persisted: boolean; user_shark_coins?: number }> {
+  const client = await getApiClient();
+  const response = await client.post<
+    { status: string; synced_count: number; persisted: boolean; user_shark_coins?: number },
+    { sessions: SimulationSession[] }
+  >('/api/simulation/sync', { sessions });
+  return response.data;
+}

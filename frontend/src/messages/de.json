@@ -29,6 +29,9 @@
       "progress": "Fortschritt",
       "lesson-count": "{count}/{total, plural, =1 {# Lektion} other {# Lektionen}}"
     },
+    "level-bar": {
+      "next-level": "Nächstes Level {points}"
+    },
     "chat-fab": {
       "label": "Sharkbot-Chat öffnen"
     },
@@ -172,7 +175,8 @@
         "reset-modal-title": "Szenario zurücksetzen?",
         "reset-modal-desc": "Der gesamte Fortschritt geht verloren und du startest neu mit dem Standardportfolio.",
         "reset-modal-cancel": "Abbrechen",
-        "reset-modal-confirm": "Zurücksetzen"
+        "reset-modal-confirm": "Zurücksetzen",
+        "quarters-count": "{count} Quartale"
       },
       "allocation-sliders": {
         "title-initial": "Startkapital verteilen",
@@ -223,7 +227,154 @@
           "gold": "Gold",
           "cash": "Bargeld"
         },
-        "cpi-inflation": "VPI-Inflation in diesem Quartal:"
+        "cpi-inflation": "VPI-Inflation in diesem Quartal:",
+        "quarters": {
+          "2007-Q4": {
+            "headline": "Erste Risse: Insolvenzen kleinerer Hypothekenfonds",
+            "context": "Die Aktienmärkte korrigieren leicht (-3,8 %), während Gold +12,3 % gewinnt und sichere Staatsanleihen steigen.",
+            "lesson": "Gold und Anleihen reagieren sofort auf erste Unsicherheiten im Bankensektor."
+          },
+          "2008-Q1": {
+            "headline": "März 2008: Zusammenbruch und Notübernahme von Bear Stearns",
+            "context": "Die fünftgrößte Investmentbank der Wall Street steht vor dem Aus und wird mit Staatshilfe von JPMorgan übernommen.",
+            "lesson": "Risiken im Finanzsektor weiten sich aus, Aktien stürzen tiefer und Kapital flieht in sichere Anleihen."
+          },
+          "2008-Q2": {
+            "headline": "Kurze Beruhigung und wachsender Inflationsdruck",
+            "context": "Rohölpreise erreichen Rekordhöhen (140 $ pro Barrel) und treiben die Inflation, während sich die Wirtschaft stark abkühlt.",
+            "lesson": "Stagflation (hohe Inflation + Wirtschaftsabkühlung) erschwert es den Zentralbanken, die Märkte rasch zu stützen."
+          },
+          "2008-Q3": {
+            "headline": "September 2008: Lehman Brothers Pleite und Liquiditätsschock",
+            "context": "Am 15. September 2008 meldet die 158 Jahre alte Investmentbank Lehman Brothers Insolvenz an. Das Interbankenvertrauen bricht zusammen.",
+            "lesson": "Fehlende Liquiditätspuffer und Panikverkäufe in diesem Schockmoment sind der häufigste Anfängerfehler."
+          },
+          "2008-Q4": {
+            "headline": "Höhepunkt der Panik: Schlimmstes Quartal für Aktien seit den 1930ern",
+            "context": "Aktien stürzen in drei Monaten um -21,9 % ab. US-Staatsanleihen schießen um rekordverdächtige +14,8 % als sicherer Hafen nach oben.",
+            "lesson": "Dieses Quartal zeigte die Stärke von Staatsanleihen: Anleger mit 40 % Anleihenquote dämpften den Verlust von -22 % auf nur -7 % ab."
+          },
+          "2009-Q1": {
+            "headline": "9. März 2009: Historischer Tiefpunkt und maximale Verzweiflung",
+            "context": "Der S&P 500 markiert bei 666 Punkten seinen Tiefststand. Medien prophezeien das Ende des Finanzsystems. Genau hier startet die größte Rallye der Geschichte.",
+            "lesson": "Wer in der tiefsten Panik Kurs hält (Warren Buffett: 'Sei gierig, wenn andere ängstlich sind'), erzielt langfristig die höchsten Erträge."
+          },
+          "2009-Q2": {
+            "headline": "Rettungspakete greifen und fulminante Erholung (+15,9 %)",
+            "context": "Regierungen beschließen Rettungsfonds und die Notenbanken starten Quantitative Easing. Die Aktienbörsen schießen nach oben.",
+            "lesson": "Wer im März 2009 alles in Bargeld gerettet hatte, verpasste diese gewaltige Aufholjagd unwiederbringlich."
+          },
+          "2009-Q3": {
+            "headline": "Fortsetzung des Bullenmarktes und Goldanstieg (+8,5 %)",
+            "context": "Die Weltwirtschaft fasst wieder Fuß und Investoren fassen neues Vertrauen in Tech- und Industrieunternehmen.",
+            "lesson": "Breite Diversifikation lässt dein Portfolio sowohl von Aktien als auch von Rohstoffrallyes profitieren."
+          },
+          "2009-Q4": {
+            "headline": "Wiedererlangtes Vertrauen und versöhnliches Jahresende",
+            "context": "Das Jahr 2009 endet mit über 26 % Jahresplus für den Aktienmarkt, obwohl es in blanker Panik begann.",
+            "lesson": "Geduld und eisernes Festhalten an der Strategie schlagen jeden Versuch des Market-Timings."
+          },
+          "2010-Q1": {
+            "headline": "Solider Start ins neue Jahrzehnt",
+            "context": "Unternehmen vermelden steigende Gewinne. Der Wirtschaftsaufschwung nimmt greifbare Formen an.",
+            "lesson": "Die Wirtschaft passt sich schrittweise an veränderte Rahmenbedingungen an."
+          },
+          "2010-Q2": {
+            "headline": "Mai 2010: Flash Crash und griechische Schuldenkrise",
+            "context": "Ein algorithmischer Flash Crash und Sorgen um eine Staatspleite Griechenlands lösen eine Korrektur aus. Gold legt +11,7 % zu.",
+            "lesson": "Rücksetzer um 10–15 % sind völlig normale Begleiter jeder Hausse und bedeuten keinen Systemkollaps."
+          },
+          "2010-Q3": {
+            "headline": "Federal Reserve kündigt QE2 an",
+            "context": "Zentralbanken garantieren dauerhaft niedrige Zinsen und befeuern damit Investitionen in Aktien und Sachwerte.",
+            "lesson": "Geldpolitische Maßnahmen haben unmittelbaren Einfluss auf die Bewertungen der Anlageklassen."
+          },
+          "2010-Q4": {
+            "headline": "Starker Jahresausklang an den Weltbörsen",
+            "context": "Unternehmensgewinne erreichen wieder das Vorkrisenniveau von 2008.",
+            "lesson": "Erfolgreiches Investieren baut auf der Innovations- und Anpassungsfähigkeit globaler Unternehmen auf."
+          },
+          "2011-Q1": {
+            "headline": "Erdbeben von Fukushima und Arabischer Frühling",
+            "context": "Trotz geopolitischer Erschütterungen bleiben die Märkte stabil, gestützt von solider Industrieproduktion.",
+            "lesson": "Einmalige Schocks brechen selten einen intakten, langfristigen Aufwärtstrend."
+          },
+          "2011-Q2": {
+            "headline": "Konjunkturabkühlung und Zuspitzung der Eurokrise",
+            "context": "Investoren blicken nervös auf steigende Renditen für Staatsanleihen in Italien und Spanien.",
+            "lesson": "Volatilität ist der Eintrittspreis für überdurchschnittliche langfristige Renditen."
+          },
+          "2011-Q3": {
+            "headline": "August 2011: S&P entzieht den USA das AAA-Rating",
+            "context": "Erstmals stuft S&P die Bonität der USA auf AA+ herab. Aktien verlieren -13,9 %, doch Anleihen (+12,9 %) und Gold retten das Portfolio.",
+            "lesson": "Ein erneuter Beweis für die negative Korrelation von Aktien und Anleihen in Schockphasen."
+          },
+          "2011-Q4": {
+            "headline": "Ende der 4-jährigen Feuertaufe: Märkte behaupten sich",
+            "context": "Die EZB greift entschlossen ein; weltweite Börsen schließen das Jahr 2011 mit einer Rallye und beenden den Krisenzyklus.",
+            "lesson": "Du hast die tiefste Finanzkrise seit 1929 durchgestanden. Sieh dir dein Debriefing an!"
+          },
+          "2020-Q1": {
+            "headline": "März 2020: Weltweiter Lockdown und Blitz-Crash (-19,6 %)",
+            "context": "Die WHO ruft eine Pandemie aus. Märkte erleiden den schnellsten 30%-Absturz der Geschichte. Anleihen steigen um +8,2 %, Gold um +3,9 %.",
+            "lesson": "Liquiditätsschock: Aus Panik wird alles liquidiert, doch Qualität und Diversifikation schützen das Vermögen rasch."
+          },
+          "2020-Q2": {
+            "headline": "Billionenhilfen der Notenbanken und Homeoffice-Boom (+20,5 %)",
+            "context": "Leitzinsen fallen auf 0 %, Konjunkturschecks werden verteilt und Tech-Riesen (Zoom, Amazon, Microsoft) verzeichnen Rekorde.",
+            "lesson": "Wer im März am Tiefpunkt verkaufte, hat diese spektakuläre Kursexplosion verpasst."
+          },
+          "2020-Q3": {
+            "headline": "Schrittweise Wiedereröffnung und Sommer-Hausse",
+            "context": "Fabriken öffnen wieder, Zuversicht kehrt zurück und Gold durchbricht erstmals die Marke von 2.000 USD/Unze.",
+            "lesson": "Aktienmärkte nehmen die reale wirtschaftliche Erholung um 6 bis 12 Monate vorweg."
+          },
+          "2020-Q4": {
+            "headline": "November 2020: Durchbruch beim mRNA-Impfstoff von Pfizer & BioNTech",
+            "context": "Die Meldung über 90 % Impfstoffwirksamkeit löst Euphorie aus und startet eine weltweite Rallye klassischer Industriezweige.",
+            "lesson": "Wissenschaftliche Durchbrüche können Marktstimmungen innerhalb weniger Stunden grundlegend drehen."
+          },
+          "2021-Q1": {
+            "headline": "Sektorrotation in Value-Werte und steigende Anleiherenditen",
+            "context": "Weltweite Impfkampagnen rollen an. Erwartungen eines Konjunkturbooms belasten langlaufende Anleihen (-5,7 %).",
+            "lesson": "Steigen Wachstum und Zinsen, geraten bestehende festverzinsliche Anleihen unter Druck."
+          },
+          "2021-Q2": {
+            "headline": "Erste Anzeichen wiederkehrender Inflation (+2,3 % im Quartal)",
+            "context": "Gestörte Lieferketten, Chipknappheit und Konsumhunger treiben Rohstoff- und Güterpreise in die Höhe.",
+            "lesson": "Unternehmen mit Preismacht können steigende Kosten an Kunden weitergeben und Margen sichern."
+          },
+          "2021-Q3": {
+            "headline": "Sommerpause und die Debatte um 'vorübergehende Inflation'",
+            "context": "Notenbanken betonen, die Teuerung sei vorübergehend; die Leitindizes bewegen sich seitwärts.",
+            "lesson": "Ruhige Marktphasen sind der beste Moment, um Allokation und Risikotoleranz zu überprüfen."
+          },
+          "2021-Q4": {
+            "headline": "Finale der Pandemie-Hausse: S&P 500 schließt nahe Rekordhoch",
+            "context": "Trotz erster Zinssorgen schließt das Börsenjahr 2021 mit hervorragenden Gewinnen für Aktienanleger.",
+            "lesson": "Zwei Jahre nach Ausbruch der Pandemie steht für diversifizierte Anleger ein Plus von über 30 % zu Buche."
+          },
+          "2022-Q1": {
+            "headline": "Februar 2022: Russischer Angriffskrieg und Rohstoffschock",
+            "context": "Krieg in Europa löst Preissprünge bei Öl, Gas und Weizen aus. Gold steigt um +5,9 %, während Aktien und Anleihen fallen.",
+            "lesson": "Gold bestätigt erneut seine Funktion als wirksamer Schutz vor geopolitischen Schocks."
+          },
+          "2022-Q2": {
+            "headline": "Aggressive Zinsschritte der Fed (+75 Bp) und 60/40-Einbruch",
+            "context": "US-Inflation über 9 %, in Polen über 15 %. Die Fed strafft radikal. Seltenes Phänomen: Aktien (-16,1 %) und Anleihen (-5,1 %) fallen gleichzeitig.",
+            "lesson": "Schnelle Zinsanstiege treffen bestehende Festzinsanleihen mit langer Laufzeit (Zinsänderungsrisiko)."
+          },
+          "2022-Q3": {
+            "headline": "Tiefster Pessimismus und ein bärenstarker US-Dollar",
+            "context": "Der US-Dollar erklimmt Mehrjahreshochs und saugt Liquidität aus Schwellenländern und Rohstoffmärkten ab.",
+            "lesson": "In Zeiten straffer Geldpolitik verschafft eine Barreserve Ruhe und Liquidität für spätere Zukäufe."
+          },
+          "2022-Q4": {
+            "headline": "Inflation bremst ab, Gold zieht kräftig an (+9,8 %)",
+            "context": "Erste Inflationsdaten zeigen Entspannung. Börsen atmen auf und die Risikobereitschaft kehrt zurück.",
+            "lesson": "Das schwierigste Börsenjahr seit Jahrzehnten ist vorbei. Prüfe, ob dein Portfolio den Wert erhalten hat!"
+          }
+        }
       },
       "chart": {
         "title": "Portfolio-Verlaufsgrafik",
@@ -232,6 +383,8 @@
       },
       "debrief": {
         "crisis-completed": "Krise Beendet",
+        "profit-awarded": "Der Anlagegewinn (+{coins} SC) wurde deinem SharkCoins-Guthaben hinzugefügt!",
+        "no-profit": "Kein Anlagegewinn — dein SharkCoins-Guthaben bleibt unverändert.",
         "final-capital": "Endkapital",
         "nominal-return": "{prefix}{value}% nominale Rendite",
         "real-capital": "Realer Wert (nach Inflation)",
@@ -259,7 +412,20 @@
         "verdict-title": "Roberts Urteil:",
         "takeaways-title": "Wichtigste Erkenntnisse:",
         "play-again": "Nochmal spielen",
-        "scenarios-list": "Szenarienliste"
+        "scenarios-list": "Szenarienliste",
+        "verdicts": {
+          "sunglasses_and_suit": "Großartige Arbeit, Chef! Du hast diesen historischen Sturm mit Bravour und solidem Gewinn überstanden. Du hast echtes Marktverständnis bewiesen!",
+          "happy": "Gute Arbeit! Du hast trotz heftiger Marktturbulenzen mit einem Plus abgeschlossen. Die wichtigste Lektion: Märkte holen Verluste immer auf, wenn man ihnen Zeit gibt.",
+          "supportive_with_lifejacket": "Lass dich von einem vorübergehenden Minus nicht entmutigen – Verluste an der Börse werden erst real, wenn du im Tief verkaufst! Ziehe deine Lehren aus diesem Zyklus."
+        },
+        "takeaways": {
+          "drawdown-safe": "Hervorragender Kapitalschutz! Dein maximaler Rückgang betrug lediglich {absDd}%. Durch kluge Diversifikation hast du die Panik vermieden, die die meisten Anleger erfasst.",
+          "drawdown-deep": "Du hast einen spürbaren Kursrücksetzer erlebt ({absDd}%). An den Aktienmärkten kommen solche Phasen regelmäßig vor – der Schlüssel zum Überleben liegt im Anlagehorizont und einem Liquiditätspuffer.",
+          "inflation-beat": "Du hast die Inflation geschlagen! Deine reale Rendite betrug +{realPct}%. Dein Vermögen ist also nicht nur auf dem Papier gewachsen, sondern hat real an Kaufkraft gewonnen.",
+          "inflation-lost": "Die Inflation hat an der Kaufkraft deines Portfolios genagt. Zu viel Bargeld führt schleichend, aber unausweichlich zu realem Wertverlust.",
+          "rebalance-none": "Eiserne Disziplin: Du hast während der Krise keine einzige panische Umschichtung vorgenommen. Nervenruhe ist historisch eine der profitabelsten Eigenschaften an der Börse.",
+          "rebalance-active": "Im Verlauf des Zyklus hast du {count} Umschichtungen vorgenommen. Gezieltes Rebalancing ermöglicht Nachkäufe günstiger Werte – hüte dich aber davor, Schlagzeilen hinterherzujagen."
+        }
       }
     }
   },

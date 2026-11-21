@@ -1,4 +1,5 @@
 import { getApiClient } from '@/api/api-client';
+import { invalidateExperienceQueries } from '@/api/services/auth-service';
 import { ApiResponse } from '@/api/types/common';
 import {
   CompleteActivityResponse,
@@ -8,7 +9,7 @@ import {
   SubmitQuizResponse,
 } from '@/api/types/learning';
 import { UseReactQuery, UseReactQueryMutation } from '@/api/types/react-query';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 type ActivityParams = {
   activityId: number;
@@ -76,6 +77,7 @@ export async function apiCompleteLearningActivity({
 export const useCompleteLearningActivityMutation: UseReactQueryMutation<CompleteActivityResponse, ActivityParams> = (
   options,
 ) => {
+  const queryClient = useQueryClient();
   return useMutation<CompleteActivityResponse, Error, ActivityParams>({
     mutationKey: ['complete-learning-activity'],
     mutationFn: async ({ activityId }) => {
@@ -83,6 +85,11 @@ export const useCompleteLearningActivityMutation: UseReactQueryMutation<Complete
       return result.data;
     },
     ...options,
+    onSuccess: async (data, ...rest) => {
+      // EXP was added to the account only when the backend saved the completion.
+      if (data.persisted) await invalidateExperienceQueries(queryClient);
+      await options?.onSuccess?.(data, ...rest);
+    },
   });
 };
 
@@ -100,6 +107,7 @@ export async function apiSubmitLearningQuiz({
 export const useSubmitLearningQuizMutation: UseReactQueryMutation<SubmitQuizResponse, SubmitLearningQuizParams> = (
   options,
 ) => {
+  const queryClient = useQueryClient();
   return useMutation<SubmitQuizResponse, Error, SubmitLearningQuizParams>({
     mutationKey: ['submit-learning-quiz'],
     mutationFn: async (params) => {
@@ -107,5 +115,10 @@ export const useSubmitLearningQuizMutation: UseReactQueryMutation<SubmitQuizResp
       return result.data;
     },
     ...options,
+    onSuccess: async (data, ...rest) => {
+      // A passed quiz saved for a signed-in user awards EXP.
+      if (data.persisted && data.passed) await invalidateExperienceQueries(queryClient);
+      await options?.onSuccess?.(data, ...rest);
+    },
   });
 };

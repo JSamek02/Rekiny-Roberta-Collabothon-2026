@@ -262,7 +262,7 @@ INSERT INTO users (
     google_sub, email, name, picture, preferred_language, shark_coins, experience_points
 )
 VALUES (
-    'mock:demo', 'demo@example.invalid', 'Demo użytkownik', NULL, 'pl', 15, 30
+    'mock:demo', 'demo@example.invalid', 'Demo użytkownik', NULL, 'pl', 3015, 30
 )
 ON CONFLICT (google_sub) DO NOTHING;
 

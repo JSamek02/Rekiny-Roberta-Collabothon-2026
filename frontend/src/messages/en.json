@@ -35,6 +35,9 @@
       "progress": "Progress",
       "lesson-count": "{count}/{total, plural, =1 {# lesson} other {# lessons}}"
     },
+    "level-bar": {
+      "next-level": "Next level {points}"
+    },
     "chat-fab": {
       "label": "Open Sharkbot chat"
     },
@@ -120,7 +123,9 @@
         "user": "Signed in",
         "creator": "Creator",
         "partner": "Partner"
-      }
+      },
+      "xp": "XP",
+      "experience": "Your experience points (EXP)"
     },
     "login-view": {
       "kicker": "Welcome aboard!",
@@ -206,7 +211,8 @@
         "reset-modal-title": "Reset scenario?",
         "reset-modal-desc": "All progress in this scenario will be lost and you will start over with the default portfolio.",
         "reset-modal-cancel": "Cancel",
-        "reset-modal-confirm": "Reset"
+        "reset-modal-confirm": "Reset",
+        "quarters-count": "{count} quarters"
       },
       "allocation-sliders": {
         "title-initial": "Set Initial Capital Allocation",
@@ -257,7 +263,154 @@
           "gold": "Gold",
           "cash": "Cash"
         },
-        "cpi-inflation": "CPI inflation this quarter:"
+        "cpi-inflation": "CPI inflation this quarter:",
+        "quarters": {
+          "2007-Q4": {
+            "headline": "First Cracks: Bankruptcies of Smaller Mortgage Funds",
+            "context": "Stock markets correct slightly (-3.8%), but gold gains +12.3% and safe Treasury bonds rise.",
+            "lesson": "Gold and bonds immediately react to the first signs of uncertainty in the banking sector."
+          },
+          "2008-Q1": {
+            "headline": "March 2008: Collapse and Fire Sale of Bear Stearns",
+            "context": "The fifth-largest Wall Street investment bank teeters on bankruptcy and is acquired by JPMorgan with government backing.",
+            "lesson": "Financial sector risks spread wider, stocks deepen losses, and capital flees to safe-haven bonds."
+          },
+          "2008-Q2": {
+            "headline": "Brief Stabilization and Mounting Inflationary Pressure",
+            "context": "Crude oil prices set an all-time high ($140 per barrel), driving inflation while the broader economy decelerates sharply.",
+            "lesson": "Stagflation (high inflation + economic slowdown) restricts central banks from quickly bailing out markets."
+          },
+          "2008-Q3": {
+            "headline": "September 2008: Lehman Brothers Collapse and Liquidity Freeze",
+            "context": "On September 15, 2008, 158-year-old Lehman Brothers files for bankruptcy. Global banks freeze lending. Equities plummet.",
+            "lesson": "Lacking a liquidity buffer and panic-selling during this shock is the single most common novice mistake."
+          },
+          "2008-Q4": {
+            "headline": "Peak Panic: Worst Quarter for Stocks Since the 1930s",
+            "context": "Equities dive -21.9% in just three months. US Treasuries skyrocket by a record +14.8% as the ultimate safe harbor.",
+            "lesson": "This quarter proved the power of government bonds – investors holding 40% bonds limited their loss from -22% down to only -7%."
+          },
+          "2009-Q1": {
+            "headline": "March 9, 2009: Historic Market Bottom and Peak Despair",
+            "context": "The S&P 500 hits a generational low at 666 points. Headlines trumpet the end of capitalism. Right then, the longest bull market in history is born.",
+            "lesson": "Holding or accumulating quality assets when everyone else panics (Buffett: 'Be greedy when others are fearful') delivers supreme long-term wealth."
+          },
+          "2009-Q2": {
+            "headline": "Bailout Packages Unleashed and Fierce Rebound (+15.9%)",
+            "context": "Governments roll out TARP and the Federal Reserve begins quantitative easing (QE). Stock markets rebound violently.",
+            "lesson": "Anyone who liquidated everything into cash in March 2009 permanently missed this historic recovery rally."
+          },
+          "2009-Q3": {
+            "headline": "Bull Market Continues and Gold Surges (+8.5%)",
+            "context": "The macroeconomy gradually heals and investors regain confidence in tech and industrial firms.",
+            "lesson": "Diversification allows you to benefit from simultaneous expansions in equities and commodities."
+          },
+          "2009-Q4": {
+            "headline": "Confidence Restored and a Winning Finish to 2009",
+            "context": "2009 concludes with a spectacular gain of over 26% for equities for the year, despite kicking off in outright panic.",
+            "lesson": "Patience and steadfast allocation discipline beat market timing attempts every single time."
+          },
+          "2010-Q1": {
+            "headline": "Solid Start to the New Decade",
+            "context": "Corporate balance sheets and quarterly earnings demonstrate robust health as the economic recovery gathers tangible momentum.",
+            "lesson": "The economy systematically adapts to new paradigms over time."
+          },
+          "2010-Q2": {
+            "headline": "May 2010: Flash Crash and the Greek Debt Crisis",
+            "context": "An algorithmic flash crash coupled with Greek sovereign default fears triggers a sharp correction. Gold rallies +11.7%.",
+            "lesson": "10-15% pullbacks are routine features of every healthy bull market and do not imply an impending systemic crash."
+          },
+          "2010-Q3": {
+            "headline": "Federal Reserve Signals QE2",
+            "context": "Central banks commit to low borrowing costs, reigniting risk appetite in equities and commodities alike.",
+            "lesson": "Monetary policy liquidity conditions exert immense direct influence on capital asset prices."
+          },
+          "2010-Q4": {
+            "headline": "Strong Year-End Rally Across World Markets",
+            "context": "Corporate profitability officially climbs back to pre-2008 peak levels.",
+            "lesson": "Investing in the global market is fundamentally a bet on human ingenuity and corporate resilience."
+          },
+          "2011-Q1": {
+            "headline": "Fukushima Disaster and Arab Spring Turmoil",
+            "context": "Despite severe geopolitical and humanitarian shocks, financial markets remain resilient, backed by strong manufacturing activity.",
+            "lesson": "Isolated exogenous events seldom derail secular multi-year economic growth trajectories."
+          },
+          "2011-Q2": {
+            "headline": "Economic Cooldown and Eurozone Debt Escalation",
+            "context": "Investors closely watch surging bond yields in Italy and Spain as fiscal strains mount across Europe.",
+            "lesson": "Short-term volatility is the unavoidable entry price for superior long-term compounded returns."
+          },
+          "2011-Q3": {
+            "headline": "August 2011: S&P Downgrades US Credit Rating",
+            "context": "For the first time in history, S&P downgrades the US sovereign debt rating from AAA to AA+. Stocks plunge -13.9%, while bonds (+12.9%) and gold protect portfolios.",
+            "lesson": "Further proof of the negative correlation between stocks and bonds during flight-to-safety episodes."
+          },
+          "2011-Q4": {
+            "headline": "End of the 4-Year Trial by Fire: Market Emerges Victorious",
+            "context": "The ECB steps in aggressively, and world markets cap 2011 with a powerful year-end rally, drawing this crisis cycle to a close.",
+            "lesson": "You survived the most severe financial crisis since 1929. Review your simulation debrief!"
+          },
+          "2020-Q1": {
+            "headline": "March 2020: Global Lockdown and Flash Crash (-19.6%)",
+            "context": "The WHO declares a global pandemic. Markets experience the fastest 30% drop in modern history. Treasuries climb +8.2% and gold adds +3.9%.",
+            "lesson": "During liquidity shocks, investors temporarily sell everything, but defensive quality assets rapidly cushion capital."
+          },
+          "2020-Q2": {
+            "headline": "Trillions from Central Banks and Remote Work Boom (+20.5%)",
+            "context": "Interest rates drop to zero, governments issue stimulus checks, and Big Tech (Zoom, Amazon, Microsoft) reports record earnings.",
+            "lesson": "Liquidating at the bottom in March locked out investors from this historic surge."
+          },
+          "2020-Q3": {
+            "headline": "Economic Reopening and Summer Bull Run",
+            "context": "Factories resume output, consumer confidence climbs, and gold shatters records by crossing $2,000/oz.",
+            "lesson": "Equity markets anticipate real economic conditions 6 to 12 months ahead."
+          },
+          "2020-Q4": {
+            "headline": "November 2020: Pfizer & BioNTech Vaccine Breakthrough",
+            "context": "Confirmation of over 90% vaccine efficacy triggers euphoria. Value and cyclicals ignite into a broad rally.",
+            "lesson": "Scientific and technological breakthroughs can completely reverse market sentiment in just hours."
+          },
+          "2021-Q1": {
+            "headline": "Rotation into Value Sectors and Rising Bond Yields",
+            "context": "Vaccine rollouts accelerate worldwide. Anticipation of economic overheating depresses fixed-rate long-term bonds (-5.7%).",
+            "lesson": "When markets expect strong growth and rising yields, prices of existing fixed-rate bonds drop."
+          },
+          "2021-Q2": {
+            "headline": "Early Signs of Resurging Inflation (+2.3% in One Quarter)",
+            "context": "Snarled supply chains, chip shortages, and pent-up consumer demand drive commodity and producer prices higher.",
+            "lesson": "Companies with pricing power pass elevated input costs directly on to customers."
+          },
+          "2021-Q3": {
+            "headline": "Summer Pause and the 'Transitory Inflation' Debate",
+            "context": "Central banks insist inflation is strictly transitory while major indices consolidate sideways.",
+            "lesson": "Sideways consolidations are ideal opportunities to re-evaluate and rebalance portfolio allocations."
+          },
+          "2021-Q4": {
+            "headline": "Pandemic Bull Market Finale: S&P 500 Closes Near Record Highs",
+            "context": "Despite rising inflation concerns, 2021 closes with double-digit returns for the global stock market.",
+            "lesson": "Two years after the global pandemic hit, a disciplined diversified investor gained more than 30%."
+          },
+          "2022-Q1": {
+            "headline": "February 2022: Russian Invasion of Ukraine and Commodity Shock",
+            "context": "War in Europe sparks a dramatic surge in oil, natural gas, and wheat. Gold surges +5.9% while stocks and bonds tumble.",
+            "lesson": "Gold once again affirms its role as an essential geopolitical crisis hedge."
+          },
+          "2022-Q2": {
+            "headline": "Aggressive Fed Rate Hikes (+75 bps) and the 60/40 Meltdown",
+            "context": "Inflation exceeds 9% in the US and 15% in Poland. Central banks hike aggressively. Unusually, stocks drop -16.1% and bonds drop -5.1%.",
+            "lesson": "Rapid rate spikes penalize existing fixed-coupon bonds (interest rate duration risk)."
+          },
+          "2022-Q3": {
+            "headline": "Peak Bearish Sentiment and the Dollar Sucking Up Liquidity",
+            "context": "The US Dollar index reaches multi-decade highs, draining liquidity out of emerging markets and risk assets.",
+            "lesson": "During quantitative tightening, cash reserves offer peace of mind and dry powder for bargain hunting."
+          },
+          "2022-Q4": {
+            "headline": "Inflation Begins to Cool, Gold Soars (+9.8%)",
+            "context": "First CPI readings show softening inflation. Markets sigh in relief and appetite for risk begins to return.",
+            "lesson": "The most challenging year in modern memory has concluded. Check if your portfolio preserved purchasing power!"
+          }
+        }
       },
       "chart": {
         "title": "Portfolio Value Chart",
@@ -266,6 +419,8 @@
       },
       "debrief": {
         "crisis-completed": "Crisis Completed",
+        "profit-awarded": "Investment profit (+{coins} SC) has been added to your SharkCoins balance!",
+        "no-profit": "No investment profit — your SharkCoins balance remains unchanged.",
         "final-capital": "Final Capital",
         "nominal-return": "{prefix}{value}% nominal return",
         "real-capital": "Real Value (after inflation)",
@@ -293,8 +448,38 @@
         "verdict-title": "Robert's Verdict:",
         "takeaways-title": "Key Takeaways:",
         "play-again": "Play again",
-        "scenarios-list": "Scenarios list"
+        "scenarios-list": "Scenarios list",
+        "verdicts": {
+          "sunglasses_and_suit": "Terrific job, Boss! You survived this historic storm in style and with strong profits. You proved you understand how markets work!",
+          "happy": "Well done! You finished in the green despite tremendous market turbulence. The most important lesson: markets always recover losses if you give them time.",
+          "supportive_with_lifejacket": "Don't fret over a temporary dip – in the stock market, losses are only real once you sell at the bottom! Learn from this cycle and prepare for the next stage."
+        },
+        "takeaways": {
+          "drawdown-safe": "Outstanding capital protection! Your maximum drawdown was only {absDd}%. Thanks to proper diversification, you avoided the panic that grips most investors.",
+          "drawdown-deep": "You experienced a deep capital drawdown ({absDd}%). In equity markets, such pullbacks happen regularly – the key to survival is a long time horizon and a cash cushion.",
+          "inflation-beat": "You beat inflation! Your real return was +{realPct}%. This means your wealth did not just grow numerically, but can genuinely buy more goods.",
+          "inflation-lost": "Inflation eroded your purchasing power. Remember that holding too much cash guarantees a slow but inevitable loss of real value.",
+          "rebalance-none": "Iron discipline: you didn't make a single panic adjustment during the crisis. Historically, avoiding rash moves is one of the most profitable investor traits.",
+          "rebalance-active": "During the cycle, you made {count} adjustments to your portfolio. Conscious rebalancing allows buying discounted assets, but remember not to chase the market based on news headlines."
+        }
       }
+    },
+    "ranking": {
+      "kicker": "Leaderboard",
+      "title": "Ranking",
+      "subtitle": "{count, plural, =0 {No sharks in the ocean yet} =1 {# shark competing for XP} other {# sharks competing for XP}}",
+      "subtitle-loading": "Loading the leaderboard...",
+      "your-position": "Your position",
+      "you": "You",
+      "top": "Top {count}",
+      "xp": "XP",
+      "place": "Place {rank}",
+      "anonymous": "Anonymous shark",
+      "guest-info": "Log in to see your position and earn XP.",
+      "log-in": "Log in",
+      "empty": "Nobody is in the ranking yet. Complete a lesson to be the first!",
+      "error": "Could not load the ranking. Make sure the backend is running.",
+      "retry": "Try again"
     }
   },
   "pages": {
@@ -320,5 +505,10 @@
         "max": "Enter at most {count, plural, =1 {# character} other {# characters}}"
       }
     }
+  },
+  "chat": {
+    "title": "Robert Biznesu — AI Financial Mentor",
+    "subtitle": "Educational finance chatbot with RAG and voice chat",
+    "badge": "Gemini 4 + 3.8 TTS RAG"
   }
 }

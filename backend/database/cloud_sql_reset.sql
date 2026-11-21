@@ -7,7 +7,7 @@ BEGIN;
 -- Uzupełnienie tabel utworzonych przez starszą wersję backendu.
 ALTER TABLE users
     ADD COLUMN IF NOT EXISTS preferred_language VARCHAR(2) NOT NULL DEFAULT 'pl',
-    ADD COLUMN IF NOT EXISTS shark_coins INTEGER NOT NULL DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS shark_coins INTEGER NOT NULL DEFAULT 3000,
     ADD COLUMN IF NOT EXISTS experience_points INTEGER NOT NULL DEFAULT 0,
     ADD COLUMN IF NOT EXISTS role VARCHAR(16) NOT NULL DEFAULT 'user';
 

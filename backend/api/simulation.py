@@ -5,7 +5,7 @@ Obsługuje:
 - Tryb gościa / local storage (persisted=False)
 - Zapis i odczyt postępu w bazie danych PostgreSQL dla zalogowanego użytkownika (persisted=True)
 - Synchronizację postępu z local storage po zalogowaniu (/api/simulation/sync)
-- Automatyczne nagradzanie Shark Coins po ukończeniu eventu
+- Automatyczne nagradzanie Shark Coins i EXP po ukończeniu eventu
 """
 
 from datetime import datetime, timezone
@@ -71,6 +71,9 @@ def _persist_session_state(db, user, event_id: str, session_dict: Dict[str, Any]
     )
 
     is_completed = session_dict["status"] == "completed"
+    # Nagroda należy się tylko przy przejściu do stanu "completed", nie przy każdym zapisie
+    # ukończonej sesji (np. ponownej synchronizacji z Local Storage).
+    newly_completed = is_completed and (record is None or record.status != "completed")
     debrief = session_dict.get("debrief")
     xp_earned = debrief.get("xp_awarded", 0) if debrief else 0
     coins_earned = debrief.get("sharcoins_awarded", 0) if debrief else 0
@@ -116,11 +119,12 @@ def _persist_session_state(db, user, event_id: str, session_dict: Dict[str, Any]
                 record.completed_at = now
         record.updated_at = now
 
-    # Nagradzanie Shark Coins na koncie użytkownika
-    if is_completed and coins_earned > 0:
+    # Nagradzanie Shark Coins i EXP na koncie użytkownika
+    if newly_completed and (coins_earned > 0 or xp_earned > 0):
         db_user = db.scalar(select(User).where(User.id == user.id))
         if db_user:
             db_user.shark_coins = (db_user.shark_coins or 0) + coins_earned
+            db_user.experience_points = (db_user.experience_points or 0) + xp_earned
 
     db.commit()
     session_dict["persisted"] = True
@@ -333,7 +337,15 @@ class SimulationSyncView(MethodView):
                     _persist_session_state(db, user, ev_id, s)
                     synced_count += 1
 
-                return jsonify(status="ok", synced_count=synced_count, persisted=True)
+                db_user = db.scalar(select(User).where(User.id == user.id))
+                user_shark_coins = db_user.shark_coins if db_user else None
+
+                return jsonify(
+                    status="ok",
+                    synced_count=synced_count,
+                    persisted=True,
+                    user_shark_coins=user_shark_coins,
+                )
         except SQLAlchemyError:
             current_app.logger.exception("Could not sync simulation progress")
             return jsonify(error="Database unavailable"), 503

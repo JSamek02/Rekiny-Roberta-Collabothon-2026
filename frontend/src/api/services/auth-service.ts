@@ -1,5 +1,6 @@
 import { getApiClient } from '@/api/api-client';
 import { ApiError } from '@/api/error-handler';
+import { RANKING_QUERY_KEYS } from '@/api/services/ranking-service';
 import {
   ApiGetAuthConfig,
   ApiGetCurrentUser,
@@ -8,7 +9,7 @@ import {
   AuthUser,
 } from '@/api/types/auth';
 import { UseReactQuery, UseReactQueryMutation } from '@/api/types/react-query';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 type NoParams = Record<string, never>;
 
@@ -16,6 +17,16 @@ export const AUTH_QUERY_KEYS = {
   config: ['auth-config'],
   currentUser: ['auth-me'],
 };
+
+/**
+ * The account's EXP comes from `/api/auth/me` and is also shown in the ranking.
+ * Call after any action that can award EXP so both are refetched instead of served from cache.
+ */
+export const invalidateExperienceQueries = (queryClient: QueryClient) =>
+  Promise.all([
+    queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.currentUser }),
+    queryClient.invalidateQueries({ queryKey: RANKING_QUERY_KEYS.root }),
+  ]);
 
 // The session lives in an HttpOnly cookie set by the backend, so every auth request must send it.
 const WITH_SESSION: RequestInit = { credentials: 'include', cache: 'no-store' };

@@ -14,6 +14,7 @@ SUPPORTED_LANGUAGE_CODES = ("pl", "en", "de")
 # Typy zalogowanych kont. Niezalogowany (gość) to brak ważnej sesji, więc nie ma go w bazie.
 USER_ROLES = ("user", "creator", "partner")
 DEFAULT_USER_ROLE = "user"
+DEFAULT_STARTING_SHARK_COINS = 3000
 
 
 def get_translation(translations: dict[str, Any] | None, language: str) -> dict[str, Any]:
@@ -40,7 +41,7 @@ class User(Base):
         String(2), nullable=False, default="pl", server_default="pl"
     )
     shark_coins: Mapped[int] = mapped_column(
-        Integer, nullable=False, default=0, server_default="0"
+        Integer, nullable=False, default=DEFAULT_STARTING_SHARK_COINS, server_default=str(DEFAULT_STARTING_SHARK_COINS)
     )
     experience_points: Mapped[int] = mapped_column(
         Integer, nullable=False, default=0, server_default="0"
@@ -58,6 +59,7 @@ class User(Base):
         values = dict(
             google_sub=userinfo["sub"], email=userinfo.get("email"),
             name=userinfo.get("name"), picture=userinfo.get("picture"),
+            shark_coins=userinfo.get("shark_coins", DEFAULT_STARTING_SHARK_COINS),
         )
         if role is not None:
             values["role"] = role

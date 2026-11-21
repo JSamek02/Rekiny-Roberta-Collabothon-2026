@@ -1,3 +1,8 @@
+import { stepSimulationQuarter } from '@/api/simulation';
+import { invalidateExperienceQueries } from '@/api/services/auth-service';
+import { UseReactQueryMutation } from '@/api/types/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
 export type AssetKey = 'stocks' | 'bonds' | 'gold' | 'cash';
 
 export type AssetAllocations = {
@@ -98,4 +103,27 @@ export type StepQuarterResponse = {
     debrief?: SimulationDebrief;
   };
   full_session: SimulationSession;
+  /** `true` when the step was saved for a signed-in user. */
+  persisted?: boolean;
+};
+
+type StepSimulationQuarterParams = {
+  eventId: string;
+  newAllocations?: AssetAllocations;
+};
+
+export const useStepSimulationQuarterMutation: UseReactQueryMutation<StepQuarterResponse, StepSimulationQuarterParams> = (
+  options,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation<StepQuarterResponse, Error, StepSimulationQuarterParams>({
+    mutationKey: ['step-simulation-quarter'],
+    mutationFn: ({ eventId, newAllocations }) => stepSimulationQuarter(eventId, newAllocations),
+    ...options,
+    onSuccess: async (data, ...rest) => {
+      // Finishing the last quarter awards EXP and SharkCoins to a signed-in user's account.
+      if (data.persisted && data.result?.is_finished) await invalidateExperienceQueries(queryClient);
+      await options?.onSuccess?.(data, ...rest);
+    },
+  });
 };

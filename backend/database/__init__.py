@@ -50,7 +50,7 @@ def upgrade_user_profile_columns():
 
         if "shark_coins" not in columns:
             connection.execute(text(
-                "ALTER TABLE users ADD COLUMN shark_coins INTEGER NOT NULL DEFAULT 0"
+                "ALTER TABLE users ADD COLUMN shark_coins INTEGER NOT NULL DEFAULT 3000"
             ))
             connection.execute(text("""
                 UPDATE users
