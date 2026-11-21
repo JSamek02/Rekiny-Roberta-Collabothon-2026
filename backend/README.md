@@ -52,7 +52,7 @@ Compose uruchamia Cloud SQL Auth Proxy dla instancji `encoded-breaker-515313-h9:
 
 Jeśli działa stary kontener `postgres` z poprzedniej konfiguracji, może nadal działać jako osierocony kontener. Zatrzymaj go osobno, gdy nie będzie potrzebny; nie usuwaj jego wolumenu, jeśli są tam potrzebne dane.
 
-Polecenie `init-db` tworzy brakujące tabele, w tym `activity_videos` dla plików MP4, uzupełnia istniejącą tabelę `users` o pola `preferred_language` oraz `shark_coins`, a tabele kursów, lekcji i aktywności o `translations`. Dla istniejących użytkowników saldo jest jednorazowo wyliczane z dotychczas zdobytych monet.
+Polecenie `init-db` tworzy brakujące tabele, w tym `activity_videos` dla plików MP4, uzupełnia istniejącą tabelę `users` o pola `preferred_language`, `shark_coins` oraz `role` (typ konta, istniejące konta dostają `user`), a tabele kursów, lekcji i aktywności o `translations`. Dla istniejących użytkowników saldo jest jednorazowo wyliczane z dotychczas zdobytych monet.
 
 Testy: `python -m unittest`. Testy operacji na użytkownikach używają bazy SQLite w pamięci.
 
@@ -76,14 +76,14 @@ Po uruchomieniu proxy, instalacji zależności i wykonaniu `flask --app app init
 python app.py --auth-mode mock --debug
 ```
 
-W tym trybie `POST /api/auth/mock` loguje na stałe konto demonstracyjne i tworzy zwykłą sesję w PostgreSQL. Konto jest tworzone automatycznie przy pierwszym logowaniu. Nie są potrzebne dane Google ani `SECRET_KEY`. Wyślij nagłówek `X-Requested-With: XMLHttpRequest`, na przykład:
+W tym trybie `POST /api/auth/mock` loguje konto demonstracyjne i tworzy zwykłą sesję w PostgreSQL. Opcjonalne body JSON `{"role": "user" | "creator" | "partner"}` wybiera konto danego typu (domyślnie `user`). Konto jest tworzone automatycznie przy pierwszym logowaniu. Nie są potrzebne dane Google ani `SECRET_KEY`. Wyślij nagłówek `X-Requested-With: XMLHttpRequest`, na przykład:
 
 ```bash
 curl -c /tmp/collabothon-cookies.txt -X POST -H 'X-Requested-With: XMLHttpRequest' http://localhost:5000/api/auth/mock
 curl -b /tmp/collabothon-cookies.txt http://localhost:5000/api/auth/me
 ```
 
-Następnie można korzystać z `GET /api/auth/me` i `POST /api/auth/logout` tak samo jak w trybie Google. Wszyscy korzystający z trybu mock współdzielą jedno konto i jego dane. Korzystaj z niego tylko lokalnie, na danych testowych: nie wymaga żadnego uwierzytelnienia. Po przełączeniu na Google sesje konta demonstracyjnego nie są akceptowane.
+Następnie można korzystać z `GET /api/auth/me` i `POST /api/auth/logout` tak samo jak w trybie Google. Wszyscy korzystający z trybu mock współdzielą te konta i ich dane. Korzystaj z niego tylko lokalnie, na danych testowych: nie wymaga żadnego uwierzytelnienia. Po przełączeniu na Google sesje kont demonstracyjnych nie są akceptowane.
 
 Domyślnym trybem jest Google: `python app.py --auth-mode google` lub dotychczasowe `flask --app app run --debug`. W tym trybie endpoint mock jest wyłączony; w trybie mock wyłączone są endpointy logowania Google.
 
@@ -93,13 +93,14 @@ Domyślnym trybem jest Google: `python app.py --auth-mode google` lub dotychczas
 2. Do dozwolonych adresów przekierowania klienta dodaj dokładnie `http://localhost:5000/api/auth/google/callback` (adres musi być identyczny z używanym przez aplikację).
 3. Uzupełnij `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` i `SECRET_KEY` w `backend/.env`, a następnie uruchom ponownie Flask. Bez nich endpoint logowania zwraca 503. Nie umieszczaj pliku `.env` w repozytorium.
 
-4. Otwórz w przeglądarce `http://localhost:5000/api/auth/google`. Przy pierwszym logowaniu konto jest automatycznie tworzone, a przy kolejnych rozpoznawane po stałym identyfikatorze Google. Domyślnie po zalogowaniu następuje przekierowanie na `/api/auth/me`.
+4. Otwórz w przeglądarce `http://localhost:5000/api/auth/google`. Przy pierwszym logowaniu konto jest automatycznie tworzone, a przy kolejnych rozpoznawane po stałym identyfikatorze Google. Po zalogowaniu następuje przekierowanie na `FRONTEND_URL` (lokalnie z frontendem: `http://localhost:3000/`; bez tej zmiennej na `/api/auth/me`).
 
 Endpointy:
 
 - `GET /api/auth/google` — rozpoczęcie logowania; przekierowanie przeglądarki do Google.
 - `GET /api/auth/google/callback` — powrót z Google, obsługiwany przez backend.
-- `GET /api/auth/me` — bieżący użytkownik (`401`, jeśli brak ważnej sesji).
+- `GET /api/auth/me` — bieżący użytkownik z typem konta `role` (`401`, jeśli brak ważnej sesji).
+- `GET /api/auth/config` — aktywny tryb logowania (`google` albo `mock`) i lista typów kont; frontend pokazuje na tej podstawie przycisk Google albo konta demonstracyjne.
 - `POST /api/auth/preferences` — zapisuje preferowany język użytkownika: `pl`, `en` albo `de`.
 - `POST /api/auth/logout` — unieważnienie bieżącej sesji; wymagany nagłówek `X-Requested-With: XMLHttpRequest`.
 
@@ -209,7 +210,16 @@ await fetch('/api/auth/logout', {
 });
 ```
 
-Sesja trwa siedem dni. Jej losowy identyfikator znajduje się w ciasteczku HttpOnly, a w bazie przechowywany jest tylko jego skrót. Backend nie przechowuje tokenów Google. Frontend powinien korzystać z tego samego originu co API, np. przez proxy serwera developerskiego; CORS nie jest skonfigurowany. Używaj konsekwentnie `localhost`, a nie zamiennie `127.0.0.1`, żeby ciasteczka działały poprawnie.
+Sesja trwa siedem dni. Jej losowy identyfikator znajduje się w ciasteczku HttpOnly, a w bazie przechowywany jest tylko jego skrót. Backend nie przechowuje tokenów Google. Gdy frontend działa pod innym originem niż API (lokalnie `http://localhost:3000` → `http://localhost:5000`), ustaw `FRONTEND_ORIGIN=http://localhost:3000`, aby backend zezwolił na zapytania z ciasteczkiem sesji. Używaj konsekwentnie `localhost`, a nie zamiennie `127.0.0.1`, żeby ciasteczka działały poprawnie.
+
+## Typy użytkowników
+
+- **Niezalogowany** — brak ważnej sesji; nie jest zapisywany w bazie.
+- **Zalogowany** (`user`) — domyślny typ każdego konta utworzonego przez logowanie Google.
+- **Twórca** (`creator`) i **Partner** (`partner`) — nadawane ręcznie w bazie, np.
+  `UPDATE users SET role = 'creator', updated_at = now() WHERE email = 'osoba@example.com';`
+
+Typ konta zwraca `GET /api/auth/me` w polu `role`. Ponowne logowanie Google nie zmienia nadanego typu. Typy nie nadają jeszcze żadnych dodatkowych uprawnień.
 
 Opcjonalnie `FRONTEND_URL` określa stały adres przekierowania po logowaniu, a `GOOGLE_REDIRECT_URI` zmienia adres callbacku (musi być również zarejestrowany w Google). W środowisku HTTPS ustaw `COOKIE_SECURE=true` i używaj adresu callbacku HTTPS. Szczegóły konfiguracji OAuth opisuje [dokumentacja Google](https://developers.google.com/identity/openid-connect/openid-connect).
 

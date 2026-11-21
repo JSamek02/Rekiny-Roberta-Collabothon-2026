@@ -59,6 +59,34 @@
         "etf": "Czym są ETF-y i jak zacząć?",
         "ike-ikze": "Jak działa IKE i IKZE w Polsce?"
       }
+    },
+    "auth": {
+      "log-in": "Zaloguj",
+      "log-out": "Wyloguj",
+      "account-menu": "Menu konta",
+      "account-type": "Typ konta",
+      "no-name": "Bez nazwy",
+      "error": "Coś poszło nie tak. Spróbuj ponownie.",
+      "roles": {
+        "guest": "Niezalogowany",
+        "user": "Zalogowany",
+        "creator": "Twórca",
+        "partner": "Partner"
+      }
+    },
+    "login-view": {
+      "kicker": "Witaj na pokładzie!",
+      "title": "Logowanie",
+      "guest-info": "Przeglądasz aplikację jako niezalogowany.",
+      "google": "Zaloguj przez Google",
+      "mock-info": "Tryb demonstracyjny: logowanie Google jest wyłączone. Wybierz typ konta, aby zalogować się na konto testowe.",
+      "mock-as": "Zaloguj jako",
+      "continue-as-guest": "Kontynuuj bez logowania",
+      "signed-in-as": "Zalogowano jako",
+      "go-home": "Strona główna",
+      "log-out": "Wyloguj",
+      "config-error": "Brak połączenia z serwerem. Sprawdź, czy backend działa.",
+      "error": "Coś poszło nie tak. Spróbuj ponownie."
     }
   },
   "global": {

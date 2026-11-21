@@ -59,6 +59,34 @@
         "etf": "What are ETFs and how do I start?",
         "ike-ikze": "How do IKE and IKZE work in Poland?"
       }
+    },
+    "auth": {
+      "log-in": "Log in",
+      "log-out": "Log out",
+      "account-menu": "Account menu",
+      "account-type": "Account type",
+      "no-name": "No name",
+      "error": "Something went wrong. Please try again.",
+      "roles": {
+        "guest": "Guest",
+        "user": "Signed in",
+        "creator": "Creator",
+        "partner": "Partner"
+      }
+    },
+    "login-view": {
+      "kicker": "Welcome aboard!",
+      "title": "Log in",
+      "guest-info": "You are browsing as a guest.",
+      "google": "Continue with Google",
+      "mock-info": "Demo mode: Google login is disabled. Pick an account type to sign in to a test account.",
+      "mock-as": "Log in as",
+      "continue-as-guest": "Continue without logging in",
+      "signed-in-as": "Signed in as",
+      "go-home": "Go to home",
+      "log-out": "Log out",
+      "config-error": "Could not connect to the server. Make sure the backend is running.",
+      "error": "Something went wrong. Please try again."
     }
   },
   "global": {
