@@ -1,5 +1,6 @@
 import { LessonCategoryNavItem } from '@/components/lesson-category-nav-item';
 import { LevelBar } from '@/components/level-bar';
+import { StockMarketHeroWidget } from '@/components/stock/StockMarketHeroWidget';
 import { BankIcon } from '@/icons/bank';
 import { DollarIcon } from '@/icons/dollar';
 import { HandCoinsIcon } from '@/icons/hand-coins';
@@ -32,6 +33,7 @@ export default function Home() {
           href={routes.learningCategory('economics')}
         />
       </div>
+      <StockMarketHeroWidget />
     </main>
   );
 }
