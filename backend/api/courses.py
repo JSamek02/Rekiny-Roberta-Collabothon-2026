@@ -7,10 +7,21 @@ from sqlalchemy.exc import SQLAlchemyError
 from api.auth import get_authenticated_user
 from database import database
 from database.models import (
-    Activity, Course, Lesson, UserActivityProgress, UserCourseEnrollment
+    Activity, Course, Lesson, SUPPORTED_LANGUAGE_CODES,
+    UserActivityProgress, UserCourseEnrollment,
 )
 
 courses = Blueprint("courses", __name__)
+
+
+def request_content_language() -> str:
+    for language, quality in request.accept_languages:
+        if quality <= 0:
+            continue
+        language_code = language.lower().split("-", 1)[0]
+        if language_code in SUPPORTED_LANGUAGE_CODES:
+            return language_code
+    return "pl"
 
 
 def check_lesson_completed(db, lesson_id: int, user_id: int) -> bool:
@@ -52,6 +63,7 @@ def check_course_completed(db, course_id: int, user_id: int) -> bool:
 class CourseListView(MethodView):
     def get(self):
         category = request.args.get("category")
+        language = request_content_language()
         try:
             with database() as db:
                 user = get_authenticated_user(db)
@@ -63,7 +75,7 @@ class CourseListView(MethodView):
 
                 courses_data = []
                 for course in course_list:
-                    c_dict = course.to_dict()
+                    c_dict = course.to_dict(language=language)
                     # Calculate total activities in course
                     total_activities = db.scalar(
                         select(func.count(Activity.id))
@@ -111,6 +123,7 @@ class CourseListView(MethodView):
 
 class CourseDetailView(MethodView):
     def get(self, identifier):
+        language = request_content_language()
         try:
             with database() as db:
                 user = get_authenticated_user(db)
@@ -124,7 +137,7 @@ class CourseDetailView(MethodView):
                 if not course:
                     return jsonify(error="Course not found"), 404
 
-                course_data = course.to_dict()
+                course_data = course.to_dict(language=language)
                 enrollment = None
                 if user:
                     enrollment = db.scalar(
@@ -161,11 +174,11 @@ class CourseDetailView(MethodView):
                 completed_activities = 0
 
                 for lesson in lessons:
-                    l_dict = lesson.to_dict()
+                    l_dict = lesson.to_dict(language=language)
                     acts_data = []
                     for act in lesson.activities:
                         total_activities += 1
-                        act_dict = act.to_dict(include_content=False)
+                        act_dict = act.to_dict(include_content=False, language=language)
                         is_comp = act.id in completed_activity_ids
                         if is_comp:
                             completed_activities += 1
@@ -240,6 +253,7 @@ class CourseEnrollView(MethodView):
 
 class LessonDetailView(MethodView):
     def get(self, lesson_id: int):
+        language = request_content_language()
         try:
             with database() as db:
                 user = get_authenticated_user(db)
@@ -260,10 +274,10 @@ class LessonDetailView(MethodView):
                         ).all()
                     )
 
-                lesson_data = lesson.to_dict()
+                lesson_data = lesson.to_dict(language=language)
                 activities_data = []
                 for act in lesson.activities:
-                    act_dict = act.to_dict(include_content=False)
+                    act_dict = act.to_dict(include_content=False, language=language)
                     act_dict["is_completed"] = act.id in completed_ids
                     activities_data.append(act_dict)
 
@@ -279,6 +293,7 @@ class LessonDetailView(MethodView):
 
 class ActivityDetailView(MethodView):
     def get(self, activity_id: int):
+        language = request_content_language()
         try:
             with database() as db:
                 user = get_authenticated_user(db)
@@ -286,7 +301,9 @@ class ActivityDetailView(MethodView):
                 if not activity:
                     return jsonify(error="Activity not found"), 404
 
-                act_data = activity.to_dict(include_content=True, sanitize_quiz=True)
+                act_data = activity.to_dict(
+                    include_content=True, sanitize_quiz=True, language=language
+                )
                 if user:
                     progress = db.scalar(
                         select(UserActivityProgress).where(
@@ -377,6 +394,7 @@ class ActivityCompleteView(MethodView):
                     progress.coins_earned = coins_earned
                     progress.completed_at = now
 
+                user.shark_coins += coins_earned
                 db.flush()
 
                 # Check lesson and course completion
@@ -413,6 +431,7 @@ class ActivityCompleteView(MethodView):
 
 class QuizSubmitView(MethodView):
     def post(self, activity_id: int):
+        language = request_content_language()
         try:
             with database() as db:
                 user = get_authenticated_user(db)
@@ -427,6 +446,11 @@ class QuizSubmitView(MethodView):
 
                 content = activity.content or {}
                 questions = content.get("questions", [])
+                translated_content = activity.localized_content(language) or {}
+                translated_questions = {
+                    str(question.get("id")): question
+                    for question in translated_content.get("questions", [])
+                }
                 total_questions = len(questions)
 
                 review = []
@@ -435,6 +459,7 @@ class QuizSubmitView(MethodView):
                     q_id = str(q.get("id"))
                     correct_opt = str(q.get("correct_option_id", ""))
                     submitted_opt = str(user_answers.get(q_id, "")) if q_id in user_answers else None
+                    translated_question = translated_questions.get(q_id, {})
 
                     is_correct = (submitted_opt is not None and submitted_opt == correct_opt)
                     if is_correct:
@@ -442,11 +467,11 @@ class QuizSubmitView(MethodView):
 
                     review.append({
                         "question_id": q_id,
-                        "prompt": q.get("prompt"),
+                        "prompt": translated_question.get("prompt", q.get("prompt")),
                         "submitted_option": submitted_opt,
                         "correct_option": correct_opt,
                         "is_correct": is_correct,
-                        "explanation": q.get("explanation"),
+                        "explanation": translated_question.get("explanation", q.get("explanation")),
                     })
 
                 score_percent = (
@@ -520,6 +545,7 @@ class QuizSubmitView(MethodView):
                         progress.coins_earned = coins_earned
                         progress.completed_at = now
 
+                user.shark_coins += coins_earned
                 db.flush()
 
                 lesson = db.scalar(select(Lesson).where(Lesson.id == activity.lesson_id))
@@ -560,6 +586,7 @@ class QuizSubmitView(MethodView):
 
 class UserProgressView(MethodView):
     def get(self):
+        language = request_content_language()
         try:
             with database() as db:
                 user = get_authenticated_user(db)
@@ -568,10 +595,6 @@ class UserProgressView(MethodView):
 
                 total_xp = db.scalar(
                     select(func.coalesce(func.sum(UserActivityProgress.xp_earned), 0))
-                    .where(UserActivityProgress.user_id == user.id)
-                ) or 0
-                total_coins = db.scalar(
-                    select(func.coalesce(func.sum(UserActivityProgress.coins_earned), 0))
                     .where(UserActivityProgress.user_id == user.id)
                 ) or 0
                 completed_activities_count = db.scalar(
@@ -610,7 +633,7 @@ class UserProgressView(MethodView):
                     pct = int(round((comp_acts / total_acts) * 100)) if total_acts > 0 else 0
                     courses_progress.append({
                         "course_id": course.id,
-                        "title": course.title,
+                        "title": course.to_dict(language=language)["title"],
                         "slug": course.slug,
                         "category": course.category,
                         "difficulty": course.difficulty,
@@ -624,7 +647,8 @@ class UserProgressView(MethodView):
                 return jsonify(
                     progress={
                         "total_xp": int(total_xp),
-                        "total_coins": int(total_coins),
+                        "total_coins": int(user.shark_coins),
+                        "shark_coins": int(user.shark_coins),
                         "completed_activities_count": int(completed_activities_count),
                         "enrolled_courses": courses_progress,
                     }
@@ -737,6 +761,8 @@ class UserProgressSyncView(MethodView):
                         )
                         if enrollment and not enrollment.completed_at:
                             enrollment.completed_at = now
+
+                user.shark_coins += total_new_coins
 
             return jsonify(
                 status="ok",
