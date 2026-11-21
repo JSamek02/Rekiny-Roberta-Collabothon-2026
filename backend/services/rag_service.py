@@ -14,6 +14,36 @@ from services.gemini_service import GeminiService
 CACHE_FILE = Path(__file__).resolve().parent / ".embedding_cache.json"
 
 
+POLISH_STOPWORDS = {
+    "ach", "aj", "albo", "bardzo", "bez", "bo", "by", "byli", "byliby", "byliście",
+    "był", "była", "byłaby", "byłoby", "było", "były", "będzie", "będą",
+    "cali", "cała", "cały", "ci", "cię", "ciebie", "co", "cóż", "czy", "czemu",
+    "dla", "dlaczego", "do", "dobrze", "dokąd", "dość", "dużo", "dwa", "dwaj", "dwie",
+    "dwoje", "dziś", "dzisiaj", "gdy", "gdyby", "gdyż", "gdzie", "go", "ich", "ile",
+    "im", "inna", "inne", "inny", "innych", "iż", "ja", "ją", "jak", "jaka", "jaki",
+    "jakich", "jakie", "jakiś", "jako", "jakoś", "je", "jeden", "jedna", "jedno",
+    "jednak", "jednakże", "jego", "jej", "jemu", "jest", "jestem", "jesteście",
+    "jesteśmy", "jeśli", "jeżeli", "już", "każdy", "kiedy", "kilka", "kim",
+    "kto", "która", "które", "którego", "której", "który", "których", "którym",
+    "którzy", "ku", "ma", "mają", "mam", "mamy", "mało", "mnie", "mną", "może",
+    "moim", "mój", "moja", "moje", "można", "musi", "mu", "my", "na", "nad", "nam",
+    "nami", "nas", "nasi", "nasz", "nasza", "nasze", "naszego", "naszych", "natomiast",
+    "nawet", "nic", "nich", "nie", "niego", "niej", "niemu", "nigdy", "nim",
+    "niż", "no", "o", "obok", "od", "około", "on", "ona", "one", "oni", "ono", "oraz",
+    "oto", "pan", "pana", "pani", "po", "pod", "podczas", "pomimo", "ponad", "ponieważ",
+    "powinien", "powinna", "powinny", "poza", "prawie", "przecież", "przed", "przede",
+    "przez", "przy", "roku", "również", "sam", "sama", "są", "się", "skąd", "sobie",
+    "sobą", "sposób", "swoje", "ta", "tak", "taki", "takie", "także", "tam", "te",
+    "tego", "tej", "temu", "ten", "teraz", "też", "to", "tobie", "tobą", "toteż",
+    "totem", "trzeba", "tu", "tutaj", "twoim", "twój", "twoja", "twoje", "twym",
+    "twych", "ty", "tych", "tylko", "tym", "u", "w", "wam", "wami", "was", "wasi",
+    "wasz", "wasza", "wasze", "we", "więc", "wszystek", "wszyscy", "wszystkich",
+    "wszystkie", "wszystkim", "wszystko", "wtedy", "wy", "właśnie", "z", "za",
+    "zapewne", "zawsze", "ze", "zł", "znowu", "znów", "został", "żaden", "żadna",
+    "żadne", "żadnych", "że", "żeby"
+}
+
+
 # Core Curated Finance Knowledge Base (Rekiny Roberta / Commerzbank Finance Quest)
 CURATED_FINANCE_DOCUMENTS = [
     {
@@ -189,7 +219,7 @@ class RagService:
 
     def _tokenize(self, text: str) -> set[str]:
         words = re.findall(r"\w+", text.lower())
-        return {w for w in words if len(w) > 2}
+        return {w for w in words if len(w) > 2 and w not in POLISH_STOPWORDS}
 
     def _lexical_score(self, query: str, doc_text: str, keywords: Optional[List[str]] = None) -> float:
         q_tokens = self._tokenize(query)
@@ -297,15 +327,20 @@ class RagService:
                     # Blend semantic (70%) and lexical (30%)
                     final_score = 0.7 * sem_score + 0.3 * lex_score
 
-            scored_docs.append((final_score, doc))
+            scored_docs.append((final_score, lex_score, doc))
 
         # Sort descending by score
         scored_docs.sort(key=lambda x: x[0], reverse=True)
 
         results = []
-        for score, doc in scored_docs[:top_k]:
-            doc_copy = dict(doc)
-            doc_copy["score"] = round(float(score), 4)
-            results.append(doc_copy)
+        for score, lex_s, doc in scored_docs[:top_k]:
+            # Filter out irrelevant documents:
+            # If there is lexical match, require score >= 0.20.
+            # If purely semantic without any keyword match, require strong confidence (>= 0.45).
+            min_score = 0.20 if lex_s > 0 else 0.45
+            if score >= min_score:
+                doc_copy = dict(doc)
+                doc_copy["score"] = round(float(score), 4)
+                results.append(doc_copy)
 
         return results

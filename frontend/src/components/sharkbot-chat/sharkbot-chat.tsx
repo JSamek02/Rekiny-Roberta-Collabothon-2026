@@ -189,14 +189,30 @@ export const SharkbotChat = () => {
           botMessage.id,
         );
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('[Sharkbot] Chat error:', error);
+      let feedbackText = t('error');
+
+      if (error && typeof error === 'object') {
+        const errObj = error as {
+          data?: { error?: string };
+          response?: { data?: { error?: string } };
+          message?: string;
+        };
+        const backendError = errObj.data?.error || errObj.response?.data?.error;
+        if (typeof backendError === 'string' && backendError.trim()) {
+          feedbackText = backendError;
+        } else if (typeof errObj.message === 'string' && !errObj.message.startsWith('[API] HTTP')) {
+          feedbackText = errObj.message;
+        }
+      }
+
       setMessages((previous) => [
         ...previous,
         {
           id: nextId('error'),
           sender: 'assistant',
-          text: t('error'),
+          text: feedbackText,
           timestamp: formatTime(new Date()),
         },
       ]);
