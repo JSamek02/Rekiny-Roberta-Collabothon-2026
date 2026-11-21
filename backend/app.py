@@ -59,7 +59,7 @@ def allow_frontend_origin(response):
         response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
         response.vary.add("Origin")
     if request.path.startswith((
-        "/api/courses", "/api/lessons", "/api/activities", "/api/user/progress", "/api/auth/*",
+        "/api/*",
     )):
         response.vary.add("Accept-Language")
     return response
