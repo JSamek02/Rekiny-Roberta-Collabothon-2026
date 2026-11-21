@@ -41,6 +41,8 @@ export class ApiClient {
   /** Returns merged default config with given options */
   private buildRequestOptions(options: RequestInit): RequestInit {
     return {
+      // Defaults (e.g. `credentials: 'include'` for the session cookie) can be overridden per request.
+      ...this.config.defaultOptions,
       ...options,
       next: { ...this.config.defaultOptions.next, ...options.next },
       headers: { ...this.config.defaultHeaders, ...options.headers },

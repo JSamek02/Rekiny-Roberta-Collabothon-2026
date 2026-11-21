@@ -123,7 +123,9 @@
         "user": "Signed in",
         "creator": "Creator",
         "partner": "Partner"
-      }
+      },
+      "xp": "XP",
+      "experience": "Your experience points (EXP)"
     },
     "login-view": {
       "kicker": "Welcome aboard!",
