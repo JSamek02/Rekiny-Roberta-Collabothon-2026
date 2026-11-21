@@ -34,6 +34,7 @@ export default function Home() {
           href={routes.learningCategory('economics')}
         />
       </div>
+      <StockMarketHeroWidget />
       <ChatbotBanner />
     </main>
   );

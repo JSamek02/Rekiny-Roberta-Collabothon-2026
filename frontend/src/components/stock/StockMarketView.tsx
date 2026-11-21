@@ -22,6 +22,15 @@ import { AllocationSliders } from './AllocationSliders';
 import { QuarterHistoryChart } from './QuarterHistoryChart';
 import { QuarterNewsCard } from './QuarterNewsCard';
 import { EventDebriefModal } from './EventDebriefModal';
+import {
+  RotateCcw,
+  TrendingUp,
+  TrendingDown,
+  Scale,
+  ArrowRight,
+  ArrowLeft,
+  Loader2,
+} from 'lucide-react';
 
 export const StockMarketView: React.FC = () => {
   const [events, setEvents] = useState<SimulationEventSummary[]>([]);
