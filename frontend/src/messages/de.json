@@ -1,0 +1,124 @@
+{
+  "components": {
+    "learning-category": {
+      "back": "Zurück zum Lernen",
+      "category": "Kategorie",
+      "progress": "Fortschritt",
+      "lesson-count": "{count}/{total, plural, =1 {# Lektion} other {# Lektionen}}",
+      "roadmap": "Lektions-Roadmap",
+      "lesson-number": "Lektion #{number}",
+      "open-lesson": "Lektion {number} öffnen",
+      "completed": "Abgeschlossen",
+      "next": "Deine nächste Lektion",
+      "available": "Lektion öffnen",
+      "categories": {
+        "stocks-bonds": "Aktien und Anleihen",
+        "investing": "Investieren",
+        "budgeting": "Budgetplanung",
+        "economics": "Wirtschaft"
+      },
+      "lessons": {
+        "lesson-1": "Finanzielle Grundlagen",
+        "lesson-2": "Risiko verstehen",
+        "lesson-3": "Wissen erweitern",
+        "lesson-4": "Eine Strategie entwickeln",
+        "lesson-5": "Die letzte Herausforderung"
+      }
+    },
+    "lesson-category-nav-item": {
+      "progress": "Fortschritt",
+      "lesson-count": "{count}/{total, plural, =1 {# Lektion} other {# Lektionen}}"
+    },
+    "chat-fab": {
+      "label": "Sharkbot-Chat öffnen"
+    },
+    "learning-activity": {
+      "loading": "Aktivität wird geladen…",
+      "loading-courses": "Kurse werden geladen…",
+      "loading-course": "Kurs wird geladen…",
+      "loading-lesson": "Lektion wird geladen…",
+      "load-error": "Die Lernmaterialien konnten nicht geladen werden. Bitte versuche es gleich noch einmal.",
+      "action-error": "Dein Fortschritt konnte nicht gespeichert werden. Bitte versuche es erneut.",
+      "retry": "Erneut versuchen",
+      "learning-kicker": "Lernbereich",
+      "learning-title": "Schritt für Schritt lernen",
+      "learning-description": "Lies Materialien, sieh dir Videos an und teste dein Wissen in Quizzen.",
+      "course-kicker": "Kurs",
+      "lesson-kicker": "Lektion {number}",
+      "lesson-activities-description": "Wähle eine Aktivität, um weiterzulernen.",
+      "lesson-not-found": "Diese Lektion wurde nicht gefunden.",
+      "no-activities": "Diese Lektion hat noch keine Aktivitäten.",
+      "back-to-learning": "Zurück zu den Kursen",
+      "back-to-lesson": "Zurück zur Lektion",
+      "back-to-category": "Zurück zur Roadmap",
+      "course-meta": "{lessons, plural, =1 {# Lektion} other {# Lektionen}} · {minutes} Min.",
+      "lesson-meta": "{activities, plural, =1 {# Aktivität} other {# Aktivitäten}} · {xp} XP",
+      "activity-meta": "{minutes} Min. · {xp} XP · {coins} SC",
+      "article": "Artikel",
+      "quiz": "Quiz",
+      "video": "Video",
+      "question-number": "Frage {current} von {total}",
+      "check-quiz": "Quiz prüfen",
+      "checking": "Wird geprüft…",
+      "quiz-passed": "Quiz bestanden!",
+      "quiz-not-passed": "Noch nicht ganz",
+      "quiz-score": "Richtige Antworten: {correct}/{total} ({score}%)",
+      "try-again": "Erneut versuchen",
+      "mark-read": "Als gelesen markieren",
+      "mark-watched": "Als gesehen markieren",
+      "saving": "Wird gespeichert…",
+      "completed": "Abgeschlossen",
+      "activity-completed": "Aktivität abgeschlossen!",
+      "reward-earned": "Du erhältst {xp} XP und {coins} SharkCoins.",
+      "return-to-lesson": "Zurück zur Lektion",
+      "video-unavailable": "Für diese Aktivität wurde noch kein Video hinzugefügt.",
+      "video-not-supported": "Dein Browser unterstützt dieses Video nicht."
+    },
+    "sharkbot-chat": {
+      "back": "Zurück",
+      "title-strike": "Chatbot?",
+      "title": "Sharkbot!",
+      "intro": "Wenn du Fragen hast, frag einfach. Ich beantworte auch die schwierigsten.",
+      "voice": "Stimme",
+      "listen": "Anhören",
+      "stop": "Stopp",
+      "sources": "Quellen",
+      "lessons": "Empfohlene Lektionen",
+      "placeholder": "Frage nach Finanzen, Aktien, ETFs…",
+      "placeholder-listening": "Ich höre zu…",
+      "send": "Senden",
+      "mic-start": "Per Sprache fragen",
+      "mic-stop": "Aufnahme stoppen",
+      "mic-unsupported": "Diese Browser unterstützt keine Spracherkennung. Gib deine Frage bitte ein.",
+      "waiting-title": "Einen Moment!",
+      "waiting-subtitle": "Wir schwimmen noch…",
+      "error": "Smoliś ist der König der Geschäftswelt",
+      "suggestions-title": "Frag zum Beispiel",
+      "suggestions": {
+        "stocks-bonds": "Was ist der Unterschied zwischen Aktien und Anleihen?",
+        "compound-interest": "Wie funktioniert der Zinseszins?",
+        "emergency-fund": "Wie baue ich einen Notgroschen auf?",
+        "etf": "Was sind ETFs und wie fange ich an?",
+        "ike-ikze": "Wie funktionieren IKE und IKZE in Polen?"
+      }
+    }
+  },
+  "global": {
+    "routes": {
+      "home": "Startseite",
+      "learning": "Lernen",
+      "ranking": "Rangliste",
+      "stock": "Börse",
+      "profile": "Profil"
+    },
+    "form": {
+      "validation": {
+        "required": "Pflichtfeld",
+        "email-invalid": "Ungültiges Format",
+        "phone-invalid": "Ungültiges Format",
+        "min": "Gib mindestens {count, plural, =1 {# Zeichen} other {# Zeichen}} ein",
+        "max": "Gib höchstens {count, plural, =1 {# Zeichen} other {# Zeichen}} ein"
+      }
+    }
+  }
+}

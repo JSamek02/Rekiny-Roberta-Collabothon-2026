@@ -52,7 +52,7 @@ Compose uruchamia Cloud SQL Auth Proxy dla instancji `encoded-breaker-515313-h9:
 
 Jeśli działa stary kontener `postgres` z poprzedniej konfiguracji, może nadal działać jako osierocony kontener. Zatrzymaj go osobno, gdy nie będzie potrzebny; nie usuwaj jego wolumenu, jeśli są tam potrzebne dane.
 
-Polecenie `init-db` tworzy brakujące tabele, w tym `activity_videos` dla plików MP4, uzupełnia istniejącą tabelę `users` o pola `preferred_language`, `shark_coins` oraz `role` (typ konta, istniejące konta dostają `user`), a tabele kursów, lekcji i aktywności o `translations`. Dla istniejących użytkowników saldo jest jednorazowo wyliczane z dotychczas zdobytych monet.
+Polecenie `init-db` tworzy brakujące tabele, w tym `activity_videos` dla plików MP4, uzupełnia istniejącą tabelę `users` o pola `preferred_language`, `shark_coins`, `experience_points` oraz `role` (typ konta, istniejące konta dostają `user`), a tabele kursów, lekcji i aktywności o `translations`. Dla istniejących użytkowników salda są jednorazowo wyliczane z dotychczas zdobytych nagród aktywności.
 
 Testy: `python -m unittest`. Testy operacji na użytkownikach używają bazy SQLite w pamięci.
 
@@ -64,7 +64,7 @@ Po utworzeniu schematu załaduj przykładowe kursy, lekcje i aktywności:
 psql "$DATABASE_URL" -f database/seed.sql
 ```
 
-Plik `database/seed.sql` jest przeznaczony dla PostgreSQL i można go uruchamiać wielokrotnie — nie usuwa danych użytkowników ani nie nadpisuje istniejących kursów. Dodaje przykładowe kursy, lekcje, artykuły, quizy, tłumaczenia oraz postęp konta `mock:demo`. Wydarzenia giełdowe pozostają w `services/simulation_data.py`, ponieważ aktualny moduł symulacji odczytuje je wyłącznie z pamięci, a nie z bazy danych.
+Plik `database/seed.sql` jest przeznaczony dla PostgreSQL i można go uruchamiać wielokrotnie — nie usuwa danych użytkowników ani nie nadpisuje istniejących kursów. Dodaje przykładowe kursy, lekcje, artykuły, quizy, tłumaczenia oraz postęp konta `mock:demo`. Zasila także cztery istniejące roadmapy frontendu (`stocks-bonds`, `investing`, `budgeting`, `economics`): każda dostaje pięć lekcji, a każda lekcja artykuł, quiz i aktywność wideo. Wydarzenia giełdowe pozostają w `services/simulation_data.py`, ponieważ aktualny moduł symulacji odczytuje je wyłącznie z pamięci, a nie z bazy danych.
 
 Jeżeli chcesz wyczyścić całą bazę aplikacji i załadować od nowa dane demonstracyjne w Google Cloud SQL Studio, najpierw wykonaj `database/cloud_sql_reset.sql`, a następnie `database/seed.sql`. Pierwszy skrypt trwale usuwa także użytkowników i sesje.
 
@@ -166,6 +166,20 @@ Dla aktywności obiekt języka może również zawierać pełne `content`; w ten
 ```
 
 Identyfikatory pytań i opcji muszą pozostać takie same jak w polskiej treści. Poprawne odpowiedzi oraz próg zaliczenia pozostają w bazowej polskiej strukturze, więc ocena quizu nie zależy od języka klienta.
+
+## Obrazy w artykułach i quizach
+
+Obrazy są lekkimi metadanymi JSON, nie binariami w bazie. Główny obraz artykułu zapisz w `content.image`, a obraz pytania quizu w `content.questions[].image`:
+
+```json
+{
+  "url": "/img/example.png",
+  "alt": "Opis alternatywny",
+  "caption": "Opcjonalny podpis"
+}
+```
+
+Artykuł może zawierać więcej obrazów w Markdown jako osobne linie, np. `![Opis](/img/example.png)`. Frontend akceptuje ścieżki zaczynające się od `/` (zasoby z `frontend/public`) i pełne adresy `http(s)`. W tłumaczeniu można podmienić obraz przez `translations.en.content.image` lub obraz danego pytania. Gdy tłumaczenie pytania nie ma własnego obrazu, backend zwraca obraz z wersji bazowej.
 
 ## Filmy MP4 w bazie
 

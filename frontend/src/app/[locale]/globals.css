@@ -20,6 +20,18 @@
   --color-grey-400: #877777;
   --color-grey-600: #565656;
 
+  --color-green-50: #ecfdf3;
+  --color-green-500: #16a34a;
+  --color-green-600: #15803d;
+  --color-green-800: #166534;
+
+  --color-red-50: #fef2f2;
+  --color-red-300: #fca5a5;
+  --color-red-800: #991b1b;
+
+  --color-amber-50: #fffbeb;
+  --color-amber-300: #fcd34d;
+
   --shadow-bottom-nav: 0 1px 8px rgba(0, 0, 0, 0.25);
   --drop-shadow-outline:
     0 1px 0px var(--tw-shadow-color, #0003), 1px 0 0px var(--tw-shadow-color, #0003),
