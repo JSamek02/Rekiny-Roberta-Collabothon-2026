@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 
 type LessonCategoryHeadingProps = {
@@ -8,13 +8,13 @@ type LessonCategoryHeadingProps = {
   total: number;
 };
 
-export const LessonCategoryHeading = async ({
+export const LessonCategoryHeading = ({
   title,
   icon,
   completed,
   total,
 }: LessonCategoryHeadingProps) => {
-  const t = await getTranslations('components.learning-category');
+  const t = useTranslations('components.learning-category');
   const progress = total > 0 ? Math.min(100, Math.round((completed / total) * 100)) : 0;
 
   return (

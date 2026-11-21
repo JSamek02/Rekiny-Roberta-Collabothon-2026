@@ -171,11 +171,28 @@ class CoursesApiTest(unittest.TestCase):
         self.assertEqual(c["id"], self.course_id)
         self.assertEqual(len(c["lessons"]), 1)
         self.assertEqual(len(c["lessons"][0]["activities"]), 3)
+        self.assertEqual(c["lessons"][0]["activities"][0]["progress_status"], "not_started")
 
         # By Slug
         res_slug = self.client.get("/api/courses/podstawy-gieldy")
         self.assertEqual(res_slug.status_code, 200)
         self.assertEqual(res_slug.get_json()["course"]["id"], self.course_id)
+
+    def test_course_detail_includes_started_activity_progress(self):
+        self.set_auth_cookie()
+        with Session(self.engine) as db:
+            db.add(UserActivityProgress(
+                user_id=self.user_id,
+                activity_id=self.quiz_id,
+                status="started",
+            ))
+            db.commit()
+
+        res = self.client.get(f"/api/courses/{self.course_id}")
+        self.assertEqual(res.status_code, 200)
+        activities = res.get_json()["course"]["lessons"][0]["activities"]
+        self.assertEqual(activities[0]["progress_status"], "not_started")
+        self.assertEqual(activities[2]["progress_status"], "started")
 
     def test_course_enroll(self):
         # Unauthenticated: allowed for local storage tracking

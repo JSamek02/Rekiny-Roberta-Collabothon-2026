@@ -217,19 +217,17 @@ class CourseDetailView(MethodView):
                 )
                 lessons = db.scalars(lessons_stmt).all()
 
-                completed_activity_ids = set()
+                activity_progress = {}
                 if user:
-                    user_completed = db.scalars(
-                        select(UserActivityProgress.activity_id)
+                    activity_progress = dict(db.execute(
+                        select(UserActivityProgress.activity_id, UserActivityProgress.status)
                         .join(Activity, Activity.id == UserActivityProgress.activity_id)
                         .join(Lesson, Lesson.id == Activity.lesson_id)
                         .where(
                             Lesson.course_id == course.id,
                             UserActivityProgress.user_id == user.id,
-                            UserActivityProgress.status == "completed",
                         )
-                    ).all()
-                    completed_activity_ids = set(user_completed)
+                    ).all())
 
                 lessons_data = []
                 total_activities = 0
@@ -241,10 +239,12 @@ class CourseDetailView(MethodView):
                     for act in lesson.activities:
                         total_activities += 1
                         act_dict = act.to_dict(include_content=False, language=language)
-                        is_comp = act.id in completed_activity_ids
+                        progress_status = activity_progress.get(act.id, "not_started")
+                        is_comp = progress_status == "completed"
                         if is_comp:
                             completed_activities += 1
                         act_dict["is_completed"] = is_comp
+                        act_dict["progress_status"] = progress_status
                         acts_data.append(act_dict)
                     l_dict["activities"] = acts_data
                     l_dict["is_completed"] = (
@@ -325,22 +325,21 @@ class LessonDetailView(MethodView):
                 if not lesson:
                     return jsonify(error="Lesson not found"), 404
 
-                completed_ids = set()
+                activity_progress = {}
                 if user:
-                    completed_ids = set(
-                        db.scalars(
-                            select(UserActivityProgress.activity_id).where(
-                                UserActivityProgress.user_id == user.id,
-                                UserActivityProgress.status == "completed",
-                            )
-                        ).all()
-                    )
+                    activity_progress = dict(db.execute(
+                        select(UserActivityProgress.activity_id, UserActivityProgress.status).where(
+                            UserActivityProgress.user_id == user.id,
+                        )
+                    ).all())
 
                 lesson_data = lesson.to_dict(language=language)
                 activities_data = []
                 for act in lesson.activities:
                     act_dict = act.to_dict(include_content=False, language=language)
-                    act_dict["is_completed"] = act.id in completed_ids
+                    progress_status = activity_progress.get(act.id, "not_started")
+                    act_dict["is_completed"] = progress_status == "completed"
+                    act_dict["progress_status"] = progress_status
                     activities_data.append(act_dict)
 
                 lesson_data["activities"] = activities_data

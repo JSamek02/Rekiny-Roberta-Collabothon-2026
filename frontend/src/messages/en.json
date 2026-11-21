@@ -15,6 +15,7 @@
       "lesson-number": "Lesson #{number}",
       "open-lesson": "Open lesson {number}",
       "completed": "Completed",
+      "in-progress": "In progress",
       "next": "Your next lesson",
       "available": "Open lesson",
       "categories": {

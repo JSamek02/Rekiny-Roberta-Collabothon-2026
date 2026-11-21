@@ -9,6 +9,7 @@
       "lesson-number": "Lektion #{number}",
       "open-lesson": "Lektion {number} öffnen",
       "completed": "Abgeschlossen",
+      "in-progress": "In Bearbeitung",
       "next": "Deine nächste Lektion",
       "available": "Lektion öffnen",
       "categories": {

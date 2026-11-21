@@ -195,7 +195,7 @@ Odpowiedź `200` zawiera `{"course": …}`. Poza polami `course` ma:
 - `lessons`: opublikowane lekcje z ich listą aktywności;
 - `total_activities`;
 - dla zalogowanego użytkownika `user_progress`, jak na liście kursów;
-- każda aktywność lekcji ma `is_completed`, a każda lekcja `is_completed`.
+- każda aktywność lekcji ma `is_completed` i `progress_status` (`not_started`, `started` lub `completed`), a każda lekcja `is_completed`.
 
 `404` oznacza brak kursu albo kurs nieopublikowany.
 
@@ -221,7 +221,7 @@ Zwraca opublikowaną lekcję oraz jej aktywności. Odpowiedź `200` ma formę:
     "id": 10,
     "course_id": 1,
     "title": "Lekcja 1",
-    "activities": [{"id": 100, "activity_type": "article", "is_completed": false}],
+    "activities": [{"id": 100, "activity_type": "article", "is_completed": false, "progress_status": "not_started"}],
     "is_completed": false
   }
 }

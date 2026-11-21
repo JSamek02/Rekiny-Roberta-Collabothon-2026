@@ -1,7 +1,8 @@
-import { Link } from '@/i18n/navigation';
 import { BooksIcon } from '@/icons/books';
+import { Link } from '@/i18n/navigation';
 import { routes } from '@/utils/routes';
-import { getTranslations } from 'next-intl/server';
+import { useTranslations } from 'next-intl';
+import { type LessonStatus } from '@/components/lessons-list/lesson-roadmap-types';
 
 type LessonItemProps = {
   category: string;
@@ -9,16 +10,16 @@ type LessonItemProps = {
   title: string;
   number: number;
   side: 'left' | 'right';
-  status: 'read' | 'unread';
-  isNext: boolean;
+  status: LessonStatus;
   isLast: boolean;
 };
 
-export const LessonItem = async ({
-  category, slug, title, number, side, status, isNext, isLast,
+export const LessonItem = ({
+  category, slug, title, number, side, status, isLast,
 }: LessonItemProps) => {
-  const t = await getTranslations('components.learning-category');
-  const isRead = status === 'read';
+  const t = useTranslations('components.learning-category');
+  const isCompleted = status === 'completed';
+  const isInProgress = status === 'in-progress';
 
   return (
     <li className="relative">
@@ -52,14 +53,14 @@ export const LessonItem = async ({
           aria-hidden="true"
           className={[
             'flex size-[72px] shrink-0 items-center justify-center rounded-full border-4 border-white ring-2 ring-black transition-transform group-hover:-translate-y-1',
-            isRead
+            isCompleted
               ? 'bg-[#16a34a] text-white'
-              : isNext
+              : isInProgress
                 ? 'bg-blue-500 text-white'
                 : 'bg-white text-blue-500',
           ].join(' ')}
         >
-          {isRead ? (
+          {isCompleted ? (
             <svg viewBox="0 0 24 24" fill="none" className="size-7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="m5 12 4 4L19 6" />
             </svg>
@@ -74,7 +75,7 @@ export const LessonItem = async ({
           </span>
           <span className="mt-1 text-sm leading-snug text-grey-600">{title}</span>
           <span className="sr-only">
-            {isRead ? t('completed') : isNext ? t('next') : t('available')}
+            {isCompleted ? t('completed') : isInProgress ? t('in-progress') : t('available')}
           </span>
         </span>
       </Link>
