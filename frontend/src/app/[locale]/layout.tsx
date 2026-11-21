@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${poppinsFont.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-blue-50 font-sans isolate">
+      <body className="min-h-full overflow-x-clip flex flex-col bg-blue-50 font-sans isolate">
         <NextIntlClientProvider>
           <QueryClientProvider>
             <Header />

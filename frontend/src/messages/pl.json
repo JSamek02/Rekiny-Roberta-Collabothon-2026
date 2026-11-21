@@ -1,5 +1,11 @@
 {
   "components": {
+    "chatbot-banner": {
+      "heading-strike-through": "Chatbot?",
+      "heading": "Sharkbot!",
+      "description": "Jeśli masz jakiekolwiek pytania, pytaj śmiało, a ja odpowiem na twoje najtrudniejsze pytania.",
+      "cta": "Otwórz chat"
+    },
     "learning-category": {
       "back": "Wróć do nauki",
       "category": "Kategoria",
