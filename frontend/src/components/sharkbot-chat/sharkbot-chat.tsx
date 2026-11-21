@@ -1,7 +1,7 @@
 'use client';
 
-import { fetchVoices, sendChatMessage, synthesizeTTS } from '@/api/chat';
-import { ChatMessage, VoiceOption } from '@/api/types/chat';
+import { sendChatMessage, synthesizeTTS } from '@/api/chat';
+import { ChatMessage } from '@/api/types/chat';
 import { FormattedText } from '@/components/sharkbot-chat/formatted-text';
 import { Link } from '@/i18n/navigation';
 import { ArrowLeftIcon } from '@/icons/arrow-left';
@@ -14,7 +14,8 @@ import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
 
-const DEFAULT_VOICE = 'Puck';
+/** Sharkbot always speaks with the Gemini TTS voice "Algieba". */
+const VOICE = 'Algieba';
 const HISTORY_LIMIT = 6;
 const SUGGESTION_KEYS = ['stocks-bonds', 'compound-interest', 'emergency-fund', 'etf', 'ike-ikze'] as const;
 
@@ -48,8 +49,6 @@ export const SharkbotChat = () => {
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
-  const [voices, setVoices] = useState<VoiceOption[]>([]);
-  const [selectedVoice, setSelectedVoice] = useState(DEFAULT_VOICE);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
@@ -61,16 +60,6 @@ export const SharkbotChat = () => {
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const idCounterRef = useRef(0);
-
-  // Load voice list from the backend
-  useEffect(() => {
-    fetchVoices()
-      .then((data) => {
-        if (data.voices?.length) setVoices(data.voices);
-        if (data.default_voice) setSelectedVoice(data.default_voice);
-      })
-      .catch((err) => console.warn('[Sharkbot] Could not load voices:', err));
-  }, []);
 
   // Keep the composer just above the sticky bottom navigation
   useEffect(() => {
@@ -138,7 +127,7 @@ export const SharkbotChat = () => {
 
     try {
       setPlayingId(msg.id);
-      const blob = await synthesizeTTS(msg.text, selectedVoice);
+      const blob = await synthesizeTTS(msg.text, VOICE);
       const url = URL.createObjectURL(blob);
       audioUrlsRef.current.set(msg.id, url);
       playSource(url, msg.id);
@@ -171,7 +160,7 @@ export const SharkbotChat = () => {
     try {
       const res = await sendChatMessage({
         message: text,
-        voice: selectedVoice,
+        voice: VOICE,
         voice_enabled: voiceEnabled,
         history,
       });
@@ -273,20 +262,6 @@ export const SharkbotChat = () => {
               />
               {t('voice')}
             </label>
-            {voices.length > 0 && (
-              <select
-                value={selectedVoice}
-                onChange={(e) => setSelectedVoice(e.target.value)}
-                aria-label={t('voice-select')}
-                className="rounded-md bg-blue-50 px-1.5 py-1 text-blue-950 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
-              >
-                {voices.map((v) => (
-                  <option key={v.id} value={v.id}>
-                    {v.name}
-                  </option>
-                ))}
-              </select>
-            )}
           </div>
         </div>
       </div>

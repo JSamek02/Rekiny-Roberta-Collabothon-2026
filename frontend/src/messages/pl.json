@@ -5,7 +5,6 @@
       "lesson-count": "{count}/{total, plural, =1 {# lekcja} few {# lekcje} other {# lekcji}}"
     },
     "chat-fab": {
-      "cta": "Otwórz czat",
       "label": "Otwórz czat z Sharkbotem"
     },
     "sharkbot-chat": {
@@ -14,7 +13,6 @@
       "title": "Sharkbot!",
       "intro": "Jeśli masz pytania, śmiało pytaj, a odpowiem nawet na te najtrudniejsze.",
       "voice": "Głos",
-      "voice-select": "Wybierz głos",
       "listen": "Odsłuchaj",
       "stop": "Zatrzymaj",
       "sources": "Źródła",
