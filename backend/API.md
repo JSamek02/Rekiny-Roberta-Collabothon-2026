@@ -456,6 +456,28 @@ Zwraca metadane wbudowanej bazy wiedzy RAG. Nie przyjmuje danych ani nie wymaga 
 
 Odpowiedź `200`: `{"count": 3, "topics": [{"id":"…","title":"…","category":"…","keywords":[…],"related_course_slug":"…"}]}`.
 
+## Ranking
+
+### `GET /api/ranking`
+
+Ranking użytkowników posortowany malejąco po `experience_points`. Nie wymaga sesji. Zwraca tylko dane publiczne (bez e-maila). Ten sam wynik XP oznacza to samo miejsce (`1, 2, 2, 4`); w remisie wcześniej założone konto jest wyżej na liście. Poza trybem `mock` konta demonstracyjne są pomijane.
+
+Parametr query `limit` (domyślnie `50`, zakres `1–100`).
+
+Odpowiedź `200`:
+
+```json
+{
+  "ranking": [
+    {"rank": 1, "user_id": 7, "name": "Jan", "picture": "https://…", "experience_points": 340}
+  ],
+  "total_users": 12,
+  "current_user": {"rank": 5, "user_id": 3, "name": "Ola", "picture": null, "experience_points": 120}
+}
+```
+
+`current_user` to pozycja zalogowanego użytkownika (także spoza `limit`); dla gościa ma wartość `null`. `503` przy braku połączenia z bazą.
+
 ## Symulacja inwestowania
 
 Symulacja nie jest obecnie zapisywana w bazie: jej sesja jest pamięcią procesu backendu. Do rozdzielenia sesji przekaż `X-Simulation-Session-Id` albo query parameter `session_id`. Bez nich używany jest wspólny klucz `default_user`; restart backendu kasuje wszystkie takie sesje.
