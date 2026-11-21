@@ -11,6 +11,9 @@ from sqlalchemy.types import JSON
 
 JsonType = JSON().with_variant(JSONB, "postgresql")
 SUPPORTED_LANGUAGE_CODES = ("pl", "en", "de")
+# Typy zalogowanych kont. Niezalogowany (gość) to brak ważnej sesji, więc nie ma go w bazie.
+USER_ROLES = ("user", "creator", "partner")
+DEFAULT_USER_ROLE = "user"
 
 
 def get_translation(translations: dict[str, Any] | None, language: str) -> dict[str, Any]:
@@ -24,6 +27,9 @@ class Base(DeclarativeBase):
 
 class User(Base):
     __tablename__ = "users"
+    __table_args__ = (
+        CheckConstraint("role IN ('user', 'creator', 'partner')", name="ck_users_role"),
+    )
 
     id: Mapped[int] = mapped_column(BigInteger().with_variant(Integer, "sqlite"), Identity(), primary_key=True)
     google_sub: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
@@ -36,23 +42,33 @@ class User(Base):
     shark_coins: Mapped[int] = mapped_column(
         Integer, nullable=False, default=0, server_default="0"
     )
+    role: Mapped[str] = mapped_column(
+        String(16), nullable=False, default=DEFAULT_USER_ROLE, server_default=DEFAULT_USER_ROLE
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     @classmethod
-    def upsert(cls, db, userinfo):
-        statement = insert(cls).values(
+    def upsert(cls, db, userinfo, role=None):
+        """Tworzy lub aktualizuje konto. Rola zmienia się tylko, gdy zostanie jawnie podana
+        (konta demonstracyjne); przy logowaniu Google zostaje rola nadana w bazie."""
+        values = dict(
             google_sub=userinfo["sub"], email=userinfo.get("email"),
             name=userinfo.get("name"), picture=userinfo.get("picture"),
         )
+        if role is not None:
+            values["role"] = role
+        statement = insert(cls).values(**values)
+        update = {
+            "email": statement.excluded.email,
+            "name": statement.excluded.name,
+            "picture": statement.excluded.picture,
+            "updated_at": func.now(),
+        }
+        if role is not None:
+            update["role"] = statement.excluded.role
         statement = statement.on_conflict_do_update(
-            index_elements=[cls.google_sub],
-            set_={
-                "email": statement.excluded.email,
-                "name": statement.excluded.name,
-                "picture": statement.excluded.picture,
-                "updated_at": func.now(),
-            },
+            index_elements=[cls.google_sub], set_=update,
         ).returning(cls.id)
         return db.execute(statement).scalar_one()
 
@@ -60,7 +76,7 @@ class User(Base):
         return {
             "id": self.id, "email": self.email, "name": self.name,
             "picture": self.picture, "preferred_language": self.preferred_language,
-            "shark_coins": self.shark_coins, "created_at": self.created_at,
+            "shark_coins": self.shark_coins, "role": self.role, "created_at": self.created_at,
         }
 
 

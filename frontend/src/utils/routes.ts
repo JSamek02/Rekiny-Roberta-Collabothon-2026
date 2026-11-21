@@ -10,4 +10,5 @@ export const routes = {
   shop: '/shop',
   startingQuiz: '/starting-quiz',
   chat: '/chat',
+  login: '/login',
 } as const;

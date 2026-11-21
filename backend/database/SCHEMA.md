@@ -16,7 +16,7 @@ erDiagram
 
 | Tabela | Klucz / relacje | Najważniejsze dane |
 | --- | --- | --- |
-| `users` | `id`, unikalne `google_sub` | profil Google, `preferred_language`, saldo `shark_coins` |
+| `users` | `id`, unikalne `google_sub` | profil Google, `preferred_language`, saldo `shark_coins`, typ konta `role` (`user`, `creator`, `partner`) |
 | `user_sessions` | `token_hash`, `user_id → users` | skrót tokenu sesji i jej data wygaśnięcia |
 | `courses` | `id`, unikalne `slug` | dane kursu i JSON `translations` dla `pl/en/de` |
 | `lessons` | `id`, `course_id → courses` | kolejność, XP, publikacja i tłumaczenia |

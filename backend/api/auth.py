@@ -13,7 +13,7 @@ from sqlalchemy import delete, func, select
 from sqlalchemy.exc import SQLAlchemyError
 
 from database import database
-from database.models import SUPPORTED_LANGUAGE_CODES, User, UserSession
+from database.models import SUPPORTED_LANGUAGE_CODES, USER_ROLES, User, UserSession
 
 
 auth = Blueprint("auth", __name__)
@@ -26,17 +26,24 @@ oauth.register(
     client_kwargs={"scope": "openid email profile", "code_challenge_method": "S256"},
 )
 
-MOCK_SUB = "mock:demo"
+MOCK_SUB_PREFIX = "mock:"
+MOCK_SUB = f"{MOCK_SUB_PREFIX}demo"
+# Konta demonstracyjne dla każdego typu użytkownika (tylko tryb mock).
+MOCK_ACCOUNTS = {
+    "user": {"sub": MOCK_SUB, "email": "demo@example.invalid", "name": "Demo"},
+    "creator": {"sub": f"{MOCK_SUB_PREFIX}creator", "email": "creator@example.invalid", "name": "Demo Twórca"},
+    "partner": {"sub": f"{MOCK_SUB_PREFIX}partner", "email": "partner@example.invalid", "name": "Demo Partner"},
+}
 
 
 class LoginSession:
     @staticmethod
-    def create(userinfo, response, clear_oauth_session=False):
+    def create(userinfo, response, clear_oauth_session=False, role=None):
         session_token = secrets.token_urlsafe(32)
         token_hash = hashlib.sha256(session_token.encode()).hexdigest()
         try:
             with database() as db, db.begin():
-                user_id = User.upsert(db, userinfo)
+                user_id = User.upsert(db, userinfo, role=role)
                 db.add(UserSession(
                     token_hash=token_hash, user_id=user_id,
                     expires_at=datetime.now(timezone.utc) + timedelta(days=7),
@@ -95,8 +102,18 @@ class MockLogin(MethodView):
             return jsonify(error="Mock login is disabled"), 404
         if request.headers.get("X-Requested-With") != "XMLHttpRequest":
             return jsonify(error="Missing X-Requested-With header"), 403
-        userinfo = {"sub": MOCK_SUB, "email": "demo@example.invalid", "name": "Demo"}
-        return LoginSession.create(userinfo, jsonify(status="ok"))
+        data = request.get_json(silent=True)
+        role = data.get("role", "user") if isinstance(data, dict) else "user"
+        if role not in MOCK_ACCOUNTS:
+            return jsonify(error="Unknown role. Use one of: user, creator, partner"), 400
+        return LoginSession.create(MOCK_ACCOUNTS[role], jsonify(status="ok"), role=role)
+
+
+class AuthConfig(MethodView):
+    """Informuje frontend, który sposób logowania jest dostępny."""
+
+    def get(self):
+        return jsonify(mode=current_app.config["AUTH_MODE"], roles=list(USER_ROLES))
 
 
 def get_authenticated_user(db):
@@ -112,7 +129,7 @@ def get_authenticated_user(db):
         )
     )
     if current_app.config.get("AUTH_MODE") != "mock":
-        statement = statement.where(User.google_sub != MOCK_SUB)
+        statement = statement.where(~User.google_sub.startswith(MOCK_SUB_PREFIX))
     return db.execute(statement).scalar_one_or_none()
 
 
@@ -183,5 +200,6 @@ auth.add_url_rule("/api/auth/google", view_func=GoogleLogin.as_view("google_logi
 auth.add_url_rule("/api/auth/google/callback", view_func=GoogleCallback.as_view("google_callback"))
 auth.add_url_rule("/api/auth/mock", view_func=MockLogin.as_view("mock_login"))
 auth.add_url_rule("/api/auth/me", view_func=CurrentUser.as_view("current_user"))
+auth.add_url_rule("/api/auth/config", view_func=AuthConfig.as_view("auth_config"))
 auth.add_url_rule("/api/auth/preferences", view_func=UserPreferences.as_view("user_preferences"))
 auth.add_url_rule("/api/auth/logout", view_func=Logout.as_view("logout"))

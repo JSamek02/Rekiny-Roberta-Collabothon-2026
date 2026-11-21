@@ -12,7 +12,7 @@ from urllib.parse import parse_qs, urlparse
 
 from joserfc import jwt
 from joserfc.jwk import RSAKey
-from sqlalchemy import create_engine, inspect, select
+from sqlalchemy import create_engine, inspect, select, text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
@@ -269,6 +269,61 @@ with patch("dotenv.load_dotenv", side_effect=load_test_env):
 
         response = self.client.options("/api/auth/logout", headers={"Origin": "https://other.example"})
         self.assertNotIn("Access-Control-Allow-Origin", response.headers)
+
+    def test_auth_config_reports_mode_and_roles(self):
+        self.assertEqual(self.client.get("/api/auth/config").get_json(), {
+            "mode": "google", "roles": ["user", "creator", "partner"],
+        })
+        with patch.dict(app.config, {"AUTH_MODE": "mock"}):
+            self.assertEqual(self.client.get("/api/auth/config").get_json()["mode"], "mock")
+
+    def test_guest_has_no_user(self):
+        self.assertEqual(self.client.get("/api/auth/me").status_code, 401)
+
+    def test_mock_login_for_each_role(self):
+        headers = {"X-Requested-With": "XMLHttpRequest"}
+        with patch.dict(app.config, {"AUTH_MODE": "mock"}):
+            self.assertEqual(self.client.post("/api/auth/mock", headers=headers).status_code, 200)
+            self.assertEqual(self.client.get("/api/auth/me").get_json()["user"]["role"], "user")
+            for role in ("creator", "partner", "user"):
+                response = self.client.post("/api/auth/mock", headers=headers, json={"role": role})
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(self.client.get("/api/auth/me").get_json()["user"]["role"], role)
+            response = self.client.post("/api/auth/mock", headers=headers, json={"role": "admin"})
+            self.assertEqual(response.status_code, 400)
+        with Session(self.engine) as db:
+            self.assertEqual(len(db.scalars(select(User)).all()), 3)
+
+    def test_google_mode_rejects_every_mock_role_session(self):
+        headers = {"X-Requested-With": "XMLHttpRequest"}
+        with patch.dict(app.config, {"AUTH_MODE": "mock"}):
+            self.client.post("/api/auth/mock", headers=headers, json={"role": "partner"})
+            self.assertEqual(self.client.get("/api/auth/me").status_code, 200)
+        self.assertEqual(self.client.get("/api/auth/me").status_code, 401)
+
+    def test_google_login_creates_regular_user_and_keeps_assigned_role(self):
+        info = {"sub": "google-id", "email": "test@example.com", "email_verified": True, "name": "Test"}
+        with patch.object(oauth.google, "authorize_access_token", return_value={"userinfo": info}):
+            self.assertEqual(self.client.get("/api/auth/google/callback").status_code, 302)
+            self.assertEqual(self.client.get("/api/auth/me").get_json()["user"]["role"], "user")
+            with Session(self.engine) as db, db.begin():
+                db.scalar(select(User)).role = "creator"
+            self.assertEqual(self.client.get("/api/auth/google/callback").status_code, 302)
+        self.assertEqual(self.client.get("/api/auth/me").get_json()["user"]["role"], "creator")
+
+    def test_init_db_adds_role_to_existing_users(self):
+        Base.metadata.drop_all(self.engine)
+        with self.engine.begin() as connection:
+            connection.execute(text(
+                "CREATE TABLE users (id INTEGER PRIMARY KEY, google_sub TEXT NOT NULL UNIQUE, "
+                "email TEXT, name TEXT, picture TEXT, preferred_language VARCHAR(2) NOT NULL DEFAULT 'pl', "
+                "shark_coins INTEGER NOT NULL DEFAULT 0, created_at TIMESTAMP, updated_at TIMESTAMP)"
+            ))
+            connection.execute(text("INSERT INTO users (google_sub, email) VALUES ('google-id', 'a@example.com')"))
+        result = app.test_cli_runner().invoke(args=["init-db"])
+        self.assertEqual(result.exit_code, 0, result.output)
+        with Session(self.engine) as db:
+            self.assertEqual(db.scalar(select(User)).role, "user")
 
 
 if __name__ == "__main__":

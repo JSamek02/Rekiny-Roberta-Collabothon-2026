@@ -61,7 +61,7 @@ Rozpoczyna logowanie OAuth Google. Nie przyjmuje body. Odpowiedzią jest przekie
 
 ### `GET /api/auth/google/callback`
 
-Endpoint wywoływany wyłącznie przez Google po logowaniu. Przyjmuje parametry OAuth w query stringu. Tworzy albo aktualizuje użytkownika i sesję, a następnie przekierowuje na `FRONTEND_URL` (domyślnie `/api/auth/me`).
+Endpoint wywoływany wyłącznie przez Google po logowaniu. Przyjmuje parametry OAuth w query stringu. Tworzy albo aktualizuje użytkownika i sesję, a następnie przekierowuje na `FRONTEND_URL` (domyślnie `/api/auth/me`). Nowe konto dostaje typ `user`; ponowne logowanie nie zmienia nadanego typu.
 
 ### `POST /api/auth/mock`
 
@@ -73,7 +73,25 @@ Wymagany nagłówek:
 X-Requested-With: XMLHttpRequest
 ```
 
-Nie przyjmuje body. Zwraca `200` z `{"status":"ok"}` i ustawia sesję. W trybie Google zwraca `404`; bez wymaganego nagłówka `403`.
+Opcjonalne body JSON wybiera konto demonstracyjne danego typu (domyślnie `user`):
+
+```json
+{"role": "creator"}
+```
+
+Dozwolone wartości: `user`, `creator`, `partner`. Zwraca `200` z `{"status":"ok"}` i ustawia sesję; `400` dla nieznanego typu. W trybie Google zwraca `404`; bez wymaganego nagłówka `403`.
+
+### `GET /api/auth/config`
+
+Informuje frontend, który sposób logowania jest dostępny. Nie wymaga sesji.
+
+Odpowiedź `200`:
+
+```json
+{"mode": "google", "roles": ["user", "creator", "partner"]}
+```
+
+`mode` to `google` albo `mock`.
 
 ### `GET /api/auth/me`
 
@@ -90,12 +108,13 @@ Odpowiedź `200`:
     "picture": "https://…",
     "preferred_language": "pl",
     "shark_coins": 25,
+    "role": "user",
     "created_at": "2026-11-21T10:00:00+00:00"
   }
 }
 ```
 
-Bez sesji zwraca `401`.
+`role` to typ konta: `user` (zalogowany), `creator` (twórca) albo `partner`. Bez sesji zwraca `401` — użytkownik jest wtedy niezalogowany.
 
 ### `POST /api/auth/preferences`
 

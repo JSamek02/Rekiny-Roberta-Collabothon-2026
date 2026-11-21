@@ -39,7 +39,7 @@ def database():
 
 
 def upgrade_user_profile_columns():
-    """Add profile fields to databases created before language and coin support."""
+    """Add profile fields to databases created before language, coin and role support."""
     with engine.begin() as connection:
         columns = {column["name"] for column in inspect(connection).get_columns("users")}
 
@@ -61,6 +61,17 @@ def upgrade_user_profile_columns():
                     0
                 )
             """))
+
+        if "role" not in columns:
+            # Existing accounts become regular signed-in users.
+            connection.execute(text(
+                "ALTER TABLE users ADD COLUMN role VARCHAR(16) NOT NULL DEFAULT 'user'"
+            ))
+            if connection.dialect.name == "postgresql":
+                connection.execute(text(
+                    "ALTER TABLE users ADD CONSTRAINT ck_users_role "
+                    "CHECK (role IN ('user', 'creator', 'partner'))"
+                ))
 
 
 def upgrade_content_translation_columns():
