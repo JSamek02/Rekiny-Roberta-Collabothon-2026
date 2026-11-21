@@ -6,7 +6,7 @@ API we Flasku z bazą PostgreSQL w Google Cloud SQL. Docker Compose uruchamia Cl
 
 - `app.py` — konfiguracja aplikacji i rejestracja modułów API.
 - `api/` — widoki klasowe endpointów podzielone według funkcjonalności (`auth.py`, `health.py`). Kolejne funkcjonalności mogą mieć własne moduły i blueprinty.
-- `database/models.py` — modele SQLAlchemy: użytkownik i sesja logowania.
+- `database/models.py` — modele SQLAlchemy: użytkownik, sesja, preferencja języka i saldo SharkCoinów.
 - `database/` — połączenie z PostgreSQL i inicjalizacja tabel na podstawie modeli. `schema.sql` dokumentuje pierwotny schemat.
 - `tests/` — testy backendu.
 - `input/` — materiały opisujące projekt.
@@ -49,7 +49,7 @@ Compose uruchamia Cloud SQL Auth Proxy dla instancji `encoded-breaker-515313-h9:
 
 Jeśli działa stary kontener `postgres` z poprzedniej konfiguracji, może nadal działać jako osierocony kontener. Zatrzymaj go osobno, gdy nie będzie potrzebny; nie usuwaj jego wolumenu, jeśli są tam potrzebne dane.
 
-Polecenie `init-db` tworzy brakujące tabele na podstawie modeli ORM, ale nie zmienia już istniejących tabel. Zmiany istniejącego schematu wymagają migracji.
+Polecenie `init-db` tworzy brakujące tabele, uzupełnia istniejącą tabelę `users` o pola `preferred_language` oraz `shark_coins`, a tabele kursów, lekcji i aktywności o `translations`. Dla istniejących użytkowników saldo jest jednorazowo wyliczane z dotychczas zdobytych monet.
 
 Testy: `python -m unittest`. Testy operacji na użytkownikach używają bazy SQLite w pamięci.
 
@@ -85,7 +85,71 @@ Endpointy:
 - `GET /api/auth/google` — rozpoczęcie logowania; przekierowanie przeglądarki do Google.
 - `GET /api/auth/google/callback` — powrót z Google, obsługiwany przez backend.
 - `GET /api/auth/me` — bieżący użytkownik (`401`, jeśli brak ważnej sesji).
+- `POST /api/auth/preferences` — zapisuje preferowany język użytkownika: `pl`, `en` albo `de`.
 - `POST /api/auth/logout` — unieważnienie bieżącej sesji; wymagany nagłówek `X-Requested-With: XMLHttpRequest`.
+
+Przykład zapisu języka dla zalogowanego użytkownika:
+
+```js
+await fetch('/api/auth/preferences', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  credentials: 'include',
+  body: JSON.stringify({ preferred_language: 'de' }),
+});
+```
+
+`GET /api/auth/me` zwraca też `preferred_language` oraz bieżące `shark_coins`. Monety są zwiększane wyłącznie przy pierwszym zaliczeniu aktywności lub podczas importu nowego postępu z lokalnego magazynu.
+
+## Język treści
+
+Język odpowiedzi dla kursów, lekcji i aktywności jest wybierany wyłącznie z nagłówka `Accept-Language`, niezależnie od `preferred_language` w profilu. Backend obsługuje `pl`, `en` i `de`, także wraz z regionem, np. `de-DE`. Wybiera pierwszy obsługiwany język o dodatnim priorytecie; przy braku dopasowania zwraca polską treść.
+
+Dotyczy to:
+
+- `GET /api/courses`;
+- `GET /api/courses/:id-lub-slug`;
+- `GET /api/lessons/:lessonId`;
+- `GET /api/activities/:activityId`;
+- `POST /api/activities/:activityId/quiz-submit` — lokalizuje tekst omówienia odpowiedzi;
+- `GET /api/user/progress` — lokalizuje nazwy kursów.
+
+Polski tekst nadal znajduje się w głównych kolumnach. Tłumaczenia zapisuj w JSON-ie `translations` danego rekordu:
+
+```json
+{
+  "en": {
+    "title": "Stock market basics",
+    "description": "Learn the essentials of investing."
+  },
+  "de": {
+    "title": "Grundlagen der Börse",
+    "description": "Lerne die Grundlagen des Investierens."
+  }
+}
+```
+
+Dla aktywności obiekt języka może również zawierać pełne `content`; w ten sposób tłumaczy się artykuł, adres wideo lub pytania quizu:
+
+```json
+{
+  "de": {
+    "title": "Was ist eine Aktie?",
+    "content": {
+      "questions": [
+        {
+          "id": "q1",
+          "prompt": "Was bedeutet der Besitz einer Aktie?",
+          "options": [{"id": "a", "text": "Anteil am Unternehmen"}],
+          "explanation": "Eine Aktie steht für einen Eigentumsanteil."
+        }
+      ]
+    }
+  }
+}
+```
+
+Identyfikatory pytań i opcji muszą pozostać takie same jak w polskiej treści. Poprawne odpowiedzi oraz próg zaliczenia pozostają w bazowej polskiej strukturze, więc ocena quizu nie zależy od języka klienta.
 
 Przykład wylogowania z frontendu pod tym samym originem:
 

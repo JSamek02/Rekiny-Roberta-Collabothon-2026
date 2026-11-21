@@ -1,7 +1,7 @@
 import os
 
 import click
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.engine import URL, make_url
 from sqlalchemy.orm import Session
 
@@ -38,7 +38,49 @@ def database():
     return Session(engine)
 
 
+def upgrade_user_profile_columns():
+    """Add profile fields to databases created before language and coin support."""
+    with engine.begin() as connection:
+        columns = {column["name"] for column in inspect(connection).get_columns("users")}
+
+        if "preferred_language" not in columns:
+            connection.execute(text(
+                "ALTER TABLE users ADD COLUMN preferred_language VARCHAR(2) NOT NULL DEFAULT 'pl'"
+            ))
+
+        if "shark_coins" not in columns:
+            connection.execute(text(
+                "ALTER TABLE users ADD COLUMN shark_coins INTEGER NOT NULL DEFAULT 0"
+            ))
+            connection.execute(text("""
+                UPDATE users
+                SET shark_coins = COALESCE(
+                    (SELECT SUM(coins_earned)
+                     FROM user_activity_progress
+                     WHERE user_activity_progress.user_id = users.id),
+                    0
+                )
+            """))
+
+
+def upgrade_content_translation_columns():
+    """Add translation containers for courses, lessons, and activities."""
+    column_type = "JSONB" if engine.dialect.name == "postgresql" else "JSON"
+    default_value = "'{}'::jsonb" if engine.dialect.name == "postgresql" else "'{}'"
+
+    with engine.begin() as connection:
+        for table in ("courses", "lessons", "activities"):
+            columns = {column["name"] for column in inspect(connection).get_columns(table)}
+            if "translations" not in columns:
+                connection.execute(text(
+                    f"ALTER TABLE {table} ADD COLUMN translations "
+                    f"{column_type} NOT NULL DEFAULT {default_value}"
+                ))
+
+
 @click.command("init-db")
 def init_db():
     Base.metadata.create_all(engine)
+    upgrade_user_profile_columns()
+    upgrade_content_translation_columns()
     print("Baza danych jest gotowa.")

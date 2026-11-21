@@ -3,6 +3,37 @@
     "lesson-category-nav-item": {
       "progress": "Postęp",
       "lesson-count": "{count}/{total, plural, =1 {# lekcja} few {# lekcje} other {# lekcji}}"
+    },
+    "chat-fab": {
+      "label": "Otwórz czat z Sharkbotem"
+    },
+    "sharkbot-chat": {
+      "back": "Wróć",
+      "title-strike": "Chatbot?",
+      "title": "Sharkbot!",
+      "intro": "Jeśli masz pytania, śmiało pytaj, a odpowiem nawet na te najtrudniejsze.",
+      "voice": "Głos",
+      "listen": "Odsłuchaj",
+      "stop": "Zatrzymaj",
+      "sources": "Źródła",
+      "lessons": "Polecane lekcje",
+      "placeholder": "Zapytaj o finanse, giełdę, ETF-y...",
+      "placeholder-listening": "Słucham...",
+      "send": "Wyślij",
+      "mic-start": "Zapytaj głosem",
+      "mic-stop": "Zatrzymaj nagrywanie",
+      "mic-unsupported": "Ta przeglądarka nie obsługuje rozpoznawania mowy. Wpisz pytanie w pole tekstowe.",
+      "waiting-title": "Chwileczkę!",
+      "waiting-subtitle": "Jeszcze płyniemy...",
+      "error": "Ups! Rekin natrafił na mieliznę techniczną. Spróbuj ponownie za chwilę.",
+      "suggestions-title": "Zapytaj na przykład",
+      "suggestions": {
+        "stocks-bonds": "Czym się różni akcja od obligacji?",
+        "compound-interest": "Jak działa procent składany?",
+        "emergency-fund": "Jak zbudować poduszkę finansową?",
+        "etf": "Czym są ETF-y i jak zacząć?",
+        "ike-ikze": "Jak działa IKE i IKZE w Polsce?"
+      }
     }
   },
   "global": {
