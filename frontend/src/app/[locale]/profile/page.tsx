@@ -2,6 +2,7 @@ import { Avatar } from '@/components/avatar';
 import { LevelBar } from '@/components/level-bar';
 import { ProfileEditButton } from '@/components/profile/profile-edit-button';
 import { ProfileLogoutButton } from '@/components/profile/profile-logout-button';
+import { ProfileAchievements } from '@/components/profile/profile-achievements';
 import { RichText } from '@/components/rich-text/rich-text';
 import { ShopButton } from '@/components/shop';
 import { getTranslations } from 'next-intl/server';
@@ -21,6 +22,7 @@ export default async function Profile() {
         </h2>
         <LevelBar />
         <ShopButton />
+        <ProfileAchievements />
         <ProfileLogoutButton />
       </div>
     </main>
