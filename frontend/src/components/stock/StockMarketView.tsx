@@ -38,6 +38,7 @@ export const StockMarketView: React.FC = () => {
   const [isStepping, setIsStepping] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [showRebalance, setShowRebalance] = useState<boolean>(false);
+  const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
 
   // Load available events on mount
   useEffect(() => {
@@ -113,9 +114,13 @@ export const StockMarketView: React.FC = () => {
     }
   };
 
-  const handleResetSession = async () => {
+  const handleResetRequest = () => {
+    setShowResetConfirm(true);
+  };
+
+  const handleResetConfirm = async () => {
     if (!selectedEvent) return;
-    if (!confirm('Czy na pewno chcesz zresetować ten scenariusz i zacząć od nowa?')) return;
+    setShowResetConfirm(false);
     setIsLoading(true);
     setError(null);
     try {
@@ -130,6 +135,10 @@ export const StockMarketView: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleResetCancel = () => {
+    setShowResetConfirm(false);
   };
 
   const handleBackToEvents = () => {
@@ -236,7 +245,7 @@ export const StockMarketView: React.FC = () => {
         <EventDebriefModal
           debrief={session.debrief}
           eventTitle={SHORT_EVENT_TITLES[selectedEvent.id] || selectedEvent.title}
-          onRestart={handleResetSession}
+          onRestart={handleResetConfirm}
           onChooseOther={handleBackToEvents}
         />
         <QuarterHistoryChart history={session.history} />
@@ -266,9 +275,9 @@ export const StockMarketView: React.FC = () => {
           ← Scenariusze
         </button>
         <button
-          onClick={handleResetSession}
+          onClick={handleResetRequest}
           disabled={isStepping}
-          className="text-[11px] font-medium text-grey-600 hover:text-red-600 transition-colors"
+          className="text-[11px] font-medium text-grey-600 hover:text-blue-500 transition-colors cursor-pointer"
         >
           Resetuj 🔄
         </button>
@@ -399,6 +408,47 @@ export const StockMarketView: React.FC = () => {
           <span>Przejdź do kolejnego kwartału ➔</span>
         )}
       </button>
+
+      {/* In-app Reset Confirmation Modal */}
+      {showResetConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-blue-950/40 backdrop-blur-sm"
+            onClick={handleResetCancel}
+          />
+          {/* Dialog */}
+          <div className="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl p-6 flex flex-col gap-5 border border-blue-100">
+            {/* Icon + Title */}
+            <div className="flex flex-col items-center gap-2 text-center">
+              <div className="w-12 h-12 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-2xl">
+                🔄
+              </div>
+              <h3 className="text-base font-bold text-blue-950">Resetować scenariusz?</h3>
+              <p className="text-xs text-grey-600 leading-relaxed">
+                Cały postęp w tym scenariuszu zostanie utracony i zaczniesz od nowa z domyślnym portfelem.
+              </p>
+            </div>
+            {/* Actions */}
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={handleResetCancel}
+                className="flex-1 py-3 px-4 rounded-xl bg-blue-50 border border-blue-100 text-sm font-semibold text-blue-950 hover:bg-blue-100 transition-colors cursor-pointer text-center"
+              >
+                Anuluj
+              </button>
+              <button
+                type="button"
+                onClick={handleResetConfirm}
+                className="flex-1 py-3 px-4 rounded-xl bg-blue-500 text-white text-sm font-bold shadow-md hover:opacity-90 active:scale-98 transition-all cursor-pointer text-center"
+              >
+                Resetuj
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any
 
 from sqlalchemy import (
-    BigInteger, Boolean, CheckConstraint, DateTime, ForeignKey, Identity,
+    BigInteger, Boolean, CheckConstraint, DateTime, Float, ForeignKey, Identity,
     Integer, LargeBinary, String, Text, UniqueConstraint, func
 )
 from sqlalchemy.dialects.postgresql import JSONB, insert
@@ -291,3 +291,59 @@ class UserActivityProgress(Base):
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class UserSimulationProgress(Base):
+    __tablename__ = "user_simulation_progress"
+    __table_args__ = (
+        UniqueConstraint("user_id", "event_id", name="uq_user_simulation_event"),
+    )
+
+    id: Mapped[int] = mapped_column(
+        BigInteger().with_variant(Integer, "sqlite"), Identity(), primary_key=True
+    )
+    user_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    event_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    status: Mapped[str] = mapped_column(String(32), default="awaiting_initial_investment")
+    current_quarter_index: Mapped[int] = mapped_column(Integer, default=0)
+    total_quarters: Mapped[int] = mapped_column(Integer, default=0)
+    initial_capital: Mapped[float] = mapped_column(Float, default=10000.0)
+    current_capital: Mapped[float] = mapped_column(Float, default=10000.0)
+    peak_capital: Mapped[float] = mapped_column(Float, default=10000.0)
+    max_drawdown_pct: Mapped[float] = mapped_column(Float, default=0.0)
+    cumulative_inflation_factor: Mapped[float] = mapped_column(Float, default=1.0)
+    allocations: Mapped[dict[str, Any]] = mapped_column(JsonType, nullable=False, default=dict)
+    rebalances_count: Mapped[int] = mapped_column(Integer, default=0)
+    history: Mapped[list[Any]] = mapped_column(JsonType, nullable=False, default=list)
+    debrief: Mapped[dict[str, Any] | None] = mapped_column(JsonType, nullable=True)
+    xp_earned: Mapped[int] = mapped_column(Integer, default=0)
+    coins_earned: Mapped[int] = mapped_column(Integer, default=0)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    user: Mapped["User"] = relationship("User")
+
+    def to_session_dict(self):
+        return {
+            "event_id": self.event_id,
+            "status": self.status,
+            "current_quarter_index": self.current_quarter_index,
+            "total_quarters": self.total_quarters,
+            "initial_capital": self.initial_capital,
+            "current_capital": self.current_capital,
+            "peak_capital": self.peak_capital,
+            "max_drawdown_pct": self.max_drawdown_pct,
+            "cumulative_inflation_factor": self.cumulative_inflation_factor,
+            "allocations": self.allocations,
+            "rebalances_count": self.rebalances_count,
+            "history": self.history,
+            "debrief": self.debrief,
+            "xp_earned": self.xp_earned,
+            "coins_earned": self.coins_earned,
+            "persisted": True,
+            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+        }
+
