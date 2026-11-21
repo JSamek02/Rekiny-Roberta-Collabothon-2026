@@ -616,7 +616,8 @@
   "pages": {
     "profile": {
       "heading": "Welcome,<br></br><span>{name}</span>",
-      "edit-personalization": "Edit personalization"
+      "edit-personalization": "Edit personalization",
+      "change-language": "Change language"
     }
   },
   "global": {

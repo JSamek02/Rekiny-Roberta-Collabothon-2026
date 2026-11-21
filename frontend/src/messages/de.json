@@ -541,7 +541,8 @@
   },
   "pages": {
     "profile": {
-      "edit-personalization": "Personalisierung bearbeiten"
+      "edit-personalization": "Personalisierung bearbeiten",
+      "change-language": "Sprache ändern"
     }
   },
   "global": {

@@ -37,7 +37,10 @@ export const StartingQuizModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent showCloseButton={false} className="max-w-md p-5 sm:p-6">
+      <DialogContent
+        showCloseButton={false}
+        className="!top-2 !left-2 !h-[calc(100dvh-1rem)] !max-h-[calc(100dvh-1rem)] !w-[calc(100%-1rem)] !max-w-none !translate-x-0 !translate-y-0 p-5 sm:p-6"
+      >
         <DialogTitle className="sr-only">{t('modal-title')}</DialogTitle>
         <StartingQuizView onComplete={handleComplete} onSkip={handleClose} />
       </DialogContent>
