@@ -60,7 +60,9 @@ export const HeaderUser = () => {
       >
         {/* <UserAvatar user={user} /> */}
         <Avatar className="size-8 rounded-full bg-blue-100" />
-        <RoleBadge type={viewerType} />
+        <span className="max-w-32 truncate text-sm font-semibold text-blue-950">
+          {user.name?.trim().split(/\s+/)[0] || t('no-name')}
+        </span>
       </button>
 
       {open && (
