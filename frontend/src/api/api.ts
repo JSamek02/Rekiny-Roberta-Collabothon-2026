@@ -14,7 +14,7 @@ export class ApiClient {
 
   constructor(config: ApiConfig = {}) {
     this.config = {
-      baseUrl: config.baseUrl || process.env.NEXT_PUBLIC_API_BASE_URL || '',
+      baseUrl: config.baseUrl || process.env.NEXT_PUBLIC_API_URL || '',
       timeout: config.timeout || Number.parseInt(process.env.NEXT_PUBLIC_API_TIMEOUT || '10000', 10),
       defaultHeaders: {
         'Content-Type': 'application/json',
