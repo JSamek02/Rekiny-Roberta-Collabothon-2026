@@ -2,8 +2,9 @@ import React from 'react';
 import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import { routes } from '@/utils/routes';
-import { Sparkles, Coins } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { CoinsIcon } from '@/icons/coins';
+import { SparklesIcon } from '@/icons/sparkles';
 
 interface StockMarketHeroWidgetProps {
   isLink?: boolean;
@@ -17,14 +18,14 @@ export const StockMarketHeroWidget: React.FC<StockMarketHeroWidgetProps> = ({ is
       <div className="relative z-10 max-w-[70%] flex flex-col justify-between h-full">
         <div>
           <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/20 text-[10px] font-medium backdrop-blur-xs mb-1 w-fit">
-            <Sparkles className="w-3 h-3 text-white" />
+            <SparklesIcon className="w-3 h-3 text-white" />
             <span>{t('badge')}</span>
           </div>
           <h2 className="text-sm font-bold leading-tight">{t('title')}</h2>
         </div>
 
         <div className="flex items-center gap-1.5 text-[11px] font-semibold bg-white/15 px-2 py-0.5 rounded-lg w-fit">
-          <Coins className="w-3.5 h-3.5 text-white" />
+          <CoinsIcon className="w-3.5 h-3.5 text-white" />
           <span>{t('starting-capital', { amount: '10 000' })}</span>
         </div>
       </div>
@@ -44,10 +45,7 @@ export const StockMarketHeroWidget: React.FC<StockMarketHeroWidgetProps> = ({ is
 
   if (isLink) {
     return (
-      <Link
-        href={routes.stock}
-        className="block cursor-pointer"
-      >
+      <Link href={routes.stock} className="block cursor-pointer">
         {content}
       </Link>
     );
