@@ -112,6 +112,7 @@ export const EventDebriefModal: React.FC<EventDebriefModalProps> = ({
           <Image src="/img/coin.svg" alt="" width={22} height={22} />
           <span className="text-xs font-bold text-amber-800">+{coinsAwarded.toLocaleString()} SharkCoins</span>
         </div>
+      </div>
 
       {/* Main Stats Grid */}
       <div className="grid grid-cols-2 gap-2 text-xs">
@@ -155,17 +156,13 @@ export const EventDebriefModal: React.FC<EventDebriefModalProps> = ({
             {debrief.badges_earned.map((badgeName) => {
               const b = BADGE_MAP[badgeName];
               const Icon = b ? b.icon : Award;
-              {
-                /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-              }
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const displayName = b
                 ? t.has(`badges.${b.key}.name` as any)
                   ? t(`badges.${b.key}.name` as any)
                   : badgeName
                 : badgeName;
-              {
-                /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-              }
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const displayDesc = b ? t(`badges.${b.key}.desc` as any) : t('badges.default.desc');
 
               return (
