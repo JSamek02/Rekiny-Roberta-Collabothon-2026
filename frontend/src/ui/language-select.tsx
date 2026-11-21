@@ -7,11 +7,44 @@ import { useLocale, useTranslations } from 'next-intl';
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 
-const languages: { locale: AppLocale; name: string; flag: string }[] = [
-  { locale: 'pl', name: 'Polski', flag: '🇵🇱' },
-  { locale: 'en', name: 'English', flag: '🇬🇧' },
-  { locale: 'de', name: 'Deutsch', flag: '🇩🇪' },
+const languages: { locale: AppLocale; name: string }[] = [
+  { locale: 'pl', name: 'Polski' },
+  { locale: 'en', name: 'English' },
+  { locale: 'de', name: 'Deutsch' },
 ];
+
+function LanguageFlag({ locale }: { locale: AppLocale }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 16"
+      className="h-4 w-6 shrink-0 overflow-hidden rounded-sm ring-1 ring-black/10"
+    >
+      {locale === 'pl' && (
+        <>
+          <path fill="#fff" d="M0 0h24v8H0z" />
+          <path fill="#dc143c" d="M0 8h24v8H0z" />
+        </>
+      )}
+      {locale === 'de' && (
+        <>
+          <path fill="#000" d="M0 0h24v16H0z" />
+          <path fill="#d00" d="M0 5.33h24v5.34H0z" />
+          <path fill="#ffce00" d="M0 10.67h24V16H0z" />
+        </>
+      )}
+      {locale === 'en' && (
+        <>
+          <path fill="#012169" d="M0 0h24v16H0z" />
+          <path d="m0 0 24 16M24 0 0 16" stroke="#fff" strokeWidth="4" />
+          <path d="m0 0 24 16M24 0 0 16" stroke="#c8102e" strokeWidth="2" />
+          <path d="M12 0v16M0 8h24" stroke="#fff" strokeWidth="6" />
+          <path d="M12 0v16M0 8h24" stroke="#c8102e" strokeWidth="2.5" />
+        </>
+      )}
+    </svg>
+  );
+}
 
 export function LanguageSelect() {
   const locale = useLocale();
@@ -42,7 +75,7 @@ export function LanguageSelect() {
           aria-expanded={isOpen}
           className="absolute top-2 right-2 inline-flex h-10 items-center gap-2 rounded-lg border border-blue-100 bg-white px-3 text-blue-950 shadow-sm transition-colors hover:bg-blue-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
         >
-          <span aria-hidden="true" className="text-xl leading-none">{selectedLanguage.flag}</span>
+          <LanguageFlag locale={selectedLanguage.locale} />
           <ChevronDown
             aria-hidden="true"
             className={`size-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
@@ -65,7 +98,7 @@ export function LanguageSelect() {
             onClick={() => changeLanguage(language.locale)}
             className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-blue-50 focus-visible:bg-blue-50 focus-visible:outline-none aria-selected:bg-blue-50 aria-selected:font-semibold"
           >
-            <span aria-hidden="true" className="text-xl leading-none">{language.flag}</span>
+            <LanguageFlag locale={language.locale} />
             <span>{language.name}</span>
           </button>
         ))}
