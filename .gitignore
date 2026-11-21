@@ -157,4 +157,4 @@ $RECYCLE.BIN/
 /credentials
 /backend/credentials/
 *.wav
-backend/credentials/database_credentials.json
+*/database_credentials.json
