@@ -1,5 +1,30 @@
 {
   "components": {
+    "learning-category": {
+      "back": "Wróć do nauki",
+      "category": "Kategoria",
+      "progress": "Postęp",
+      "lesson-count": "{count}/{total, plural, =1 {# lekcja} few {# lekcje} other {# lekcji}}",
+      "roadmap": "Mapa lekcji",
+      "lesson-number": "Lekcja #{number}",
+      "open-lesson": "Otwórz lekcję {number}",
+      "completed": "Ukończona",
+      "next": "Twoja następna lekcja",
+      "available": "Otwórz lekcję",
+      "categories": {
+        "stocks-bonds": "Akcje i obligacje",
+        "investing": "Inwestowanie",
+        "budgeting": "Budżetowanie",
+        "economics": "Ekonomia"
+      },
+      "lessons": {
+        "lesson-1": "Podstawy finansów",
+        "lesson-2": "Zrozumienie ryzyka",
+        "lesson-3": "Rozwijanie wiedzy",
+        "lesson-4": "Budowanie strategii",
+        "lesson-5": "Ostatnie wyzwanie"
+      }
+    },
     "lesson-category-nav-item": {
       "progress": "Postęp",
       "lesson-count": "{count}/{total, plural, =1 {# lekcja} few {# lekcje} other {# lekcji}}"
