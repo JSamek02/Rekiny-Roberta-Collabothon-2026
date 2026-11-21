@@ -50,7 +50,7 @@ app.cli.add_command(init_db)
 @app.after_request
 def allow_frontend_origin(response):
     origin = request.headers.get("Origin")
-    if origin and origin == os.environ.get("FRONTEND_ORIGIN"):
+    if origin in {os.environ.get("FRONTEND_ORIGIN"), "http://localhost:3000"}:
         response.headers["Access-Control-Allow-Origin"] = origin
         response.headers["Access-Control-Allow-Credentials"] = "true"
         response.headers["Access-Control-Allow-Headers"] = (
