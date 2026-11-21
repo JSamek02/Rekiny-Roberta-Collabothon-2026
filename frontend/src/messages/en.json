@@ -1,5 +1,11 @@
 {
   "components": {
+    "chatbot-banner": {
+      "heading-strike-through": "Chatbot?",
+      "heading": "Sharkbot!",
+      "description": "If you have any questions,feel free to ask me, and I’ll answer your hardest questions",
+      "cta": "Open chat"
+    },
     "learning-category": {
       "back": "Go back to learning",
       "category": "Category",

@@ -1,10 +1,17 @@
-import { Link } from '@/i18n/navigation';
+'use client';
+
+import { Link, usePathname } from '@/i18n/navigation';
 import { routes } from '@/utils/routes';
-import { getTranslations } from 'next-intl/server';
+import { useTranslations } from 'next-intl';
 
 /** Floating chat-bubble button that opens the Sharkbot chat view. */
-export const ChatFab = async () => {
-  const t = await getTranslations('components.chat-fab');
+export const ChatFab = () => {
+  const t = useTranslations('components.chat-fab');
+  const pathname = usePathname();
+
+  if (pathname === routes.learning) {
+    return null;
+  }
 
   return (
     <Link
