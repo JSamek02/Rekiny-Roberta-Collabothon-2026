@@ -11,6 +11,7 @@ from api.auth import auth, oauth
 from api.chat import chat
 from api.courses import courses
 from api.health import health
+from api.ranking import ranking
 from api.simulation import simulation
 from database import init_db
 
@@ -42,6 +43,7 @@ app.register_blueprint(auth)
 app.register_blueprint(courses)
 app.register_blueprint(chat)
 app.register_blueprint(simulation)
+app.register_blueprint(ranking)
 app.cli.add_command(init_db)
 
 

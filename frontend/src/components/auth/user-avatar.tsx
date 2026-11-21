@@ -3,8 +3,11 @@ import { UserIcon } from '@/icons/user';
 import clsx from 'clsx';
 import Image from 'next/image';
 
+type AvatarUser = Pick<AuthUser, 'name' | 'picture'> & { email?: string | null };
+
 type UserAvatarProps = {
-  user: AuthUser | null;
+  /** Any user with a name and picture (signed-in user, ranking entry); `null` for guests. */
+  user: AvatarUser | null;
   className?: string;
 };
 

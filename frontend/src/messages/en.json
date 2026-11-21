@@ -135,6 +135,23 @@
       "log-out": "Log out",
       "config-error": "Could not connect to the server. Make sure the backend is running.",
       "error": "Something went wrong. Please try again."
+    },
+    "ranking": {
+      "kicker": "Leaderboard",
+      "title": "Ranking",
+      "subtitle": "{count, plural, =0 {No sharks in the ocean yet} =1 {# shark competing for XP} other {# sharks competing for XP}}",
+      "subtitle-loading": "Loading the leaderboard...",
+      "your-position": "Your position",
+      "you": "You",
+      "top": "Top {count}",
+      "xp": "XP",
+      "place": "Place {rank}",
+      "anonymous": "Anonymous shark",
+      "guest-info": "Log in to see your position and earn XP.",
+      "log-in": "Log in",
+      "empty": "Nobody is in the ranking yet. Complete a lesson to be the first!",
+      "error": "Could not load the ranking. Make sure the backend is running.",
+      "retry": "Try again"
     }
   },
   "global": {
