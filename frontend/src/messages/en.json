@@ -617,7 +617,13 @@
     "profile": {
       "heading": "Welcome,<br></br><span>{name}</span>",
       "edit-personalization": "Edit personalization",
-      "change-language": "Change language"
+      "change-language": "Change language",
+      "contrast": {
+        "label": "Contrast",
+        "normal": "Normal",
+        "black-white": "Black & white",
+        "black-yellow": "Black & yellow"
+      }
     }
   },
   "global": {

@@ -542,7 +542,13 @@
   "pages": {
     "profile": {
       "edit-personalization": "Personalisierung bearbeiten",
-      "change-language": "Sprache ändern"
+      "change-language": "Sprache ändern",
+      "contrast": {
+        "label": "Kontrast",
+        "normal": "Normal",
+        "black-white": "Schwarz-Weiß",
+        "black-yellow": "Schwarz-Gelb"
+      }
     }
   },
   "global": {
