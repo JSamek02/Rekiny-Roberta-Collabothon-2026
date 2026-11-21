@@ -123,7 +123,7 @@ export const EventDebriefModal: React.FC<EventDebriefModalProps> = ({
         <div className="flex items-start gap-3 bg-blue-50 p-3 rounded-xl border border-blue-200">
           <div className="w-12 h-14 shrink-0 relative">
             <Image
-              src="/img/shark.png"
+              src="/img/shark.svg"
               alt="Robert Biznesu"
               width={48}
               height={56}
