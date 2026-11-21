@@ -40,7 +40,7 @@ import { useTranslations } from 'next-intl';
 export const StockMarketView: React.FC = () => {
   const t = useTranslations('components.stock.view');
   const tEvents = useTranslations('components.stock.event-selector');
-  const { handleInvestmentProfit } = useSharkCoins();
+  const { sharkCoins, handleInvestmentProfit } = useSharkCoins();
 
   const [events, setEvents] = useState<SimulationEventSummary[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<SimulationEventSummary | null>(null);
@@ -90,19 +90,35 @@ export const StockMarketView: React.FC = () => {
       const currentGuest = getGuestSimulationSessions();
       const localGuestSession = currentGuest[ev.id];
 
+      const currentWallet = sharkCoins && sharkCoins > 0 ? sharkCoins : (detail.event.starting_capital || 3000);
+
       if (detail.active_session) {
-        setSession(detail.active_session);
-        setAllocations(detail.active_session.allocations);
-        saveGuestSimulationSession(detail.active_session);
+        if (detail.active_session.status === 'awaiting_initial_investment' && detail.active_session.initial_capital !== currentWallet) {
+          const startRes = await startSimulation(ev.id, currentWallet);
+          setSession(startRes.session);
+          setAllocations(startRes.session.allocations);
+          saveGuestSimulationSession(startRes.session);
+        } else {
+          setSession(detail.active_session);
+          setAllocations(detail.active_session.allocations);
+          saveGuestSimulationSession(detail.active_session);
+        }
       } else if (localGuestSession && localGuestSession.status !== 'completed') {
-        try {
-          await syncSimulationSessions([localGuestSession]);
-        } catch {}
-        setSession(localGuestSession);
-        setAllocations(localGuestSession.allocations);
+        if (localGuestSession.status === 'awaiting_initial_investment' && localGuestSession.initial_capital !== currentWallet) {
+          const startRes = await startSimulation(ev.id, currentWallet);
+          setSession(startRes.session);
+          setAllocations(startRes.session.allocations);
+          saveGuestSimulationSession(startRes.session);
+        } else {
+          try {
+            await syncSimulationSessions([localGuestSession]);
+          } catch {}
+          setSession(localGuestSession);
+          setAllocations(localGuestSession.allocations);
+        }
       } else {
-        // Start fresh session
-        const startRes = await startSimulation(ev.id, ev.starting_capital);
+        // Start fresh session with the user's current wallet balance
+        const startRes = await startSimulation(ev.id, currentWallet);
         setSession(startRes.session);
         setAllocations(startRes.session.allocations);
         saveGuestSimulationSession(startRes.session);
@@ -175,7 +191,8 @@ export const StockMarketView: React.FC = () => {
     setError(null);
     try {
       await resetSimulation(selectedEvent.id);
-      const startRes = await startSimulation(selectedEvent.id, selectedEvent.starting_capital);
+      const currentWallet = sharkCoins && sharkCoins > 0 ? sharkCoins : (selectedEvent.starting_capital || 3000);
+      const startRes = await startSimulation(selectedEvent.id, currentWallet);
       setSession(startRes.session);
       setAllocations({ stocks: 0.4, bonds: 0.3, gold: 0.2, cash: 0.1 });
       setShowRebalance(false);

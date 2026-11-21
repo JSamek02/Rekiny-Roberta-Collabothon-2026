@@ -29,12 +29,12 @@ SIMULATION_EVENTS: List[Dict[str, Any]] = [
         "title": "Wielki Kryzys Finansowy i Upadek Lehman Brothers (2007–2011)",
         "period": "2007-Q4 – 2011-Q4",
         "total_quarters": 17,
-        "starting_capital": 10000.0,
+        "starting_capital": 3000.0,
         "initial_context": {
             "headline": "Jesień 2007: Pozorny spokój przed burzą stulecia",
             "description": (
                 "Jest IV kwartał 2007 roku. Światowa gospodarka od lat rozwija się stabilnie, "
-                "a rynki akcji osiągają historyczne szczyty. Masz 10 000 SC w gotówce i zero inwestycji. "
+                "a rynki akcji osiągają historyczne szczyty. Wchodzisz na rynek ze swoim portfelem SharkCoins (SC) w gotówce i zero inwestycji. "
                 "W mediach pojawiają się pierwsze niepokojące sygnały o 'złych kredytach hipotecznych subprime' w USA, "
                 "ale większość analityków bagatelizuje problem. Zdecyduj, w co ulokujesz swój kapitał!"
             ),
@@ -185,13 +185,13 @@ SIMULATION_EVENTS: List[Dict[str, Any]] = [
         "title": "Krach COVID-19 i Szok Płynnościowy (2020–2021)",
         "period": "2020-Q1 – 2021-Q4",
         "total_quarters": 8,
-        "starting_capital": 10000.0,
+        "starting_capital": 3000.0,
         "initial_context": {
             "headline": "Styczeń 2020: Rekordy wycen i pierwsze doniesienia z Wuhan",
             "description": (
                 "Jest styczeń 2020 roku. Rynki finansowe pną się w górę, a spółki technologiczne biją rekordy. "
                 "Pojawiają się pierwsze wieści o nowym wirusie w Chinach. "
-                "Zaczynasz ten etap z 10 000 SC w czystej gotówce. Wybierz, jak podzielisz kapitał na starcie!"
+                "Zaczynasz ten etap ze swoim portfelem SharkCoins (SC) w czystej gotówce. Wybierz, jak podzielisz kapitał na starcie!"
             ),
             "key_learning_question": "Jak przygotować portfel na niespodziewany czarny łabędź?",
         },
@@ -268,12 +268,12 @@ SIMULATION_EVENTS: List[Dict[str, Any]] = [
         "title": "Szok Inflacyjny i Podwyżki Stóp Procentowych (2022)",
         "period": "2022-Q1 – 2022-Q4",
         "total_quarters": 4,
-        "starting_capital": 10000.0,
+        "starting_capital": 3000.0,
         "initial_context": {
             "headline": "Styczeń 2022: Najwyższa inflacja od 40 lat i widmo wojny",
             "description": (
                 "Jest styczeń 2022 roku. Ceny w sklepach rosną w oczach, a banki centralne zapowiadają koniec ery darmowego pieniądza. "
-                "Zaczynasz z 10 000 SC w gotówce. "
+                "Zaczynasz ze swoim portfelem SharkCoins (SC) w gotówce. "
                 "Twoim celem jest obrona realnej siły nabywczej w jednym z najtrudniejszych lat dla rynków!"
             ),
             "key_learning_question": "Jak chronić kapitał, gdy spadają i akcje, i obligacje?",

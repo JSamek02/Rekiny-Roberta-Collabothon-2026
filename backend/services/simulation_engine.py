@@ -30,7 +30,7 @@ def initialize_event_session(event_id: str, initial_capital: Optional[float] = N
     if not event:
         raise ValueError(f"Nieznany event: {event_id}")
 
-    capital = float(initial_capital or event.get("starting_capital", 10000.0))
+    capital = float(initial_capital if (initial_capital is not None and initial_capital > 0) else event.get("starting_capital", 3000.0))
     initial_allocations = {"stocks": 0.0, "bonds": 0.0, "gold": 0.0, "cash": 1.0}
 
     return {

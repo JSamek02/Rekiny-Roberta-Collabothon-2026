@@ -114,7 +114,7 @@
         "badge": "Robert empfiehlt",
         "title": "Börsensimulator",
         "description": "Verwalte dein Portfolio in realen historischen Krisen. Schlage die Inflation und rette dein Kapital!",
-        "starting-capital": "Startkapital: {amount} SC"
+        "starting-capital": "Dein Budget: {amount} SC"
       },
       "event-selector": {
         "heading": "Wähle ein Reales Szenario",
@@ -141,9 +141,9 @@
           "inflation_2022": "Inflationsschock 2022"
         },
         "descriptions": {
-          "gfc_2008": "Es ist das 4. Quartal 2007. Die Weltwirtschaft wächst seit Jahren stabil und die Aktienmärkte erreichen Allzeithochs. Du hast 10.000 SC in bar und keine Investitionen. In den Medien tauchen erste beunruhigende Berichte über 'faule Subprime-Hypotheken' in den USA auf, doch die meisten Analysten wiegeln ab. Entscheide, wie du dein Kapital anlegst!",
-          "covid_2020": "Es ist Januar 2020. Die Finanzmärkte steigen und Technologieunternehmen brechen Rekorde. Erste Berichte über ein neuartiges Virus in China tauchen auf. Du startest diese Etappe mit 10.000 SC in reinem Bargeld. Wähle, wie du dein Startkapital verteilst!",
-          "inflation_2022": "Es ist Januar 2022. Die Verbraucherpreise steigen rasant und die Zentralbanken läuten das Ende des billigen Geldes ein. Du startest mit 10.000 SC in bar. Dein Ziel ist es, deine reale Kaufkraft in einem der schwierigsten Marktjahre zu verteidigen!"
+          "gfc_2008": "Es ist das 4. Quartal 2007. Die Weltwirtschaft wächst seit Jahren stabil und die Aktienmärkte erreichen Allzeithochs. Du betrittst den Markt mit deinem SharkCoins (SC) Wallet in bar und ohne Investitionen. In den Medien tauchen erste beunruhigende Berichte über 'faule Subprime-Hypotheken' in den USA auf, doch die meisten Analysten wiegeln ab. Entscheide, wie du dein Kapital anlegst!",
+          "covid_2020": "Es ist Januar 2020. Die Finanzmärkte steigen und Technologieunternehmen brechen Rekorde. Erste Berichte über ein neuartiges Virus in China tauchen auf. Du startest diese Etappe mit deinem SharkCoins (SC) Wallet in bar. Wähle, wie du dein Startkapital verteilst!",
+          "inflation_2022": "Es ist Januar 2022. Die Verbraucherpreise steigen rasant und die Zentralbanken läuten das Ende des billigen Geldes ein. Du startest mit deinem SharkCoins (SC) Wallet in bar. Dein Ziel ist es, deine reale Kaufkraft in einem der schwierigsten Marktjahre zu verteidigen!"
         },
         "tags": {
           "gfc_2008": "Lehman Brothers & Hausse",

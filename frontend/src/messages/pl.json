@@ -150,7 +150,7 @@
         "badge": "Robert Biznesu poleca",
         "title": "Symulator Giełdowy",
         "description": "Zarządzaj portfelem w realnych, historycznych kryzysach. Sprawdź, czy pokonasz inflację i ocalisz kapitał!",
-        "starting-capital": "Kapitał startowy: {amount} SC"
+        "starting-capital": "Twój budżet: {amount} SC"
       },
       "event-selector": {
         "heading": "Wybierz Realny scenariusz",
@@ -177,9 +177,9 @@
           "inflation_2022": "Szok Inflacyjny 2022"
         },
         "descriptions": {
-          "gfc_2008": "Jest IV kwartał 2007 roku. Światowa gospodarka od lat rozwija się stabilnie, a rynki akcji osiągają historyczne szczyty. Masz 10 000 SC w gotówce i zero inwestycji. W mediach pojawiają się pierwsze niepokojące sygnały o 'złych kredytach hipotecznych subprime' w USA, ale większość analityków bagatelizuje problem. Zdecyduj, w co ulokujesz swój kapitał!",
-          "covid_2020": "Jest styczeń 2020 roku. Rynki finansowe pną się w górę, a spółki technologiczne biją rekordy. Pojawiają się pierwsze wieści o nowym wirusie w Chinach. Zaczynasz ten etap z 10 000 SC w czystej gotówce. Wybierz, jak podzielisz kapitał na starcie!",
-          "inflation_2022": "Jest styczeń 2022 roku. Ceny w sklepach rosną w oczach, a banki centralne zapowiadają koniec ery darmowego pieniądza. Zaczynasz z 10 000 SC w gotówce. Twoim celem jest obrona realnej siły nabywczej w jednym z najtrudniejszych lat dla rynków!"
+          "gfc_2008": "Jest IV kwartał 2007 roku. Światowa gospodarka od lat rozwija się stabilnie, a rynki akcji osiągają historyczne szczyty. Wchodzisz na rynek ze swoim portfelem SharkCoins (SC) w gotówce i zero inwestycji. W mediach pojawiają się pierwsze niepokojące sygnały o 'złych kredytach hipotecznych subprime' w USA, ale większość analityków bagatelizuje problem. Zdecyduj, w co ulokujesz swój kapitał!",
+          "covid_2020": "Jest styczeń 2020 roku. Rynki finansowe pną się w górę, a spółki technologiczne biją rekordy. Pojawiają się pierwsze wieści o nowym wirusie w Chinach. Zaczynasz ten etap ze swoim portfelem SharkCoins (SC) w czystej gotówce. Wybierz, jak podzielisz kapitał na starcie!",
+          "inflation_2022": "Jest styczeń 2022 roku. Ceny w sklepach rosną w oczach, a banki centralne zapowiadają koniec ery darmowego pieniądza. Zaczynasz ze swoim portfelem SharkCoins (SC) w gotówce. Twoim celem jest obrona realnej siły nabywczej w jednym z najtrudniejszych lat dla rynków!"
         },
         "tags": {
           "gfc_2008": "Lehman Brothers & Hossa",

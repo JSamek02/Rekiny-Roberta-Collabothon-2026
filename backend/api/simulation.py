@@ -146,13 +146,18 @@ class SimulationEventsListView(MethodView):
 
                 events_summary = []
                 for ev in SIMULATION_EVENTS:
+                    starting_capital = (
+                        float(user.shark_coins)
+                        if (user and user.shark_coins and user.shark_coins > 0)
+                        else float(ev["starting_capital"])
+                    )
                     ev_data = {
                         "id": ev["id"],
                         "order_index": ev["order_index"],
                         "title": ev["title"],
                         "period": ev["period"],
                         "total_quarters": ev["total_quarters"],
-                        "starting_capital": ev["starting_capital"],
+                        "starting_capital": starting_capital,
                         "initial_context": ev["initial_context"],
                     }
                     if user and ev["id"] in user_progress_map:
@@ -203,6 +208,11 @@ class SimulationEventDetailView(MethodView):
             with database() as db:
                 user = get_authenticated_user(db)
                 session = _load_session_state(db, user, event_id)
+                starting_capital = (
+                    float(user.shark_coins)
+                    if (user and user.shark_coins and user.shark_coins > 0)
+                    else float(ev["starting_capital"])
+                )
 
                 return jsonify(
                     event={
@@ -211,7 +221,7 @@ class SimulationEventDetailView(MethodView):
                         "title": ev["title"],
                         "period": ev["period"],
                         "total_quarters": ev["total_quarters"],
-                        "starting_capital": ev["starting_capital"],
+                        "starting_capital": starting_capital,
                         "initial_context": ev["initial_context"],
                         "data_sources": DATA_SOURCES_METADATA,
                     },
@@ -231,16 +241,25 @@ class SimulationStartEventView(MethodView):
             return jsonify(error="Event nie istnieje"), 404
 
         payload = request.get_json(silent=True) or {}
-        capital = payload.get("initial_capital", ev["starting_capital"])
-        session = initialize_event_session(event_id, capital)
-
-        initial_alloc = payload.get("allocations")
-        if initial_alloc:
-            session = set_initial_investment(session, initial_alloc)
+        capital = payload.get("initial_capital")
 
         try:
             with database() as db:
                 user = get_authenticated_user(db)
+                if capital is None or capital <= 0:
+                    if user and user.shark_coins and user.shark_coins > 0:
+                        capital = float(user.shark_coins)
+                    else:
+                        capital = float(ev["starting_capital"])
+                else:
+                    capital = float(capital)
+
+                session = initialize_event_session(event_id, capital)
+
+                initial_alloc = payload.get("allocations")
+                if initial_alloc:
+                    session = set_initial_investment(session, initial_alloc)
+
                 key = _get_session_key(event_id, user.id if user else None)
                 _SIM_SESSIONS[key] = session
                 _persist_session_state(db, user, event_id, session)
