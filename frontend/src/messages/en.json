@@ -42,9 +42,13 @@
     "rewards": {
       "title": "Rewards",
       "category-hats": "Shark hats",
+      "category-others": "Others",
       "hat": "Hat {number}",
       "buy": "Buy · {price} SC",
       "owned": "Owned",
+      "other-advice-discount": "Investment advice discount - 50 PLN",
+      "other-account-bonus": "50 PLN to start an account",
+      "other-investment-webinar": "Investment webinar",
       "open-with-balance": "Open Rewards. Balance: {balance} SharkCoins"
     },
     "chat-fab": {

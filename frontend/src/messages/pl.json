@@ -42,9 +42,13 @@
     "rewards": {
       "title": "Nagrody",
       "category-hats": "Czapki rekinów",
+      "category-others": "Inne",
       "hat": "Czapka {number}",
       "buy": "Kup · {price} SC",
       "owned": "Posiadane",
+      "other-advice-discount": "Zniżka na poradę inwestycyjną - 50zł",
+      "other-account-bonus": "50zł na start konta",
+      "other-investment-webinar": "Webinar inwestycyjny",
       "open-with-balance": "Otwórz Nagrody. Saldo: {balance} SharkCoinów"
     },
     "chat-fab": {

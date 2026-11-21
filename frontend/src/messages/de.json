@@ -1,5 +1,79 @@
 {
   "components": {
+    "chatbot-banner": {
+      "heading-strike-through": "Chatbot?",
+      "heading": "Sharkbot!",
+      "description": "Wenn du Fragen hast, frag mich gern – ich beantworte auch die schwierigsten Fragen.",
+      "cta": "Chat öffnen"
+    },
+    "auth": {
+      "log-in": "Anmelden",
+      "log-out": "Abmelden",
+      "account-menu": "Kontomenü",
+      "account-type": "Kontotyp",
+      "no-name": "Kein Name",
+      "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+      "roles": {
+        "guest": "Gast",
+        "user": "Angemeldet",
+        "creator": "Ersteller",
+        "partner": "Partner"
+      },
+      "xp": "XP",
+      "experience": "Deine Erfahrungspunkte (EXP)"
+    },
+    "login-view": {
+      "kicker": "Willkommen an Bord!",
+      "title": "Anmelden",
+      "guest-info": "Du nutzt die App als Gast.",
+      "google": "Mit Google fortfahren",
+      "mock-info": "Demomodus: Die Google-Anmeldung ist deaktiviert. Wähle einen Kontotyp, um dich bei einem Testkonto anzumelden.",
+      "mock-as": "Anmelden als",
+      "continue-as-guest": "Ohne Anmeldung fortfahren",
+      "signed-in-as": "Angemeldet als",
+      "go-home": "Zur Startseite",
+      "log-out": "Abmelden",
+      "config-error": "Verbindung zum Server fehlgeschlagen. Stelle sicher, dass das Backend läuft.",
+      "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+    },
+    "ranking": {
+      "kicker": "Bestenliste",
+      "title": "Rangliste",
+      "subtitle": "{count, plural, =0 {Noch keine Haie im Ozean} =1 {# Hai sammelt XP} other {# Haie sammeln XP}}",
+      "subtitle-loading": "Bestenliste wird geladen...",
+      "your-position": "Dein Platz",
+      "you": "Du",
+      "top": "Top {count}",
+      "xp": "XP",
+      "place": "Platz {rank}",
+      "anonymous": "Anonymer Hai",
+      "guest-info": "Melde dich an, um deinen Platz zu sehen und XP zu sammeln.",
+      "log-in": "Anmelden",
+      "empty": "Noch niemand ist in der Rangliste. Schließe eine Lektion ab, um als Erster dabei zu sein!",
+      "error": "Die Rangliste konnte nicht geladen werden. Stelle sicher, dass das Backend läuft.",
+      "retry": "Erneut versuchen"
+    },
+    "cake-game": {
+      "kicker": "Geheimes Minispiel",
+      "title": "Roberts Fang",
+      "instructions": "Fange Sahnetorten mit dem Maul des Hais – jede stellt ein Leben wieder her. Fange SharkCoins (+5 auf dein Konto), denn jede verpasste Münze kostet ein Leben. Eine Seemine kostet ebenfalls ein Leben. Du hast 3 Leben!",
+      "lives": "Leben: {lives}",
+      "controls": "Bewege dich mit dem Finger oder der Maus oder benutze die Pfeiltasten ← →.",
+      "points": "+{points} Pkt.",
+      "avoid": "Achtung!",
+      "start": "Spielen",
+      "loading": "Spiel wird geladen...",
+      "load-error": "Das Spiel konnte nicht geladen werden.",
+      "retry": "Erneut versuchen",
+      "score": "Punktzahl",
+      "best": "Rekord",
+      "boom": "Boom!",
+      "game-over": "Spiel vorbei",
+      "new-best": "Neuer Rekord!",
+      "caught": "Gefangen: {cakes, plural, =1 {# Sahnetorte} other {# Sahnetorten}} und {coins, plural, =1 {# SharkCoin} other {# SharkCoins}}",
+      "play-again": "Nochmal spielen",
+      "back": "Zurück"
+    },
     "learning-category": {
       "back": "Zurück zum Lernen",
       "category": "Kategorie",
@@ -36,9 +110,13 @@
     "rewards": {
       "title": "Belohnungen",
       "category-hats": "Haie-Hüte",
+      "category-others": "Sonstiges",
       "hat": "Hut {number}",
       "buy": "Kaufen · {price} SC",
       "owned": "Besessen",
+      "other-advice-discount": "Rabatt auf Anlageberatung - 50 PLN",
+      "other-account-bonus": "50 PLN zum Start eines Kontos",
+      "other-investment-webinar": "Anlage-Webinar",
       "open-with-balance": "Belohnungen öffnen. Guthaben: {balance} SharkCoins"
     },
     "chat-fab": {
@@ -541,6 +619,7 @@
   },
   "pages": {
     "profile": {
+      "heading": "Willkommen,<br></br><span>{name}</span>",
       "edit-personalization": "Personalisierung bearbeiten",
       "change-language": "Sprache ändern",
       "contrast": {
@@ -568,5 +647,10 @@
         "max": "Gib höchstens {count, plural, =1 {# Zeichen} other {# Zeichen}} ein"
       }
     }
+  },
+  "chat": {
+    "title": "Robert Biznesu — KI-Finanzmentor",
+    "subtitle": "Lehr-Chatbot für Finanzen mit RAG und Sprachchat",
+    "badge": "Gemini 4 + 3.8 TTS RAG"
   }
 }

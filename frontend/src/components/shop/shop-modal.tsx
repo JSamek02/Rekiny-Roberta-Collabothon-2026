@@ -3,8 +3,14 @@
 import { AvatarHatImage, avatarHats } from '@/components/avatar';
 import { useShop } from '@/components/shop/shop-context';
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle } from '@/ui';
-import { Check } from 'lucide-react';
+import { Check, ImageIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+
+const otherRewards = [
+  { id: 'advice-discount', title: 'other-advice-discount', company: 'Tumbleweed co.' },
+  { id: 'account-bonus', title: 'other-account-bonus', company: 'Tumbleweed co.' },
+  { id: 'investment-webinar', title: 'other-investment-webinar' },
+] as const;
 
 type ShopModalProps = {
   open: boolean;
@@ -25,7 +31,7 @@ export const ShopModal = ({ open, onOpenChange }: ShopModalProps) => {
           <DialogTitle className="text-xl font-semibold text-blue-950">{t('title')}</DialogTitle>
         </DialogHeader>
 
-        <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="min-h-0 flex-1 overflow-y-auto pr-4 -mr-4">
           <h3 className="mb-4 text-sm font-semibold text-grey-600">{t('category-hats')}</h3>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             {avatarHats.map((hat) => {
@@ -63,6 +69,24 @@ export const ShopModal = ({ open, onOpenChange }: ShopModalProps) => {
                 </article>
               );
             })}
+          </div>
+
+          <h3 className="mb-4 mt-8 text-sm font-semibold text-grey-600">{t('category-others')}</h3>
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            {otherRewards.map((reward) => (
+              <article
+                key={reward.id}
+                className="flex min-h-64 flex-col rounded-xl border border-blue-100 bg-white p-3"
+              >
+                <div className="flex min-h-40 flex-1 items-center justify-center rounded-lg bg-blue-50">
+                  <ImageIcon className="size-10 text-grey-400" aria-hidden />
+                </div>
+                <div className="mt-3 flex flex-1 flex-col gap-1">
+                  <span className="text-sm font-semibold text-blue-950">{t(reward.title)}</span>
+                  {'company' in reward && <span className="text-xs text-grey-600">{reward.company}</span>}
+                </div>
+              </article>
+            ))}
           </div>
         </div>
       </DialogContent>
