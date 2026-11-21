@@ -1,25 +1,19 @@
 'use client';
 
-import { sendChatMessage, synthesizeTTS } from '@/api/chat';
-import { ChatMessage } from '@/api/types/chat';
-import { FormattedText } from '@/components/sharkbot-chat/formatted-text';
-import { Link } from '@/i18n/navigation';
-import { ArrowLeftIcon } from '@/icons/arrow-left';
-import { MicIcon } from '@/icons/mic';
-import { SendIcon } from '@/icons/send';
-import { SpeakerIcon } from '@/icons/speaker';
-import { routes } from '@/utils/routes';
-import clsx from 'clsx';
+import {
+  useSendChatMessageMutation,
+  useSynthesizeTtsMutation,
+} from '@/api/services/chat-service';
+import { SharkbotChatComposer } from '@/components/sharkbot-chat/sharkbot-chat-composer';
+import { SharkbotChatHeader } from '@/components/sharkbot-chat/sharkbot-chat-header';
+import { SharkbotChatMessages } from '@/components/sharkbot-chat/sharkbot-chat-messages';
+import { SharkbotChatMessage } from '@/components/sharkbot-chat/sharkbot-chat-types';
 import { useLocale, useTranslations } from 'next-intl';
-import Image from 'next/image';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-/** Sharkbot always speaks with the Gemini TTS voice "Algieba". */
 const VOICE = 'Algieba';
 const HISTORY_LIMIT = 6;
-const SUGGESTION_KEYS = ['stocks-bonds', 'compound-interest', 'emergency-fund', 'etf', 'ike-ikze'] as const;
 
-// Minimal typings for the Web Speech API (not included in the TS DOM lib).
 type SpeechRecognitionResultEvent = { results: ArrayLike<ArrayLike<{ transcript: string }>> };
 type SpeechRecognitionInstance = {
   lang: string;
@@ -46,11 +40,12 @@ const formatTime = (date: Date) => date.toLocaleTimeString([], { hour: '2-digit'
 export const SharkbotChat = () => {
   const t = useTranslations('components.sharkbot-chat');
   const locale = useLocale();
+  const sendChatMutation = useSendChatMessageMutation();
+  const synthesizeTtsMutation = useSynthesizeTtsMutation();
 
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<SharkbotChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [voiceEnabled, setVoiceEnabled] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [bottomOffset, setBottomOffset] = useState(0);
@@ -61,7 +56,6 @@ export const SharkbotChat = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const idCounterRef = useRef(0);
 
-  // Keep the composer just above the sticky bottom navigation
   useEffect(() => {
     const nav = document.querySelector('nav');
     if (!nav) return;
@@ -72,9 +66,8 @@ export const SharkbotChat = () => {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }, [messages, isLoading]);
+  }, [messages, sendChatMutation.isPending]);
 
-  // Stop audio and free object URLs when leaving the view
   useEffect(() => {
     const urls = audioUrlsRef.current;
     return () => {
@@ -102,46 +95,55 @@ export const SharkbotChat = () => {
     setPlayingId(messageId);
     audio.onended = () => setPlayingId((id) => (id === messageId ? null : id));
     audio.onerror = () => setPlayingId((id) => (id === messageId ? null : id));
-    audio.play().catch((err) => {
-      console.warn('[Sharkbot] Audio playback blocked:', err);
+    audio.play().catch((error) => {
+      console.warn('[Sharkbot] Audio playback blocked:', error);
       setPlayingId(null);
     });
   };
 
-  const handleListen = async (msg: ChatMessage) => {
-    if (playingId === msg.id) {
+  const handleListen = async (message: SharkbotChatMessage) => {
+    if (playingId === message.id) {
       stopAudio();
       return;
     }
 
-    if (msg.audio_base64) {
-      playSource(`data:${msg.mime_type || 'audio/wav'};base64,${msg.audio_base64}`, msg.id);
+    if (message.audio_base64) {
+      playSource(`data:${message.mime_type || 'audio/wav'};base64,${message.audio_base64}`, message.id);
       return;
     }
 
-    const cachedUrl = audioUrlsRef.current.get(msg.id);
+    const cachedUrl = audioUrlsRef.current.get(message.id);
     if (cachedUrl) {
-      playSource(cachedUrl, msg.id);
+      playSource(cachedUrl, message.id);
       return;
     }
 
     try {
-      setPlayingId(msg.id);
-      const blob = await synthesizeTTS(msg.text, VOICE);
-      const url = URL.createObjectURL(blob);
-      audioUrlsRef.current.set(msg.id, url);
-      playSource(url, msg.id);
-    } catch (err) {
-      console.error('[Sharkbot] TTS error:', err);
+      setPlayingId(message.id);
+      const result = await synthesizeTtsMutation.mutateAsync({
+        text: message.text,
+        voice: VOICE,
+        format: 'json',
+      });
+      const jsonResult = result as unknown as {
+        audio_base64: string;
+        mime_type: string;
+      };
+      playSource(
+        `data:${jsonResult.mime_type || 'audio/wav'};base64,${jsonResult.audio_base64}`,
+        message.id,
+      );
+    } catch (error) {
+      console.error('[Sharkbot] TTS error:', error);
       setPlayingId(null);
     }
   };
 
   const handleSend = async (textToSend?: string) => {
     const text = (textToSend ?? inputText).trim();
-    if (!text || isLoading) return;
+    if (!text || sendChatMutation.isPending) return;
 
-    const userMsg: ChatMessage = {
+    const userMessage: SharkbotChatMessage = {
       id: nextId('user'),
       sender: 'user',
       text,
@@ -149,43 +151,48 @@ export const SharkbotChat = () => {
     };
 
     const history = messages
-      .filter((m) => !m.id.startsWith('error'))
+      .filter((message) => !message.id.startsWith('error'))
       .slice(-HISTORY_LIMIT)
-      .map((m) => ({ role: m.sender === 'user' ? 'user' : 'model', content: m.text }));
+      .map((message) => ({
+        role: message.sender === 'user' ? 'user' : 'model',
+        content: message.text,
+      }));
 
-    setMessages((prev) => [...prev, userMsg]);
+    setMessages((previous) => [...previous, userMessage]);
     setInputText('');
-    setIsLoading(true);
 
     try {
-      const res = await sendChatMessage({
+      const response = await sendChatMutation.mutateAsync({
         message: text,
         voice: VOICE,
         voice_enabled: voiceEnabled,
         history,
       });
 
-      const botMsg: ChatMessage = {
+      const botMessage: SharkbotChatMessage = {
         id: nextId('bot'),
         sender: 'assistant',
-        text: res.reply,
+        text: response.reply,
         timestamp: formatTime(new Date()),
-        sources: res.sources,
-        suggested_lessons: res.suggested_lessons,
-        audio_base64: res.audio_base64,
-        mime_type: res.mime_type,
-        voice: res.voice,
-        model: res.model,
+        sources: response.sources,
+        suggested_lessons: response.suggested_lessons,
+        audio_base64: response.audio_base64,
+        mime_type: response.mime_type,
+        voice: response.voice,
+        model: response.model,
       };
-      setMessages((prev) => [...prev, botMsg]);
+      setMessages((previous) => [...previous, botMessage]);
 
-      if (voiceEnabled && res.audio_base64) {
-        playSource(`data:${res.mime_type || 'audio/wav'};base64,${res.audio_base64}`, botMsg.id);
+      if (voiceEnabled && response.audio_base64) {
+        playSource(
+          `data:${response.mime_type || 'audio/wav'};base64,${response.audio_base64}`,
+          botMessage.id,
+        );
       }
-    } catch (err) {
-      console.error('[Sharkbot] Chat error:', err);
-      setMessages((prev) => [
-        ...prev,
+    } catch (error) {
+      console.error('[Sharkbot] Chat error:', error);
+      setMessages((previous) => [
+        ...previous,
         {
           id: nextId('error'),
           sender: 'assistant',
@@ -193,8 +200,6 @@ export const SharkbotChat = () => {
           timestamp: formatTime(new Date()),
         },
       ]);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -218,7 +223,7 @@ export const SharkbotChat = () => {
     recognition.onresult = (event) => {
       const transcript = event.results[0]?.[0]?.transcript ?? '';
       setIsRecording(false);
-      if (transcript) handleSend(transcript);
+      if (transcript) void handleSend(transcript);
     };
     recognition.onerror = (event) => {
       console.warn('[Sharkbot] Speech recognition error:', event);
@@ -230,185 +235,35 @@ export const SharkbotChat = () => {
     try {
       recognition.start();
       setIsRecording(true);
-    } catch (err) {
-      console.error('[Sharkbot] Could not start speech recognition:', err);
+    } catch (error) {
+      console.error('[Sharkbot] Could not start speech recognition:', error);
       setIsRecording(false);
     }
   };
 
   return (
     <div className="flex flex-col flex-1 gap-4 px-5 pt-4">
-      {/* Back link + title */}
-      <div className="flex flex-col gap-3">
-        <Link href={routes.home} className="flex items-center gap-1 text-sm uppercase text-blue-950 w-fit">
-          <ArrowLeftIcon className="text-2xl stroke-[1.5]" />
-          <span>{t('back')}</span>
-        </Link>
-
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-base text-grey-600 line-through">{t('title-strike')}</p>
-            <h1 className="text-2xl font-medium leading-none text-blue-950">{t('title')}</h1>
-          </div>
-
-          {/* Voice controls */}
-          <div className="flex items-center gap-2 rounded-xl border border-blue-100 bg-white px-3 py-1.5 text-xs">
-            <label className="flex items-center gap-1.5 cursor-pointer font-medium text-blue-950">
-              <input
-                type="checkbox"
-                checked={voiceEnabled}
-                onChange={(e) => setVoiceEnabled(e.target.checked)}
-                className="size-4 accent-blue-500 cursor-pointer"
-              />
-              {t('voice')}
-            </label>
-          </div>
-        </div>
-      </div>
-
-      {/* Messages */}
-      <div className="flex flex-col gap-3 flex-1">
-        {/* Intro card, styled like the "Sharkbot!" card from the dashboard design */}
-        <div className="relative flex items-end gap-3 rounded-xl border border-blue-100 bg-white p-4 overflow-hidden">
-          <p className="text-sm text-grey-600 flex-1">{t('intro')}</p>
-          <Image src="/img/shark.svg" alt="" width={80} height={120} className="-mb-10 shrink-0" />
-        </div>
-
-        {messages.length === 0 && (
-          <div className="flex flex-col gap-2">
-            <p className="text-xs font-medium text-grey-600">{t('suggestions-title')}</p>
-            <div className="flex flex-wrap gap-2">
-              {SUGGESTION_KEYS.map((key) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => handleSend(t(`suggestions.${key}`))}
-                  className="rounded-full border border-blue-100 bg-white px-3 py-1.5 text-xs text-blue-950 transition-colors hover:bg-blue-100 cursor-pointer"
-                >
-                  {t(`suggestions.${key}`)}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {messages.map((msg) =>
-          msg.sender === 'user' ? (
-            <div key={msg.id} className="flex flex-col items-end gap-1">
-              <div className="max-w-[85%] rounded-xl rounded-br-sm bg-blue-500 px-4 py-2.5 text-sm text-white whitespace-pre-line">
-                {msg.text}
-              </div>
-              <span className="text-[10px] text-grey-400">{msg.timestamp}</span>
-            </div>
-          ) : (
-            <div key={msg.id} className="flex flex-col items-start gap-1">
-              <div className="max-w-[92%] flex flex-col gap-3 rounded-xl rounded-bl-sm border border-blue-100 bg-white p-4 text-blue-950">
-                <FormattedText text={msg.text} />
-
-                {msg.sources && msg.sources.length > 0 && (
-                  <div className="flex flex-col gap-1.5">
-                    <p className="text-xs font-medium text-grey-600">{t('sources')}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {msg.sources.map((src) => (
-                        <span key={src.id} className="rounded-md bg-blue-50 px-2 py-0.5 text-[11px] text-blue-950">
-                          {src.title}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {msg.suggested_lessons && msg.suggested_lessons.length > 0 && (
-                  <div className="flex flex-col gap-1.5">
-                    <p className="text-xs font-medium text-grey-600">{t('lessons')}</p>
-                    {msg.suggested_lessons.map((lesson) => (
-                      <Link
-                        key={lesson.slug}
-                        href={`/courses/${lesson.slug}`}
-                        className="flex items-center justify-between gap-2 rounded-lg border border-blue-100 px-3 py-2 text-xs font-semibold text-blue-950 transition-colors hover:bg-blue-50"
-                      >
-                        <span>{lesson.title}</span>
-                        <span aria-hidden>→</span>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-
-                {!msg.id.startsWith('error') && (
-                  <button
-                    type="button"
-                    onClick={() => handleListen(msg)}
-                    className={clsx(
-                      'flex w-fit items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer',
-                      playingId === msg.id ? 'bg-blue-500 text-white' : 'bg-blue-50 text-blue-500 hover:bg-blue-100',
-                    )}
-                  >
-                    <SpeakerIcon className="text-base stroke-[1.5]" />
-                    {playingId === msg.id ? t('stop') : t('listen')}
-                  </button>
-                )}
-              </div>
-              <span className="text-[10px] text-grey-400">{msg.timestamp}</span>
-            </div>
-          ),
-        )}
-
-        {isLoading && (
-          <div className="relative flex flex-col gap-1 overflow-hidden rounded-xl border border-blue-100 bg-white p-4 pb-16">
-            <p className="text-2xl font-medium text-[#617bff]">{t('waiting-title')}</p>
-            <p className="text-base text-[#061d8d]">{t('waiting-subtitle')}</p>
-            {/* Waves with the shark fin, from the "Please wait!" screen in the design */}
-            <div className="absolute inset-x-0 bottom-0 h-14 animate-pulse">
-              <Image src="/img/waves.svg" alt="" fill className="object-cover object-top" />
-            </div>
-          </div>
-        )}
-
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* Composer */}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSend();
-        }}
-        style={{ bottom: bottomOffset }}
-        className="sticky z-10 -mx-5 flex items-center gap-2 bg-blue-50 px-5 py-3"
-      >
-        <button
-          type="button"
-          onClick={toggleRecording}
-          aria-label={isRecording ? t('mic-stop') : t('mic-start')}
-          title={isRecording ? t('mic-stop') : t('mic-start')}
-          className={clsx(
-            'flex size-10 shrink-0 items-center justify-center rounded-lg border transition-colors cursor-pointer',
-            isRecording
-              ? 'animate-pulse border-blue-500 bg-blue-500 text-white'
-              : 'border-blue-100 bg-white text-blue-950 hover:bg-blue-100',
-          )}
-        >
-          <MicIcon className="text-xl stroke-[1.5]" />
-        </button>
-
-        <input
-          type="text"
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-          placeholder={isRecording ? t('placeholder-listening') : t('placeholder')}
-          className="h-10 min-w-0 flex-1 rounded-lg border border-blue-100 bg-white px-3 text-sm text-blue-950 placeholder:text-grey-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-
-        <button
-          type="submit"
-          disabled={!inputText.trim() || isLoading}
-          aria-label={t('send')}
-          className="flex h-10 shrink-0 items-center gap-2 rounded-lg bg-blue-500 px-4 text-sm font-semibold text-white transition-opacity disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-        >
-          <span className="hidden min-[380px]:inline">{t('send')}</span>
-          <SendIcon className="text-lg stroke-[1.5]" />
-        </button>
-      </form>
+      <SharkbotChatHeader
+        voiceEnabled={voiceEnabled}
+        onVoiceEnabledChange={setVoiceEnabled}
+      />
+      <SharkbotChatMessages
+        messages={messages}
+        isLoading={sendChatMutation.isPending}
+        playingId={playingId}
+        messagesEndRef={messagesEndRef}
+        onSendSuggestion={(text) => void handleSend(text)}
+        onListen={(message) => void handleListen(message)}
+      />
+      <SharkbotChatComposer
+        inputText={inputText}
+        bottomOffset={bottomOffset}
+        isLoading={sendChatMutation.isPending}
+        isRecording={isRecording}
+        onInputChange={setInputText}
+        onSend={() => void handleSend()}
+        onToggleRecording={toggleRecording}
+      />
     </div>
   );
 };
