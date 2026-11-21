@@ -2,8 +2,13 @@
 
 import React from 'react';
 import { AssetAllocations, AssetKey } from './types';
-import { TrendingUp, Landmark, Coins, Banknote, Minus, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { TrendingUpIcon } from '@/icons/trending-up';
+import { BankIcon } from '@/icons/bank';
+import { CoinsIcon } from '@/icons/coins';
+import { BanknoteIcon } from '@/icons/banknote';
+import { MinusIcon } from '@/icons/minus';
+import { PlusIcon } from '@/icons/plus';
 
 interface AllocationSlidersProps {
   allocations: AssetAllocations;
@@ -21,22 +26,22 @@ const ASSET_CONFIG: Record<
   }
 > = {
   stocks: {
-    icon: TrendingUp,
+    icon: TrendingUpIcon,
     barColor: '#3b5cff',
     textColor: 'text-blue-500',
   },
   bonds: {
-    icon: Landmark,
+    icon: BankIcon,
     barColor: '#10b981',
     textColor: 'text-[#10b981]',
   },
   gold: {
-    icon: Coins,
+    icon: CoinsIcon,
     barColor: '#f59e0b',
     textColor: 'text-[#f59e0b]',
   },
   cash: {
-    icon: Banknote,
+    icon: BanknoteIcon,
     barColor: '#64748b',
     textColor: 'text-[#64748b]',
   },
@@ -74,9 +79,7 @@ export const AllocationSliders: React.FC<AllocationSlidersProps> = ({
   const t = useTranslations('components.stock.allocation-sliders');
 
   // Sum percentage (rounded to 1 decimal)
-  const totalPct = Math.round(
-    (allocations.stocks + allocations.bonds + allocations.gold + allocations.cash) * 100
-  );
+  const totalPct = Math.round((allocations.stocks + allocations.bonds + allocations.gold + allocations.cash) * 100);
 
   const handleSliderChange = (key: AssetKey, newPctVal: number) => {
     const val = Math.max(0, Math.min(100, newPctVal)) / 100;
@@ -102,7 +105,7 @@ export const AllocationSliders: React.FC<AllocationSlidersProps> = ({
             (Math.round((allocations.stocks / sum) * 100) / 100 +
               Math.round((allocations.bonds / sum) * 100) / 100 +
               Math.round((allocations.gold / sum) * 100) / 100)) *
-            100
+            100,
         ) / 100,
     });
   };
@@ -111,9 +114,7 @@ export const AllocationSliders: React.FC<AllocationSlidersProps> = ({
     <div className="bg-white rounded-2xl p-4 border border-blue-100 flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-bold text-sm text-blue-950">
-            {t(isInitial ? 'title-initial' : 'title-rebalance')}
-          </h3>
+          <h3 className="font-bold text-sm text-blue-950">{t(isInitial ? 'title-initial' : 'title-rebalance')}</h3>
           <p className="text-xs text-grey-600">{t('subtitle')}</p>
         </div>
         <div
@@ -163,6 +164,7 @@ export const AllocationSliders: React.FC<AllocationSlidersProps> = ({
               onClick={() => onChange(p.alloc)}
               className="px-2 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-950 text-[11px] font-medium transition-colors border border-blue-100 active:scale-95 cursor-pointer disabled:opacity-50"
             >
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {t(`presets.${p.key}` as any)}
             </button>
           ))}
@@ -181,13 +183,13 @@ export const AllocationSliders: React.FC<AllocationSlidersProps> = ({
               <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-1.5">
                   <Icon className={`w-4 h-4 ${cfg.textColor}`} />
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   <span className="font-semibold text-blue-950">{t(`assets.${key}.name` as any)}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className={`font-bold font-mono ${cfg.textColor}`}>{pct}%</span>
                 </div>
               </div>
-
               <div className="flex items-center gap-3">
                 <button
                   type="button"
@@ -196,7 +198,7 @@ export const AllocationSliders: React.FC<AllocationSlidersProps> = ({
                   className="w-6 h-6 rounded bg-white border border-grey-200 text-xs font-bold text-grey-600 hover:bg-blue-50 flex items-center justify-center disabled:opacity-40 cursor-pointer"
                   aria-label="Decrease percentage"
                 >
-                  <Minus className="w-3 h-3" />
+                  <MinusIcon className="w-3 h-3" />
                 </button>
                 <input
                   type="range"
@@ -215,10 +217,10 @@ export const AllocationSliders: React.FC<AllocationSlidersProps> = ({
                   className="w-6 h-6 rounded bg-white border border-grey-200 text-xs font-bold text-grey-600 hover:bg-blue-50 flex items-center justify-center disabled:opacity-40 cursor-pointer"
                   aria-label="Increase percentage"
                 >
-                  <Plus className="w-3 h-3" />
+                  <PlusIcon className="w-3 h-3" />
                 </button>
               </div>
-
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               <span className="text-[10px] text-grey-600 mt-0.5">{t(`assets.${key}.description` as any)}</span>
             </div>
           );

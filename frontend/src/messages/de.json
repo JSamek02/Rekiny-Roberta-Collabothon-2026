@@ -263,6 +263,11 @@
       }
     }
   },
+  "pages": {
+    "profile": {
+      "edit-personalization": "Personalisierung bearbeiten"
+    }
+  },
   "global": {
     "routes": {
       "home": "Startseite",

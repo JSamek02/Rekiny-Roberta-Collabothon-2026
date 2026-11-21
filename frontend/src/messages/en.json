@@ -299,7 +299,8 @@
   },
   "pages": {
     "profile": {
-      "heading": "Welcome,<br></br><span>{name}</span>"
+      "heading": "Welcome,<br></br><span>{name}</span>",
+      "edit-personalization": "Edit personalization"
     }
   },
   "global": {
