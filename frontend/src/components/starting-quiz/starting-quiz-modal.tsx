@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Dialog, DialogContent, DialogTitle } from '@/ui';
 import { StartingQuizView } from './starting-quiz-view';
 import { useStartingQuiz } from './use-starting-quiz';
@@ -12,6 +13,7 @@ export const StartingQuizModal = ({
   onFinished,
   forceShow = false,
 }: StartingQuizModalProps) => {
+  const t = useTranslations('components.starting-quiz');
   const { shouldShow, skipQuiz } = useStartingQuiz();
   const [internalOpen, setInternalOpen] = useState(true);
 
@@ -36,7 +38,7 @@ export const StartingQuizModal = ({
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent showCloseButton={false} className="max-w-md p-5 sm:p-6">
-        <DialogTitle className="sr-only">Ankieta wstępna</DialogTitle>
+        <DialogTitle className="sr-only">{t('modal-title')}</DialogTitle>
         <StartingQuizView onComplete={handleComplete} onSkip={handleClose} />
       </DialogContent>
     </Dialog>

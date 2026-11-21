@@ -2,16 +2,12 @@ import type { ComponentType } from 'react';
 
 export type QuizOption = {
   id: string;
-  title: string;
-  description: string;
   icon: ComponentType<{ className?: string }>;
   iconColor: string;
 };
 
 export type QuizStep = {
   id: string;
-  title: string;
-  subtitle: string;
   options: QuizOption[];
   isMultiSelect?: boolean;
 };

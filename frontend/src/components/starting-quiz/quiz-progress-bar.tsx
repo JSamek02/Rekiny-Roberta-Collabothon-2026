@@ -1,6 +1,7 @@
 'use client';
 
 import clsx from 'clsx';
+import { useTranslations } from 'next-intl';
 
 type QuizProgressBarProps = {
   currentStep: number;
@@ -13,6 +14,8 @@ export const QuizProgressBar = ({
   totalSteps,
   onSkip,
 }: QuizProgressBarProps) => {
+  const t = useTranslations('components.starting-quiz');
+
   return (
     <div className="flex items-center justify-between gap-3 pb-1">
       <div
@@ -21,7 +24,7 @@ export const QuizProgressBar = ({
         aria-valuenow={currentStep + 1}
         aria-valuemin={1}
         aria-valuemax={totalSteps}
-        aria-label={`Krok ${currentStep + 1} z ${totalSteps}`}
+        aria-label={t('step-progress', { current: currentStep + 1, total: totalSteps })}
       >
         {Array.from({ length: totalSteps }, (_, idx) => (
           <span
@@ -44,7 +47,7 @@ export const QuizProgressBar = ({
           onClick={onSkip}
           className="text-xs font-semibold text-grey-500 transition-colors hover:text-blue-900 focus-visible:outline-hidden focus-visible:underline"
         >
-          Pomiń
+          {t('skip')}
         </button>
       )}
     </div>

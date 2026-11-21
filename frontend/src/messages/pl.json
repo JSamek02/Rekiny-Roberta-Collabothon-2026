@@ -509,6 +509,99 @@
       "caught": "Złapane: {cakes, plural, =1 {# ciasto} few {# ciasta} other {# ciast}} i {coins, plural, =1 {# SharkCoin} few {# SharkCoiny} other {# SharkCoinów}}",
       "play-again": "Jeszcze raz",
       "back": "Wróć"
+    },
+    "starting-quiz": {
+      "skip": "Pomiń",
+      "back": "Wstecz",
+      "next": "Dalej",
+      "finish": "Rozpocznij naukę",
+      "step-progress": "Krok {current} z {total}",
+      "modal-title": "Ankieta wstępna",
+      "thank-you": {
+        "title": "Dziękujemy za wypełnienie ankiety!",
+        "description": "Twój profil został skonfigurowany. Przygotowaliśmy dla Ciebie spersonalizowane lekcje oraz wyzwania w aplikacji.",
+        "benefit-plan": "Plan nauki dopasowany do Twoich celów",
+        "benefit-difficulty": "Odpowiedni poziom trudności na start",
+        "cta": "Przejdź do ekranu głównego"
+      },
+      "steps": {
+        "goal": {
+          "title": "Jaki jest Twój główny cel finansowy?",
+          "subtitle": "Wybierz jedną lub więcej opcji, a pomożemy Ci dobrać odpowiednie lekcje.",
+          "options": {
+            "budget_basics": {
+              "title": "Podstawy i budżet domowy",
+              "description": "Zbudowanie poduszki finansowej i kontrola wydatków"
+            },
+            "first_investments": {
+              "title": "Pierwsze inwestycje",
+              "description": "Bezpieczny start: ETF-y, obligacje skarbowe i giełda"
+            },
+            "big_expense": {
+              "title": "Duży cel finansowy",
+              "description": "Wkład własny, zakup mieszkania lub większy wydatek"
+            },
+            "long_term_capital": {
+              "title": "Kapitał długoterminowy",
+              "description": "Zabezpieczenie emerytury i siła procentu składanego"
+            }
+          }
+        },
+        "level": {
+          "title": "Jak oceniasz swoją wiedzę o finansach?",
+          "subtitle": "Dostosujemy trudność materiałów edukacyjnych.",
+          "options": {
+            "level_beginner": {
+              "title": "Zaczynam od zera",
+              "description": "Pojęcia takie jak obligacje czy ETF są mi zupełnie obce"
+            },
+            "level_intermediate": {
+              "title": "Znam podstawy",
+              "description": "Wiem, czym jest inflacja i lokata, ale brak mi pewności"
+            },
+            "level_advanced": {
+              "title": "Mam pierwsze kroki za sobą",
+              "description": "Inwestuję i chcę usystematyzować strategię"
+            }
+          }
+        },
+        "format": {
+          "title": "W jakiej formie najwygodniej Ci się uczyć?",
+          "subtitle": "Wybierz preferowany format przyswajania wiedzy.",
+          "options": {
+            "format_quiz": {
+              "title": "Krótkie quizy i wyzwania",
+              "description": "Interaktywne pytania, misje i zdobywanie punktów"
+            },
+            "format_articles": {
+              "title": "Zwięzłe pigułki wiedzy",
+              "description": "Krótkie artykuły i infografiki czytane we własnym tempie"
+            },
+            "format_ai": {
+              "title": "Rozmowa z SharkBotem",
+              "description": "Asystent AI odpowiadający na bieżąco na Twoje pytania"
+            }
+          }
+        },
+        "commitment": {
+          "title": "Ile czasu dziennie chcesz poświęcić?",
+          "subtitle": "Ustal swoje tempo, by łatwiej utrzymać regularność.",
+          "options": {
+            "time_5m": {
+              "title": "5 minut dziennie",
+              "description": "Na luzie – 1 szybka pigułka wiedzy dziennie"
+            },
+            "time_10m": {
+              "title": "10 minut dziennie",
+              "description": "Regularnie – 1 lekcja + szybki quiz"
+            },
+            "time_15m": {
+              "title": "15+ minut dziennie",
+              "description": "Ambitnie – pełne misje i maksymalne nagrody"
+            }
+          }
+        }
+      }
     }
   },
   "pages": {

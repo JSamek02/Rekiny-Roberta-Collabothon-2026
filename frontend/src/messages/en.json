@@ -509,6 +509,99 @@
       "caught": "Caught: {cakes, plural, =1 {# cake} other {# cakes}} and {coins, plural, =1 {# SharkCoin} other {# SharkCoins}}",
       "play-again": "Play again",
       "back": "Back"
+    },
+    "starting-quiz": {
+      "skip": "Skip",
+      "back": "Back",
+      "next": "Next",
+      "finish": "Start learning",
+      "step-progress": "Step {current} of {total}",
+      "modal-title": "Starting survey",
+      "thank-you": {
+        "title": "Thank you for completing the survey!",
+        "description": "Your profile has been set up. We have prepared personalized lessons and challenges for you in the app.",
+        "benefit-plan": "Learning path tailored to your goals",
+        "benefit-difficulty": "Optimal difficulty level from day one",
+        "cta": "Go to home screen"
+      },
+      "steps": {
+        "goal": {
+          "title": "What is your main financial goal right now?",
+          "subtitle": "Choose one or more options to help us tailor your starting lessons.",
+          "options": {
+            "budget_basics": {
+              "title": "Foundations & household budget",
+              "description": "Build an emergency fund and take control of expenses"
+            },
+            "first_investments": {
+              "title": "First investments",
+              "description": "Safe start: ETFs, treasury bonds, and stock market"
+            },
+            "big_expense": {
+              "title": "Major financial goal",
+              "description": "Down payment, buying a home, or a major purchase"
+            },
+            "long_term_capital": {
+              "title": "Long-term wealth",
+              "description": "Retirement security and the power of compound interest"
+            }
+          }
+        },
+        "level": {
+          "title": "How would you rate your financial knowledge?",
+          "subtitle": "We will adapt the difficulty of educational materials.",
+          "options": {
+            "level_beginner": {
+              "title": "Starting from scratch",
+              "description": "Concepts like bonds or ETFs are completely new to me"
+            },
+            "level_intermediate": {
+              "title": "I know the basics",
+              "description": "I understand inflation and savings, but lack confidence"
+            },
+            "level_advanced": {
+              "title": "I have taken my first steps",
+              "description": "I invest and want to systemize my strategy"
+            }
+          }
+        },
+        "format": {
+          "title": "How do you prefer to learn?",
+          "subtitle": "Select your favorite learning format.",
+          "options": {
+            "format_quiz": {
+              "title": "Short quizzes & challenges",
+              "description": "Interactive questions, missions, and earning points"
+            },
+            "format_articles": {
+              "title": "Bite-sized knowledge pills",
+              "description": "Concise articles and infographics at your own pace"
+            },
+            "format_ai": {
+              "title": "Conversation with SharkBot",
+              "description": "AI assistant answering your questions in real time"
+            }
+          }
+        },
+        "commitment": {
+          "title": "How much time do you want to spend daily?",
+          "subtitle": "Set your pace to easily maintain a regular streak.",
+          "options": {
+            "time_5m": {
+              "title": "5 minutes a day",
+              "description": "Casual – 1 quick knowledge pill per day"
+            },
+            "time_10m": {
+              "title": "10 minutes a day",
+              "description": "Regular – 1 lesson + quick quiz"
+            },
+            "time_15m": {
+              "title": "15+ minutes a day",
+              "description": "Ambitious – full missions and maximum rewards"
+            }
+          }
+        }
+      }
     }
   },
   "pages": {

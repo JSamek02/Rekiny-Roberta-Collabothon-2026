@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import clsx from 'clsx';
 import { ArrowLeft, ChevronRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/ui';
 import { QuizOptionCard } from './quiz-option-card';
 import { QuizProgressBar } from './quiz-progress-bar';
@@ -15,6 +16,7 @@ export const StartingQuizView = ({
   onSkip,
   className,
 }: StartingQuizViewProps) => {
+  const t = useTranslations('components.starting-quiz');
   const [isCompleted, setIsCompleted] = useState(false);
   const {
     currentStep,
@@ -53,6 +55,9 @@ export const StartingQuizView = ({
     );
   }
 
+  const stepTitle = t(`steps.${currentStep.id}.title` as any);
+  const stepSubtitle = t(`steps.${currentStep.id}.subtitle` as any);
+
   return (
     <div className={clsx('flex flex-col gap-4', className)}>
       <QuizProgressBar
@@ -63,19 +68,20 @@ export const StartingQuizView = ({
 
       <div className="space-y-1">
         <h2 className="text-xl font-bold tracking-tight text-blue-950">
-          {currentStep.title}
+          {stepTitle}
         </h2>
-        <p className="text-xs text-grey-600">{currentStep.subtitle}</p>
+        <p className="text-xs text-grey-600">{stepSubtitle}</p>
       </div>
 
       <div
         role={currentStep.isMultiSelect ? 'group' : 'radiogroup'}
-        aria-label={currentStep.title}
+        aria-label={stepTitle}
         className="flex flex-col gap-2.5 py-1"
       >
         {currentStep.options.map((option) => (
           <QuizOptionCard
             key={option.id}
+            stepId={currentStep.id}
             option={option}
             isSelected={isOptionSelected(option.id)}
             onSelect={selectOption}
@@ -94,7 +100,7 @@ export const StartingQuizView = ({
             className="gap-1.5 px-3 text-grey-600 hover:text-blue-950"
           >
             <ArrowLeft className="size-4" />
-            Wstecz
+            {t('back')}
           </Button>
         )}
 
@@ -106,7 +112,7 @@ export const StartingQuizView = ({
           disabled={!hasValidSelection}
           className="flex-1 gap-2"
         >
-          {isLastStep ? 'Rozpocznij naukę' : 'Dalej'}
+          {isLastStep ? t('finish') : t('next')}
           <ChevronRight className="size-4" />
         </Button>
       </div>

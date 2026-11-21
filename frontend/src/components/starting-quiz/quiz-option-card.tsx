@@ -2,9 +2,11 @@
 
 import clsx from 'clsx';
 import { Check } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { QuizOption } from './types';
 
 type QuizOptionCardProps = {
+  stepId: string;
   option: QuizOption;
   isSelected: boolean;
   onSelect: (id: string) => void;
@@ -12,12 +14,17 @@ type QuizOptionCardProps = {
 };
 
 export const QuizOptionCard = ({
+  stepId,
   option,
   isSelected,
   onSelect,
   isMultiSelect = false,
 }: QuizOptionCardProps) => {
+  const t = useTranslations('components.starting-quiz');
   const Icon = option.icon;
+
+  const title = t(`steps.${stepId}.options.${option.id}.title` as any);
+  const description = t(`steps.${stepId}.options.${option.id}.description` as any);
 
   return (
     <button
@@ -44,10 +51,10 @@ export const QuizOptionCard = ({
             isSelected ? 'text-blue-950' : 'text-grey-900',
           )}
         >
-          {option.title}
+          {title}
         </p>
         <p className="mt-1 text-xs text-grey-500 leading-snug">
-          {option.description}
+          {description}
         </p>
       </div>
 
