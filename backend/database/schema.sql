@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS user_sessions (
     user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     expires_at TIMESTAMPTZ NOT NULL
 );
+CREATE INDEX IF NOT EXISTS ix_user_sessions_user_id ON user_sessions(user_id);
 
 CREATE TABLE IF NOT EXISTS courses (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -30,6 +31,7 @@ CREATE TABLE IF NOT EXISTS courses (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+CREATE INDEX IF NOT EXISTS ix_courses_slug ON courses(slug);
 
 CREATE TABLE IF NOT EXISTS lessons (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -43,7 +45,7 @@ CREATE TABLE IF NOT EXISTS lessons (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX IF NOT EXISTS idx_lessons_course_id ON lessons(course_id);
+CREATE INDEX IF NOT EXISTS ix_lessons_course_id ON lessons(course_id);
 
 CREATE TABLE IF NOT EXISTS activities (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -57,9 +59,25 @@ CREATE TABLE IF NOT EXISTS activities (
     content JSONB NOT NULL DEFAULT '{}'::jsonb,
     translations JSONB NOT NULL DEFAULT '{}'::jsonb,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    CONSTRAINT ck_activities_activity_type CHECK (activity_type IN ('article', 'quiz', 'video'))
 );
-CREATE INDEX IF NOT EXISTS idx_activities_lesson_id ON activities(lesson_id);
+CREATE INDEX IF NOT EXISTS ix_activities_lesson_id ON activities(lesson_id);
+
+CREATE TABLE IF NOT EXISTS activity_videos (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    activity_id BIGINT NOT NULL REFERENCES activities(id) ON DELETE CASCADE,
+    language VARCHAR(2) NOT NULL DEFAULT 'pl',
+    filename VARCHAR(255) NOT NULL,
+    mime_type VARCHAR(127) NOT NULL DEFAULT 'video/mp4',
+    size_bytes BIGINT NOT NULL,
+    data BYTEA NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    CONSTRAINT uq_activity_video_language UNIQUE (activity_id, language),
+    CONSTRAINT ck_activity_videos_language CHECK (language IN ('pl', 'en', 'de'))
+);
+CREATE INDEX IF NOT EXISTS ix_activity_videos_activity_id ON activity_videos(activity_id);
 
 CREATE TABLE IF NOT EXISTS user_course_enrollments (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -70,6 +88,8 @@ CREATE TABLE IF NOT EXISTS user_course_enrollments (
     last_accessed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     CONSTRAINT uq_user_course UNIQUE (user_id, course_id)
 );
+CREATE INDEX IF NOT EXISTS ix_user_course_enrollments_user_id ON user_course_enrollments(user_id);
+CREATE INDEX IF NOT EXISTS ix_user_course_enrollments_course_id ON user_course_enrollments(course_id);
 
 CREATE TABLE IF NOT EXISTS user_activity_progress (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -87,3 +107,5 @@ CREATE TABLE IF NOT EXISTS user_activity_progress (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     CONSTRAINT uq_user_activity UNIQUE (user_id, activity_id)
 );
+CREATE INDEX IF NOT EXISTS ix_user_activity_progress_user_id ON user_activity_progress(user_id);
+CREATE INDEX IF NOT EXISTS ix_user_activity_progress_activity_id ON user_activity_progress(activity_id);

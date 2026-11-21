@@ -2,6 +2,8 @@
 
 API we Flasku z bazą PostgreSQL w Google Cloud SQL. Docker Compose uruchamia Cloud SQL Auth Proxy; API działa lokalnie.
 
+Pełny opis endpointów (wejścia, odpowiedzi i kody błędów) znajduje się w [API.md](API.md).
+
 ## Struktura
 
 - `app.py` — konfiguracja aplikacji i rejestracja modułów API.
@@ -49,9 +51,19 @@ Compose uruchamia Cloud SQL Auth Proxy dla instancji `encoded-breaker-515313-h9:
 
 Jeśli działa stary kontener `postgres` z poprzedniej konfiguracji, może nadal działać jako osierocony kontener. Zatrzymaj go osobno, gdy nie będzie potrzebny; nie usuwaj jego wolumenu, jeśli są tam potrzebne dane.
 
-Polecenie `init-db` tworzy brakujące tabele, uzupełnia istniejącą tabelę `users` o pola `preferred_language` oraz `shark_coins`, a tabele kursów, lekcji i aktywności o `translations`. Dla istniejących użytkowników saldo jest jednorazowo wyliczane z dotychczas zdobytych monet.
+Polecenie `init-db` tworzy brakujące tabele, w tym `activity_videos` dla plików MP4, uzupełnia istniejącą tabelę `users` o pola `preferred_language` oraz `shark_coins`, a tabele kursów, lekcji i aktywności o `translations`. Dla istniejących użytkowników saldo jest jednorazowo wyliczane z dotychczas zdobytych monet.
 
 Testy: `python -m unittest`. Testy operacji na użytkownikach używają bazy SQLite w pamięci.
+
+## Dane demonstracyjne
+
+Po utworzeniu schematu załaduj przykładowe kursy, lekcje i aktywności:
+
+```bash
+psql "$DATABASE_URL" -f database/seed.sql
+```
+
+Plik `database/seed.sql` jest przeznaczony dla PostgreSQL i można go uruchamiać wielokrotnie — nie usuwa danych użytkowników ani nie nadpisuje istniejących kursów. Zawiera fixture’y z testów kursów i czatu. Wydarzenia giełdowe pozostają w `services/simulation_data.py`, ponieważ aktualny moduł symulacji odczytuje je wyłącznie z pamięci, a nie z bazy danych.
 
 ## Tryb demonstracyjny bez Google
 
@@ -129,7 +141,7 @@ Polski tekst nadal znajduje się w głównych kolumnach. Tłumaczenia zapisuj w 
 }
 ```
 
-Dla aktywności obiekt języka może również zawierać pełne `content`; w ten sposób tłumaczy się artykuł, adres wideo lub pytania quizu:
+Dla aktywności obiekt języka może również zawierać pełne `content`; w ten sposób tłumaczy się artykuł, zewnętrzny adres wideo lub pytania quizu:
 
 ```json
 {
@@ -150,6 +162,40 @@ Dla aktywności obiekt języka może również zawierać pełne `content`; w ten
 ```
 
 Identyfikatory pytań i opcji muszą pozostać takie same jak w polskiej treści. Poprawne odpowiedzi oraz próg zaliczenia pozostają w bazowej polskiej strukturze, więc ocena quizu nie zależy od języka klienta.
+
+## Filmy MP4 w bazie
+
+Struktura treści jest następująca: kurs ma lekcje, lekcja ma aktywności, a aktywność ma typ `article`, `quiz` lub `video`. Artykuł i quiz pozostają w JSON-ie `activities.content`; pliki MP4 są przechowywane binarnie w tabeli `activity_videos`, oddzielnie dla każdego języka (`pl`, `en`, `de`). Dzięki temu film angielski i niemiecki mogą być różnymi plikami.
+
+Zwykłe odczyty kursów nie pobierają plików binarnych. Przy `GET /api/activities/:activityId` backend wybiera film według `Accept-Language` i zwraca jego metadane w `content`; gdy brakuje wersji `en` lub `de`, używa wersji polskiej:
+
+```json
+{
+  "activity": {
+    "activity_type": "video",
+    "content": {
+      "video_url": "/api/activities/42/video?language=en",
+      "video_filename": "podstawy-gieldy-en.mp4",
+      "video_mime_type": "video/mp4",
+      "video_size_bytes": 18432590,
+      "video_language": "en"
+    }
+  }
+}
+```
+
+`GET /api/activities/:activityId/video` zwraca właściwy MP4 jako `video/mp4`. Adres zwrócony w szczegółach aktywności zawiera już wybrany język; przy ręcznym wywołaniu bez parametru `language` backend wybiera wersję z `Accept-Language` i ewentualnie wraca do polskiej.
+
+Do zapisu filmów ustaw w `backend/.env` osobny, losowy sekret `CONTENT_ADMIN_TOKEN` oraz opcjonalny limit `MAX_VIDEO_UPLOAD_BYTES` (domyślnie `104857600`, czyli 100 MiB). Następnie administrator wysyła `multipart/form-data` z polem pliku `video` i opcjonalnym polem `language` (`pl` domyślnie):
+
+```bash
+curl -X POST http://localhost:5000/api/activities/42/video \
+  -H "X-Content-Admin-Token: $CONTENT_ADMIN_TOKEN" \
+  -F "video=@podstawy-gieldy-en.mp4" \
+  -F "language=en"
+```
+
+Plik musi mieć rozszerzenie `.mp4` i poprawny nagłówek kontenera MP4. Endpoint nadpisuje wyłącznie film dla wskazanej aktywności i języka; bez poprawnego tokenu zwraca `403`.
 
 Przykład wylogowania z frontendu pod tym samym originem:
 

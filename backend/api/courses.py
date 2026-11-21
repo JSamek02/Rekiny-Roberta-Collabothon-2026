@@ -1,13 +1,17 @@
+import hmac
 from datetime import datetime, timezone
-from flask import Blueprint, current_app, jsonify, request
+from io import BytesIO
+
+from flask import Blueprint, current_app, jsonify, request, send_file
 from flask.views import MethodView
 from sqlalchemy import func, select
 from sqlalchemy.exc import SQLAlchemyError
+from werkzeug.utils import secure_filename
 
 from api.auth import get_authenticated_user
 from database import database
 from database.models import (
-    Activity, Course, Lesson, SUPPORTED_LANGUAGE_CODES,
+    Activity, ActivityVideo, Course, Lesson, SUPPORTED_LANGUAGE_CODES,
     UserActivityProgress, UserCourseEnrollment,
 )
 
@@ -22,6 +26,55 @@ def request_content_language() -> str:
         if language_code in SUPPORTED_LANGUAGE_CODES:
             return language_code
     return "pl"
+
+
+def get_stored_video(
+    db, activity_id: int, language: str, fallback_to_polish: bool = True
+) -> ActivityVideo | None:
+    video = db.scalar(
+        select(ActivityVideo).where(
+            ActivityVideo.activity_id == activity_id,
+            ActivityVideo.language == language,
+        )
+    )
+    if video or language == "pl" or not fallback_to_polish:
+        return video
+    return db.scalar(
+        select(ActivityVideo).where(
+            ActivityVideo.activity_id == activity_id,
+            ActivityVideo.language == "pl",
+        )
+    )
+
+
+def add_stored_video_details(video: ActivityVideo | None, activity_data: dict) -> None:
+    """Expose a local playback URL without serializing the MP4 into JSON."""
+    if not video:
+        return
+
+    content = activity_data.setdefault("content", {})
+    content.update({
+        "video_url": f"/api/activities/{video.activity_id}/video?language={video.language}",
+        "video_filename": video.filename,
+        "video_mime_type": video.mime_type,
+        "video_size_bytes": video.size_bytes,
+        "video_language": video.language,
+    })
+
+
+def is_content_admin() -> bool:
+    configured_token = current_app.config.get("CONTENT_ADMIN_TOKEN")
+    provided_token = request.headers.get("X-Content-Admin-Token")
+    return bool(
+        configured_token
+        and provided_token
+        and hmac.compare_digest(provided_token, configured_token)
+    )
+
+
+def is_mp4(video_data: bytes) -> bool:
+    """Check the ISO base media file signature used by MP4 containers."""
+    return len(video_data) >= 12 and video_data[4:8] == b"ftyp"
 
 
 def check_lesson_completed(db, lesson_id: int, user_id: int) -> bool:
@@ -304,6 +357,10 @@ class ActivityDetailView(MethodView):
                 act_data = activity.to_dict(
                     include_content=True, sanitize_quiz=True, language=language
                 )
+                if activity.activity_type == "video":
+                    add_stored_video_details(
+                        get_stored_video(db, activity.id, language), act_data
+                    )
                 if user:
                     progress = db.scalar(
                         select(UserActivityProgress).where(
@@ -327,6 +384,101 @@ class ActivityDetailView(MethodView):
                 return jsonify(activity=act_data)
         except SQLAlchemyError:
             current_app.logger.exception("Could not get activity detail")
+            return jsonify(error="Database unavailable"), 503
+
+
+class ActivityVideoView(MethodView):
+    def get(self, activity_id: int):
+        try:
+            with database() as db:
+                activity = db.scalar(select(Activity).where(Activity.id == activity_id))
+                if (
+                    not activity
+                    or activity.activity_type != "video"
+                ):
+                    return jsonify(error="Video not found"), 404
+
+                language = request.args.get("language") or request_content_language()
+                if language not in SUPPORTED_LANGUAGE_CODES:
+                    return jsonify(error="Unsupported language. Use one of: pl, en, de"), 400
+                video = get_stored_video(db, activity.id, language)
+                if not video:
+                    return jsonify(error="Video not found"), 404
+                video_data = video.data
+
+                return send_file(
+                    BytesIO(video_data),
+                    mimetype="video/mp4",
+                    as_attachment=False,
+                    download_name=video.filename,
+                    conditional=True,
+                )
+        except SQLAlchemyError:
+            current_app.logger.exception("Could not load activity video")
+            return jsonify(error="Database unavailable"), 503
+
+    def post(self, activity_id: int):
+        if not current_app.config.get("CONTENT_ADMIN_TOKEN"):
+            return jsonify(error="Video upload is not configured"), 503
+        if not is_content_admin():
+            return jsonify(error="Forbidden"), 403
+
+        max_size = current_app.config["MAX_VIDEO_UPLOAD_BYTES"]
+        if request.content_length and request.content_length > max_size:
+            return jsonify(error="Video file is too large"), 413
+
+        uploaded_file = request.files.get("video")
+        if not uploaded_file or not uploaded_file.filename:
+            return jsonify(error="Missing multipart field: video"), 400
+
+        language = request.form.get("language", "pl").lower()
+        if language not in SUPPORTED_LANGUAGE_CODES:
+            return jsonify(error="Unsupported language. Use one of: pl, en, de"), 400
+
+        filename = secure_filename(uploaded_file.filename)
+        if not filename.lower().endswith(".mp4"):
+            return jsonify(error="Video file must have an .mp4 extension"), 400
+
+        video_data = uploaded_file.read(max_size + 1)
+        if len(video_data) > max_size:
+            return jsonify(error="Video file is too large"), 413
+        if not is_mp4(video_data):
+            return jsonify(error="Uploaded file is not a valid MP4 container"), 400
+
+        try:
+            with database() as db:
+                activity = db.scalar(select(Activity).where(Activity.id == activity_id))
+                if not activity:
+                    return jsonify(error="Activity not found"), 404
+                if activity.activity_type != "video":
+                    return jsonify(error="Activity is not a video"), 400
+
+                video = get_stored_video(
+                    db, activity.id, language, fallback_to_polish=False
+                )
+                is_new_video = video is None
+                if not video:
+                    video = ActivityVideo(activity_id=activity.id, language=language)
+                    db.add(video)
+                video.filename = filename
+                video.mime_type = "video/mp4"
+                video.size_bytes = len(video_data)
+                video.data = video_data
+                db.commit()
+
+                return jsonify(
+                    status="ok",
+                    activity_id=activity.id,
+                    video={
+                        "url": f"/api/activities/{activity.id}/video?language={video.language}",
+                        "language": video.language,
+                        "filename": video.filename,
+                        "mime_type": video.mime_type,
+                        "size_bytes": video.size_bytes,
+                    },
+                ), 201 if is_new_video else 200
+        except SQLAlchemyError:
+            current_app.logger.exception("Could not store activity video")
             return jsonify(error="Database unavailable"), 503
 
 
@@ -781,6 +933,7 @@ courses.add_url_rule("/api/courses/<identifier>", view_func=CourseDetailView.as_
 courses.add_url_rule("/api/courses/<int:course_id>/enroll", view_func=CourseEnrollView.as_view("course_enroll"))
 courses.add_url_rule("/api/lessons/<int:lesson_id>", view_func=LessonDetailView.as_view("lesson_detail"))
 courses.add_url_rule("/api/activities/<int:activity_id>", view_func=ActivityDetailView.as_view("activity_detail"))
+courses.add_url_rule("/api/activities/<int:activity_id>/video", view_func=ActivityVideoView.as_view("activity_video"))
 courses.add_url_rule("/api/activities/<int:activity_id>/complete", view_func=ActivityCompleteView.as_view("activity_complete"))
 courses.add_url_rule("/api/activities/<int:activity_id>/quiz-submit", view_func=QuizSubmitView.as_view("quiz_submit"))
 courses.add_url_rule("/api/user/progress", view_func=UserProgressView.as_view("user_progress"))

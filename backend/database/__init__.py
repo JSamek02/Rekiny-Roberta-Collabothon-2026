@@ -78,9 +78,32 @@ def upgrade_content_translation_columns():
                 ))
 
 
+def ensure_model_indexes():
+    """Create indexes declared by the ORM for databases created before them."""
+    statements = (
+        "CREATE INDEX IF NOT EXISTS ix_user_sessions_user_id ON user_sessions(user_id)",
+        "CREATE INDEX IF NOT EXISTS ix_courses_slug ON courses(slug)",
+        "CREATE INDEX IF NOT EXISTS ix_lessons_course_id ON lessons(course_id)",
+        "CREATE INDEX IF NOT EXISTS ix_activities_lesson_id ON activities(lesson_id)",
+        "CREATE INDEX IF NOT EXISTS ix_activity_videos_activity_id ON activity_videos(activity_id)",
+        "CREATE INDEX IF NOT EXISTS ix_user_course_enrollments_user_id "
+        "ON user_course_enrollments(user_id)",
+        "CREATE INDEX IF NOT EXISTS ix_user_course_enrollments_course_id "
+        "ON user_course_enrollments(course_id)",
+        "CREATE INDEX IF NOT EXISTS ix_user_activity_progress_user_id "
+        "ON user_activity_progress(user_id)",
+        "CREATE INDEX IF NOT EXISTS ix_user_activity_progress_activity_id "
+        "ON user_activity_progress(activity_id)",
+    )
+    with engine.begin() as connection:
+        for statement in statements:
+            connection.execute(text(statement))
+
+
 @click.command("init-db")
 def init_db():
     Base.metadata.create_all(engine)
     upgrade_user_profile_columns()
     upgrade_content_translation_columns()
+    ensure_model_indexes()
     print("Baza danych jest gotowa.")
