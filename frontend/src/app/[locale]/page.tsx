@@ -1,5 +1,6 @@
 import { LessonCategoryNavItem } from '@/components/lesson-category-nav-item';
 import { LevelBar } from '@/components/level-bar';
+import { StockMarketHeroWidget } from '@/components/stock/StockMarketHeroWidget';
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
         <LessonCategoryNavItem />
         <LessonCategoryNavItem />
       </div>
+      <StockMarketHeroWidget />
     </main>
   );
 }

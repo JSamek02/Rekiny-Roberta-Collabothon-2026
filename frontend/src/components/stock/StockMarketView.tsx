@@ -277,7 +277,7 @@ export const StockMarketView: React.FC = () => {
         <button
           onClick={handleResetRequest}
           disabled={isStepping}
-          className="text-[11px] font-medium text-grey-600 hover:text-red-600 transition-colors"
+          className="text-[11px] font-medium text-grey-600 hover:text-blue-500 transition-colors cursor-pointer"
         >
           Resetuj 🔄
         </button>
@@ -421,7 +421,7 @@ export const StockMarketView: React.FC = () => {
           <div className="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl p-6 flex flex-col gap-5 border border-blue-100">
             {/* Icon + Title */}
             <div className="flex flex-col items-center gap-2 text-center">
-              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-2xl">
+              <div className="w-12 h-12 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-2xl">
                 🔄
               </div>
               <h3 className="text-base font-bold text-blue-950">Resetować scenariusz?</h3>
@@ -432,14 +432,16 @@ export const StockMarketView: React.FC = () => {
             {/* Actions */}
             <div className="flex gap-3">
               <button
+                type="button"
                 onClick={handleResetCancel}
-                className="flex-1 py-2.5 rounded-xl border border-grey-200 text-sm font-semibold text-blue-950 hover:bg-grey-100 transition-colors"
+                className="flex-1 py-3 px-4 rounded-xl bg-blue-50 border border-blue-100 text-sm font-semibold text-blue-950 hover:bg-blue-100 transition-colors cursor-pointer text-center"
               >
                 Anuluj
               </button>
               <button
+                type="button"
                 onClick={handleResetConfirm}
-                className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-bold transition-colors shadow-sm"
+                className="flex-1 py-3 px-4 rounded-xl bg-blue-500 text-white text-sm font-bold shadow-md hover:opacity-90 active:scale-98 transition-all cursor-pointer text-center"
               >
                 Resetuj
               </button>
