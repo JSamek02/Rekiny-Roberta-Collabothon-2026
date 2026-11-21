@@ -141,7 +141,9 @@ export const EventSelector: React.FC<EventSelectorProps> = ({ events, onSelectEv
                     isExpanded ? '' : 'line-clamp-2'
                   }`}
                 >
-                  {ev.initial_context?.description || t('fallback-desc')}
+                  {(t.has(`descriptions.${ev.id}` as any) ? t(`descriptions.${ev.id}` as any) : null) ||
+                    ev.initial_context?.description ||
+                    t('fallback-desc')}
                 </p>
                 <button
                   type="button"

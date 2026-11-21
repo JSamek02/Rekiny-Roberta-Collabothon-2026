@@ -166,6 +166,11 @@
           "covid_2020": "COVID-19 Crash",
           "inflation_2022": "Inflation Shock 2022"
         },
+        "descriptions": {
+          "gfc_2008": "It is Q4 2007. The global economy has been growing steadily for years, and stock markets are reaching all-time highs. You have 10,000 PLN in cash and zero investments. The media carries the first troubling reports of 'subprime mortgage loans' in the US, but most analysts downplay the risk. Decide where to allocate your capital!",
+          "covid_2020": "It is January 2020. Financial markets are climbing, and tech companies are breaking records. The first news of a new virus in China begins to emerge. You start this stage with 10,000 PLN in pure cash. Choose how to distribute your capital at the start!",
+          "inflation_2022": "It is January 2022. Prices in stores are skyrocketing, and central banks announce the end of the free-money era. You start with 10,000 PLN in cash. Your goal is to defend real purchasing power during one of the most challenging years for financial markets!"
+        },
         "tags": {
           "gfc_2008": "Lehman Brothers & Bull Market",
           "covid_2020": "Lockdown & Tech Boom",

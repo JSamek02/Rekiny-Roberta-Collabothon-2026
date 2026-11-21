@@ -30,6 +30,7 @@ import { useTranslations } from 'next-intl';
 
 export const StockMarketView: React.FC = () => {
   const t = useTranslations('components.stock.view');
+  const tEvents = useTranslations('components.stock.event-selector');
 
   const [events, setEvents] = useState<SimulationEventSummary[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<SimulationEventSummary | null>(null);
@@ -207,7 +208,9 @@ export const StockMarketView: React.FC = () => {
             <span>{selectedEvent.total_quarters} kwartałów</span>
           </div>
           <div className="p-2.5 rounded-xl bg-blue-50/60 border border-blue-100 text-xs text-grey-700 mt-1 leading-relaxed">
-            {selectedEvent.initial_context?.description}
+            {(tEvents.has(`descriptions.${selectedEvent.id}` as any)
+              ? tEvents(`descriptions.${selectedEvent.id}` as any)
+              : null) || selectedEvent.initial_context?.description}
           </div>
           <div className="flex items-center justify-between pt-2 border-t border-grey-100 mt-1">
             <span className="text-xs text-grey-600">{t('starting-budget')}</span>
