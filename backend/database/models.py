@@ -2,8 +2,8 @@ from datetime import datetime
 from typing import Any
 
 from sqlalchemy import (
-    BigInteger, Boolean, DateTime, ForeignKey, Identity,
-    Integer, String, Text, UniqueConstraint, func
+    BigInteger, Boolean, CheckConstraint, DateTime, ForeignKey, Identity,
+    Integer, LargeBinary, String, Text, UniqueConstraint, func
 )
 from sqlalchemy.dialects.postgresql import JSONB, insert
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
@@ -158,6 +158,12 @@ class Lesson(Base):
 
 class Activity(Base):
     __tablename__ = "activities"
+    __table_args__ = (
+        CheckConstraint(
+            "activity_type IN ('article', 'quiz', 'video')",
+            name="ck_activities_activity_type",
+        ),
+    )
 
     id: Mapped[int] = mapped_column(
         BigInteger().with_variant(Integer, "sqlite"), Identity(), primary_key=True
@@ -177,6 +183,9 @@ class Activity(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     lesson: Mapped["Lesson"] = relationship("Lesson", back_populates="activities")
+    videos: Mapped[list["ActivityVideo"]] = relationship(
+        "ActivityVideo", back_populates="activity", cascade="all, delete-orphan"
+    )
 
     def localized_content(self, language="pl"):
         translation = get_translation(self.translations, language)
@@ -210,6 +219,31 @@ class Activity(Base):
                 content_copy["questions"] = sanitized_questions
             data["content"] = content_copy
         return data
+
+
+class ActivityVideo(Base):
+    __tablename__ = "activity_videos"
+    __table_args__ = (
+        UniqueConstraint("activity_id", "language", name="uq_activity_video_language"),
+        CheckConstraint("language IN ('pl', 'en', 'de')", name="ck_activity_videos_language"),
+    )
+
+    id: Mapped[int] = mapped_column(
+        BigInteger().with_variant(Integer, "sqlite"), Identity(), primary_key=True
+    )
+    activity_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("activities.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    language: Mapped[str] = mapped_column(String(2), nullable=False, default="pl", server_default="pl")
+    filename: Mapped[str] = mapped_column(String(255), nullable=False)
+    mime_type: Mapped[str] = mapped_column(String(127), nullable=False, default="video/mp4")
+    size_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    # Deferred keeps MP4 bytes out of ordinary activity and course queries.
+    data: Mapped[bytes] = mapped_column(LargeBinary, nullable=False, deferred=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    activity: Mapped["Activity"] = relationship("Activity", back_populates="videos")
 
 
 class UserCourseEnrollment(Base):
