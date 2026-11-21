@@ -463,6 +463,23 @@
           "rebalance-active": "W trakcie cyklu dokonałeś {count} zmian w portfelu. Świadomy rebalancing pozwala dokupować przecenione aktywa, ale pamiętaj, by nie gonić rynku pod wpływem nagłówków prasowych."
         }
       }
+    },
+    "ranking": {
+      "kicker": "Tabela wyników",
+      "title": "Ranking",
+      "subtitle": "{count, plural, =0 {W oceanie nie ma jeszcze rekinów} =1 {# rekin walczy o XP} few {# rekiny walczą o XP} other {# rekinów walczy o XP}}",
+      "subtitle-loading": "Wczytywanie rankingu...",
+      "your-position": "Twoja pozycja",
+      "you": "Ty",
+      "top": "Top {count}",
+      "xp": "XP",
+      "place": "Miejsce {rank}",
+      "anonymous": "Anonimowy rekin",
+      "guest-info": "Zaloguj się, aby zobaczyć swoją pozycję i zdobywać XP.",
+      "log-in": "Zaloguj",
+      "empty": "Nikogo jeszcze nie ma w rankingu. Ukończ lekcję, aby być pierwszym!",
+      "error": "Nie udało się wczytać rankingu. Sprawdź, czy backend działa.",
+      "retry": "Spróbuj ponownie"
     }
   },
   "global": {
