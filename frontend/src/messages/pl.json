@@ -297,6 +297,12 @@
       }
     }
   },
+  "pages": {
+    "profile": {
+      "heading": "Witaj,<br></br><span>{name}</span>",
+      "edit-personalization": "Edytuj personalizację"
+    }
+  },
   "global": {
     "routes": {
       "home": "Strona główna",

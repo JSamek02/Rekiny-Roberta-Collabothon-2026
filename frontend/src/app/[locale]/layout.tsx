@@ -6,6 +6,7 @@ import { Header } from '@/components/header';
 import { BottomNav } from '@/components/bottom-nav';
 import { ChatFab } from '@/components/chat-fab';
 import { QueryClientProvider } from '@/components/query-client-provider/query-client-provider';
+import { AvatarProvider } from '@/components/avatar';
 
 const poppinsFont = Poppins({
   variable: '--font-poppins',
@@ -22,14 +23,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${poppinsFont.variable} h-full antialiased`}>
       <body className="min-h-full overflow-x-clip flex flex-col bg-blue-50 font-sans isolate">
-        <NextIntlClientProvider>
-          <QueryClientProvider>
-            <Header />
-            {children}
-            <ChatFab />
-            <BottomNav />
-          </QueryClientProvider>
-        </NextIntlClientProvider>
+        <AvatarProvider>
+          <NextIntlClientProvider>
+            <QueryClientProvider>
+              <Header />
+              {children}
+              <ChatFab />
+              <BottomNav />
+            </QueryClientProvider>
+          </NextIntlClientProvider>
+        </AvatarProvider>
       </body>
     </html>
   );

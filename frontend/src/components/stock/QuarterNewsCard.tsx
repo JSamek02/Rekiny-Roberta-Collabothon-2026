@@ -3,8 +3,11 @@
 import React from 'react';
 import Image from 'next/image';
 import { QuarterHistoryEntry } from './types';
-import { TrendingUp, Landmark, Coins, Banknote } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { BankIcon } from '@/icons/bank';
+import { TrendingUpIcon } from '@/icons/trending-up';
+import { CoinsIcon } from '@/icons/coins';
+import { BanknoteIcon } from '@/icons/banknote';
 
 interface QuarterNewsCardProps {
   quarterData: QuarterHistoryEntry;
@@ -51,13 +54,7 @@ export const QuarterNewsCard: React.FC<QuarterNewsCardProps> = ({ quarterData })
       {quarterData.lesson && (
         <div className="flex items-start gap-2.5 bg-blue-50 p-2.5 rounded-xl border border-blue-100">
           <div className="w-8 h-8 shrink-0 relative mt-0.5">
-            <Image
-              src="/img/shark.svg"
-              alt="Robert Biznesu"
-              width={32}
-              height={32}
-              className="object-contain"
-            />
+            <Image src="/img/shark.svg" alt="Robert Biznesu" width={32} height={32} className="object-contain" />
           </div>
           <div>
             <span className="text-[10px] font-bold text-blue-900 uppercase tracking-wide block">
@@ -70,20 +67,14 @@ export const QuarterNewsCard: React.FC<QuarterNewsCardProps> = ({ quarterData })
 
       {/* Asset Returns Breakdown for This Quarter */}
       <div>
-        <span className="text-[11px] font-semibold text-grey-600 mb-1.5 block">
-          {t('asset-returns-title')}
-        </span>
+        <span className="text-[11px] font-semibold text-grey-600 mb-1.5 block">{t('asset-returns-title')}</span>
         <div className="grid grid-cols-2 gap-1.5 text-xs">
           <div className="p-2 rounded-lg bg-grey-50 border border-grey-100 flex items-center justify-between">
             <span className="flex items-center gap-1.5 text-grey-700">
-              <TrendingUp className="w-3.5 h-3.5 text-blue-500" />
+              <TrendingUpIcon className="w-3.5 h-3.5 text-blue-500" />
               <span>{t('assets.stocks')}</span>
             </span>
-            <span
-              className={`font-bold font-mono ${
-                benchmarks.stocks >= 0 ? 'text-[#10b981]' : 'text-[#ef4444]'
-              }`}
-            >
+            <span className={`font-bold font-mono ${benchmarks.stocks >= 0 ? 'text-[#10b981]' : 'text-[#ef4444]'}`}>
               {benchmarks.stocks >= 0 ? '+' : ''}
               {benchmarks.stocks?.toFixed(1)}%
             </span>
@@ -91,14 +82,10 @@ export const QuarterNewsCard: React.FC<QuarterNewsCardProps> = ({ quarterData })
 
           <div className="p-2 rounded-lg bg-grey-50 border border-grey-100 flex items-center justify-between">
             <span className="flex items-center gap-1.5 text-grey-700">
-              <Landmark className="w-3.5 h-3.5 text-[#10b981]" />
+              <BankIcon className="w-3.5 h-3.5 text-[#10b981]" />
               <span>{t('assets.bonds')}</span>
             </span>
-            <span
-              className={`font-bold font-mono ${
-                benchmarks.bonds >= 0 ? 'text-[#10b981]' : 'text-[#ef4444]'
-              }`}
-            >
+            <span className={`font-bold font-mono ${benchmarks.bonds >= 0 ? 'text-[#10b981]' : 'text-[#ef4444]'}`}>
               {benchmarks.bonds >= 0 ? '+' : ''}
               {benchmarks.bonds?.toFixed(1)}%
             </span>
@@ -106,14 +93,10 @@ export const QuarterNewsCard: React.FC<QuarterNewsCardProps> = ({ quarterData })
 
           <div className="p-2 rounded-lg bg-grey-50 border border-grey-100 flex items-center justify-between">
             <span className="flex items-center gap-1.5 text-grey-700">
-              <Coins className="w-3.5 h-3.5 text-[#f59e0b]" />
+              <CoinsIcon className="w-3.5 h-3.5 text-[#f59e0b]" />
               <span>{t('assets.gold')}</span>
             </span>
-            <span
-              className={`font-bold font-mono ${
-                benchmarks.gold >= 0 ? 'text-[#10b981]' : 'text-[#ef4444]'
-              }`}
-            >
+            <span className={`font-bold font-mono ${benchmarks.gold >= 0 ? 'text-[#10b981]' : 'text-[#ef4444]'}`}>
               {benchmarks.gold >= 0 ? '+' : ''}
               {benchmarks.gold?.toFixed(1)}%
             </span>
@@ -121,12 +104,10 @@ export const QuarterNewsCard: React.FC<QuarterNewsCardProps> = ({ quarterData })
 
           <div className="p-2 rounded-lg bg-grey-50 border border-grey-100 flex items-center justify-between">
             <span className="flex items-center gap-1.5 text-grey-700">
-              <Banknote className="w-3.5 h-3.5 text-[#64748b]" />
+              <BanknoteIcon className="w-3.5 h-3.5 text-[#64748b]" />
               <span>{t('assets.cash')}</span>
             </span>
-            <span className="font-bold font-mono text-grey-700">
-              +{benchmarks.cash?.toFixed(1)}%
-            </span>
+            <span className="font-bold font-mono text-grey-700">+{benchmarks.cash?.toFixed(1)}%</span>
           </div>
         </div>
 
