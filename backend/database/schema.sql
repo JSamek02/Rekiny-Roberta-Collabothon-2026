@@ -109,3 +109,29 @@ CREATE TABLE IF NOT EXISTS user_activity_progress (
 );
 CREATE INDEX IF NOT EXISTS ix_user_activity_progress_user_id ON user_activity_progress(user_id);
 CREATE INDEX IF NOT EXISTS ix_user_activity_progress_activity_id ON user_activity_progress(activity_id);
+
+CREATE TABLE IF NOT EXISTS user_simulation_progress (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    event_id VARCHAR(64) NOT NULL,
+    status VARCHAR(32) NOT NULL DEFAULT 'awaiting_initial_investment',
+    current_quarter_index INTEGER NOT NULL DEFAULT 0,
+    total_quarters INTEGER NOT NULL DEFAULT 0,
+    initial_capital DOUBLE PRECISION NOT NULL DEFAULT 10000.0,
+    current_capital DOUBLE PRECISION NOT NULL DEFAULT 10000.0,
+    peak_capital DOUBLE PRECISION NOT NULL DEFAULT 10000.0,
+    max_drawdown_pct DOUBLE PRECISION NOT NULL DEFAULT 0.0,
+    cumulative_inflation_factor DOUBLE PRECISION NOT NULL DEFAULT 1.0,
+    allocations JSONB NOT NULL DEFAULT '{}'::jsonb,
+    rebalances_count INTEGER NOT NULL DEFAULT 0,
+    history JSONB NOT NULL DEFAULT '[]'::jsonb,
+    debrief JSONB,
+    xp_earned INTEGER NOT NULL DEFAULT 0,
+    coins_earned INTEGER NOT NULL DEFAULT 0,
+    completed_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    CONSTRAINT uq_user_simulation_event UNIQUE (user_id, event_id)
+);
+CREATE INDEX IF NOT EXISTS ix_user_simulation_progress_user_id ON user_simulation_progress(user_id);
+CREATE INDEX IF NOT EXISTS ix_user_simulation_progress_event_id ON user_simulation_progress(event_id);

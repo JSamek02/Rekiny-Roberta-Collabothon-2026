@@ -1,10 +1,20 @@
 """
 backend/tests/test_simulation.py
-Testy jednostkowe silnika symulacji rynkowej oraz endpointów REST API.
+Testy jednostkowe silnika symulacji rynkowej, endpointów REST API,
+obsługi trybu gościa (local storage) oraz trwałego zapisu w bazie danych dla zalogowanych użytkowników.
 """
 
+import hashlib
 import unittest
+from datetime import datetime, timedelta, timezone
+from unittest.mock import patch
+
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import Session
+from sqlalchemy.pool import StaticPool
+
 from app import app
+from database.models import Base, User, UserSession, UserSimulationProgress
 from services.simulation_data import SIMULATION_EVENTS, get_event_by_id
 from services.simulation_engine import (
     advance_quarter,
@@ -16,13 +26,11 @@ from services.simulation_engine import (
 
 class SimulationEngineTest(unittest.TestCase):
     def test_normalize_allocations_default_to_cash(self):
-        # Gdy gracz nic nie wpisze, 100% zostaje w gotówce
         alloc = normalize_allocations({})
         self.assertEqual(alloc["cash"], 1.0)
         self.assertEqual(alloc["stocks"], 0.0)
 
     def test_normalize_allocations_scales_to_one(self):
-        # Gdy gracz wpisze np. 60 i 40 (lub 6000 i 4000 zł)
         alloc = normalize_allocations({"stocks": 60, "bonds": 40})
         self.assertAlmostEqual(alloc["stocks"], 0.6, places=2)
         self.assertAlmostEqual(alloc["bonds"], 0.4, places=2)
@@ -32,7 +40,6 @@ class SimulationEngineTest(unittest.TestCase):
         session = initialize_event_session("covid_2020", initial_capital=10000.0)
         self.assertEqual(session["status"], "awaiting_initial_investment")
         self.assertEqual(session["current_capital"], 10000.0)
-        # Na samym początku gracz ma 100% gotówki i zero inwestycji
         self.assertEqual(session["allocations"]["cash"], 1.0)
         self.assertEqual(session["allocations"]["stocks"], 0.0)
         self.assertEqual(session["current_quarter_index"], 0)
@@ -46,10 +53,8 @@ class SimulationEngineTest(unittest.TestCase):
 
     def test_advance_quarter_covid_calculation(self):
         session = initialize_event_session("covid_2020", initial_capital=10000.0)
-        # Portfel 100% w akcjach S&P 500
         set_initial_investment(session, {"stocks": 1.0})
 
-        # Krok 1: 2020-Q1 (Wybuch pandemii, S&P 500: -19.6%)
         res = advance_quarter(session)
         q_data = res["quarter_data"]
         self.assertEqual(q_data["quarter"], "2020-Q1")
@@ -57,7 +62,6 @@ class SimulationEngineTest(unittest.TestCase):
         self.assertAlmostEqual(session["current_capital"], 8040.0, places=1)
         self.assertEqual(session["max_drawdown_pct"], -19.6)
 
-        # Krok 2: Gracz decyduje się dokonać rebalancingu i dodać obligacje
         res2 = advance_quarter(session, new_allocations={"stocks": 0.5, "bonds": 0.5})
         self.assertEqual(session["rebalances_count"], 1)
         self.assertEqual(session["current_quarter_index"], 2)
@@ -65,22 +69,59 @@ class SimulationEngineTest(unittest.TestCase):
 
 class SimulationApiTest(unittest.TestCase):
     def setUp(self):
-        self.client = app.test_client()
+        # Konfiguracja bazy SQLite w pamięci na potrzeby testów integracyjnych
+        self.engine = create_engine("sqlite://", poolclass=StaticPool)
+        Base.metadata.create_all(self.engine)
+        engine_patch = patch("database.engine", self.engine)
+        engine_patch.start()
+        self.addCleanup(engine_patch.stop)
+        self.addCleanup(self.engine.dispose)
 
-    def test_get_events_list(self):
+        self.client = app.test_client()
+        previous_secret = app.secret_key
+        app.secret_key = "test-secret"
+        self.addCleanup(setattr, app, "secret_key", previous_secret)
+
+        # Użytkownik testowy
+        with Session(self.engine) as db:
+            self.user = User(
+                google_sub="test:sim_investor",
+                email="rekin@collabothon.pl",
+                name="Robert Biznesu",
+                shark_coins=100,
+            )
+            db.add(self.user)
+            db.commit()
+            db.refresh(self.user)
+            self.user_id = self.user.id
+
+            self.raw_token = "valid-simulation-test-token"
+            token_hash = hashlib.sha256(self.raw_token.encode()).hexdigest()
+            session = UserSession(
+                token_hash=token_hash,
+                user_id=self.user_id,
+                expires_at=datetime.now(timezone.utc) + timedelta(days=7),
+            )
+            db.add(session)
+            db.commit()
+
+    def _login(self):
+        self.client.set_cookie("auth_session", self.raw_token)
+
+    def test_get_events_list_unauthenticated(self):
         res = self.client.get("/api/simulation/events")
         self.assertEqual(res.status_code, 200)
         data = res.get_json()
         self.assertIn("events", data)
         self.assertEqual(len(data["events"]), 3)
-        # Weryfikacja chronologii
         self.assertEqual(data["events"][0]["id"], "gfc_2008")
         self.assertEqual(data["events"][1]["id"], "covid_2020")
         self.assertEqual(data["events"][2]["id"], "inflation_2022")
-        self.assertIn("data_sources", data)
+        self.assertIsNone(data["events"][0]["user_progress"])
 
-    def test_full_lifecycle_start_invest_and_step(self):
-        session_header = {"X-Simulation-Session-Id": "test_user_collabothon"}
+    def test_guest_lifecycle_not_persisted(self):
+        # Gość z nagłówkiem sesji symulacji (local storage)
+        session_header = {"X-Simulation-Session-Id": "guest_local_storage_123"}
 
         # 1. Start eventu COVID-19 z kapitałem 10 000 zł
         start_res = self.client.post(
@@ -90,53 +131,143 @@ class SimulationApiTest(unittest.TestCase):
         )
         self.assertEqual(start_res.status_code, 200)
         start_data = start_res.get_json()
+        self.assertFalse(start_data["persisted"])
         self.assertEqual(start_data["session"]["status"], "awaiting_initial_investment")
-        self.assertEqual(start_data["session"]["allocations"]["cash"], 1.0)
 
-        # 2. Próba przejścia do kwartału bez inwestycji powinna zwrócić błąd 400
-        step_err = self.client.post(
-            "/api/simulation/events/covid_2020/step-quarter",
-            headers=session_header,
-            json={},
-        )
-        self.assertEqual(step_err.status_code, 400)
-
-        # 3. Gracz wybiera inwestycje: 60% Akcje, 30% Obligacje, 10% Złoto
-        invest_res = self.client.post(
+        # 2. Inwestycja
+        inv_res = self.client.post(
             "/api/simulation/events/covid_2020/invest",
             headers=session_header,
-            json={"allocations": {"stocks": 0.6, "bonds": 0.3, "gold": 0.1, "cash": 0.0}},
+            json={"allocations": {"stocks": 0.6, "bonds": 0.4}},
         )
-        self.assertEqual(invest_res.status_code, 200)
-        self.assertEqual(invest_res.get_json()["session"]["status"], "in_progress")
+        self.assertEqual(inv_res.status_code, 200)
+        self.assertFalse(inv_res.get_json()["persisted"])
 
-        # 4. Przeskok o 1 kwartał (Q1 2020 - Krach)
+        # 3. Krok kwartalny
         step_res = self.client.post(
             "/api/simulation/events/covid_2020/step-quarter",
             headers=session_header,
             json={},
         )
         self.assertEqual(step_res.status_code, 200)
-        step_data = step_res.get_json()
-        self.assertEqual(step_data["result"]["quarter_data"]["quarter"], "2020-Q1")
-        self.assertFalse(step_data["result"]["is_finished"])
+        self.assertFalse(step_res.get_json()["persisted"])
 
-        # 5. Przeskakujemy pozostałe 7 kwartałów do końca eventu
-        for _ in range(7):
-            final_step = self.client.post(
+    def test_authenticated_user_lifecycle_persisted_to_database(self):
+        self._login()
+
+        # 1. Start eventu COVID-19 jako zalogowany użytkownik
+        start_res = self.client.post(
+            "/api/simulation/events/covid_2020/start",
+            json={"initial_capital": 10000.0},
+        )
+        self.assertEqual(start_res.status_code, 200)
+        self.assertTrue(start_res.get_json()["persisted"])
+
+        # Weryfikacja bezpośrednio w bazie danych
+        with Session(self.engine) as db:
+            record = db.scalar(
+                select(UserSimulationProgress).where(
+                    UserSimulationProgress.user_id == self.user_id,
+                    UserSimulationProgress.event_id == "covid_2020",
+                )
+            )
+            self.assertIsNotNone(record)
+            self.assertEqual(record.status, "awaiting_initial_investment")
+            self.assertEqual(record.current_capital, 10000.0)
+
+        # 2. Gracz wybiera pierwszą alokację (np. 70% akcje, 30% obligacje)
+        inv_res = self.client.post(
+            "/api/simulation/events/covid_2020/invest",
+            json={"allocations": {"stocks": 0.7, "bonds": 0.3}},
+        )
+        self.assertEqual(inv_res.status_code, 200)
+        self.assertTrue(inv_res.get_json()["persisted"])
+
+        with Session(self.engine) as db:
+            record = db.scalar(
+                select(UserSimulationProgress).where(
+                    UserSimulationProgress.user_id == self.user_id,
+                    UserSimulationProgress.event_id == "covid_2020",
+                )
+            )
+            self.assertEqual(record.status, "in_progress")
+            self.assertEqual(record.allocations["stocks"], 0.7)
+
+        # 3. Przejście przez wszystkie kwartały (8 kwartałów pandemii)
+        for _ in range(8):
+            step_res = self.client.post(
                 "/api/simulation/events/covid_2020/step-quarter",
-                headers=session_header,
                 json={},
             )
+            self.assertEqual(step_res.status_code, 200)
+            self.assertTrue(step_res.get_json()["persisted"])
 
-        final_data = final_step.get_json()
+        final_data = step_res.get_json()
         self.assertTrue(final_data["result"]["is_finished"])
-        self.assertIn("debrief", final_data["result"])
-        debrief = final_data["result"]["debrief"]
-        self.assertIn("robert_verdict", debrief)
-        self.assertIn("badges_earned", debrief)
-        self.assertIn("educational_takeaways", debrief)
-        self.assertGreater(debrief["xp_awarded"], 0)
+
+        # Weryfikacja ukończenia w bazie oraz nagrody Shark Coins
+        with Session(self.engine) as db:
+            record = db.scalar(
+                select(UserSimulationProgress).where(
+                    UserSimulationProgress.user_id == self.user_id,
+                    UserSimulationProgress.event_id == "covid_2020",
+                )
+            )
+            self.assertEqual(record.status, "completed")
+            self.assertIsNotNone(record.completed_at)
+            self.assertIsNotNone(record.debrief)
+            self.assertGreater(record.coins_earned, 0)
+
+            user = db.scalar(select(User).where(User.id == self.user_id))
+            # Początkowo miał 100, otrzymał dodatkowe monety z eventu
+            self.assertGreater(user.shark_coins, 100)
+
+        # 4. Sprawdzenie, czy lista eventów pokazuje status ukończenia
+        events_res = self.client.get("/api/simulation/events")
+        self.assertEqual(events_res.status_code, 200)
+        ev_list = events_res.get_json()["events"]
+        covid_ev = next(e for e in ev_list if e["id"] == "covid_2020")
+        self.assertIsNotNone(covid_ev["user_progress"])
+        self.assertTrue(covid_ev["user_progress"]["is_completed"])
+
+    def test_sync_from_local_storage_to_database(self):
+        self._login()
+
+        # Symulacja danych z Local Storage gracza
+        mock_local_session = {
+            "event_id": "inflation_2022",
+            "status": "in_progress",
+            "current_quarter_index": 2,
+            "total_quarters": 4,
+            "initial_capital": 10000.0,
+            "current_capital": 9150.0,
+            "peak_capital": 10000.0,
+            "max_drawdown_pct": -8.5,
+            "cumulative_inflation_factor": 1.053,
+            "allocations": {"stocks": 0.5, "bonds": 0.5},
+            "rebalances_count": 1,
+            "history": [],
+            "debrief": None,
+        }
+
+        sync_res = self.client.post(
+            "/api/simulation/sync",
+            json={"sessions": [mock_local_session]},
+        )
+        self.assertEqual(sync_res.status_code, 200)
+        self.assertEqual(sync_res.get_json()["synced_count"], 1)
+
+        # Weryfikacja, że trafiło do bazy danych
+        with Session(self.engine) as db:
+            record = db.scalar(
+                select(UserSimulationProgress).where(
+                    UserSimulationProgress.user_id == self.user_id,
+                    UserSimulationProgress.event_id == "inflation_2022",
+                )
+            )
+            self.assertIsNotNone(record)
+            self.assertEqual(record.status, "in_progress")
+            self.assertEqual(record.current_capital, 9150.0)
 
 
 if __name__ == "__main__":

@@ -51,7 +51,11 @@ class ApiTest(unittest.TestCase):
         self.assertEqual(result.exit_code, 0, result.output)
         self.assertEqual(
             set(inspect(self.engine).get_table_names()),
-            {"users", "user_sessions", "courses", "lessons", "activities", "user_course_enrollments", "user_activity_progress"},
+            {
+                "users", "user_sessions", "courses", "lessons", "activities",
+                "activity_videos", "user_course_enrollments", "user_activity_progress",
+                "user_simulation_progress",
+            },
         )
 
     def test_callback_rejects_missing_oauth_state(self):
