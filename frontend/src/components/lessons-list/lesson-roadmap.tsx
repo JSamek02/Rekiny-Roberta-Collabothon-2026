@@ -1,10 +1,11 @@
 'use client';
 
 import { useApiGetRoadmapCourseQuery } from '@/api/services/learning-service';
-import { type ActivitySummary, type LessonActivities } from '@/api/types/learning';
+import { type LessonActivities } from '@/api/types/learning';
 import { LessonCategoryHeading } from '@/components/lessons-list/lesson-category-heading';
+import { getLessonStatus } from '@/components/lessons-list/lesson-progress';
 import { LessonsList } from '@/components/lessons-list/lessons-list';
-import { type LessonListItem, type LessonStatus } from '@/components/lessons-list/lesson-roadmap-types';
+import { type LessonListItem } from '@/components/lessons-list/lesson-roadmap-types';
 import { useLocalLearningProgress } from '@/hooks/use-local-learning-progress';
 import { BankIcon } from '@/icons/bank';
 import { DollarIcon } from '@/icons/dollar';
@@ -49,29 +50,6 @@ const fallbackLessonTitles = [
   'lessons.lesson-4',
   'lessons.lesson-5',
 ] as const;
-
-const getLessonStatus = (
-  activities: ActivitySummary[],
-  localActivities: ReturnType<typeof useLocalLearningProgress>,
-): LessonStatus => {
-  const isCompleted = (activity: ActivitySummary) => (
-    activity.is_completed || localActivities[String(activity.id)]?.status === 'completed'
-  );
-
-  if (activities.length > 0 && activities.every(isCompleted)) {
-    return 'completed';
-  }
-
-  if (activities.some((activity) => (
-    isCompleted(activity)
-    || activity.progress_status === 'started'
-    || localActivities[String(activity.id)]?.status === 'started'
-  ))) {
-    return 'in-progress';
-  }
-
-  return 'not-started';
-};
 
 export const LessonRoadmap = ({ category }: LessonRoadmapProps) => {
   const t = useTranslations('components.learning-category');

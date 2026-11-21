@@ -92,7 +92,11 @@ export const useMockLoginMutation: UseReactQueryMutation<ApiPostMockLogin.Respon
   return useMutation({
     mutationKey: ['auth-mock-login'],
     mutationFn: (body: ApiPostMockLogin.Body) => apiMockLogin({ body }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.currentUser }),
+    onSuccess: () => Promise.all([
+      queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.currentUser }),
+      // Course progress belongs to the session that has just changed.
+      queryClient.invalidateQueries({ queryKey: ['learning'] }),
+    ]),
     ...options,
   });
 };
