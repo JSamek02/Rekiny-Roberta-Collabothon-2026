@@ -14,10 +14,12 @@ type LessonsListProps = {
 
 export const LessonsList = async ({ category, lessons }: LessonsListProps) => {
   const t = await getTranslations('components.learning-category');
+  const nextLesson = lessons.findIndex((lesson) => lesson.status !== 'read');
 
   return (
-    <section aria-label={t('roadmap')} className="relative w-full py-2">
-      <div className="relative flex flex-col">
+    <section aria-label={t('roadmap')} className="relative mx-auto w-full max-w-lg pb-6">
+      <h2 className="px-1 text-xs font-semibold uppercase tracking-[0.12em] text-grey-600">{t('roadmap')}</h2>
+      <ol className="relative mt-1 flex flex-col">
         {lessons.map((lesson, index) => (
           <LessonItem
             key={lesson.slug}
@@ -27,10 +29,11 @@ export const LessonsList = async ({ category, lessons }: LessonsListProps) => {
             number={index + 1}
             side={index % 2 === 0 ? 'left' : 'right'}
             status={lesson.status || 'unread'}
+            isNext={index === nextLesson}
             isLast={index === lessons.length - 1}
           />
         ))}
-      </div>
+      </ol>
     </section>
   );
 };

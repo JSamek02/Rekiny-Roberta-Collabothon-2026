@@ -1,6 +1,5 @@
-import { buttonVariants } from '@/ui';
 import { Link } from '@/i18n/navigation';
-import { ArrowRightIcon } from '@/icons/arrow-right';
+import { BooksIcon } from '@/icons/books';
 import { routes } from '@/utils/routes';
 import { getTranslations } from 'next-intl/server';
 
@@ -11,107 +10,74 @@ type LessonItemProps = {
   number: number;
   side: 'left' | 'right';
   status: 'read' | 'unread';
+  isNext: boolean;
   isLast: boolean;
 };
 
 export const LessonItem = async ({
-  category,
-  slug,
-  title,
-  number,
-  side,
-  status,
-  isLast,
+  category, slug, title, number, side, status, isNext, isLast,
 }: LessonItemProps) => {
   const t = await getTranslations('components.learning-category');
+  const isRead = status === 'read';
 
   return (
-    <article
-      className={[
-        'relative flex h-24 w-full items-center',
-        side === 'left' ? 'text-left' : 'text-right',
-      ].join(' ')}
-    >
+    <li className="relative">
       {!isLast && (
         <svg
-          aria-hidden
-          viewBox="0 0 100 24"
+          aria-hidden="true"
+          viewBox="0 0 100 100"
           preserveAspectRatio="none"
-          className="pointer-events-none absolute left-0 top-[88px] h-6 w-full overflow-visible"
+          className="pointer-events-none absolute top-[calc(50%+36px)] right-9 left-9 h-[calc(100%-72px)] w-[calc(100%-72px)] overflow-visible text-blue-500/40"
         >
-          {side === 'left' ? (
-            <path
-              d="M14 0 V12 Q14 24 26 24 H74 Q86 24 86 12 V0"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeDasharray="4 5"
-              vectorEffect="non-scaling-stroke"
-              className="text-blue-950"
-            />
-          ) : (
-            <path
-              d="M86 0 V12 Q86 24 74 24 H26 Q14 24 14 12 V0"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeDasharray="4 5"
-              vectorEffect="non-scaling-stroke"
-              className="text-blue-950"
-            />
-          )}
+          <path
+            d={side === 'left' ? 'M0 0 V30 Q0 50 12 50 H88 Q100 50 100 70 V100' : 'M100 0 V30 Q100 50 88 50 H12 Q0 50 0 70 V100'}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeDasharray="5 7"
+            strokeLinecap="round"
+            vectorEffect="non-scaling-stroke"
+          />
         </svg>
       )}
 
-      {side === 'left' ? (
-        <>
-          <Link
-            href={routes.learningLesson(category, slug)}
-            aria-label={t('open-lesson', { number })}
-            className={[
-              buttonVariants({ variant: 'solid', size: 'icon', color: 'blue' }),
-              'absolute left-0 z-10 size-14 shrink-0 rounded-full border-2 border-white text-xl shadow-sm',
-            ].join(' ')}
-          >
-            <ArrowRightIcon aria-hidden className="size-5 stroke-[1.5]" />
-          </Link>
-          <div
-            className={[
-              'ml-[72px] flex-1 min-w-0 px-2 py-2 text-left',
-              status === 'read' ? 'opacity-70' : '',
-            ].join(' ')}
-          >
-            <p className="text-lg font-medium leading-tight text-blue-950">
-              {t('lesson-number', { number })}
-            </p>
-            <p className="mt-1 text-base font-medium leading-tight text-blue-950">{title}</p>
-          </div>
-        </>
-      ) : (
-        <>
-          <div
-            className={[
-              'mr-[72px] flex-1 min-w-0 px-2 py-2 text-right',
-              status === 'read' ? 'opacity-70' : '',
-            ].join(' ')}
-          >
-            <p className="text-lg font-medium leading-tight text-blue-950">
-              {t('lesson-number', { number })}
-            </p>
-            <p className="mt-1 text-base font-medium leading-tight text-blue-950">{title}</p>
-          </div>
-          <Link
-            href={routes.learningLesson(category, slug)}
-            aria-label={t('open-lesson', { number })}
-            className={[
-              buttonVariants({ variant: 'solid', size: 'icon', color: 'blue' }),
-              'absolute right-0 z-10 size-14 shrink-0 rounded-full border-2 border-white text-xl shadow-sm',
-            ].join(' ')}
-          >
-            <ArrowRightIcon aria-hidden className="size-5 stroke-[1.5]" />
-          </Link>
-        </>
-      )}
-    </article>
+      <Link
+        href={routes.learningLesson(category, slug)}
+        className={[
+          'group relative z-10 flex min-h-40 w-full items-center gap-4 rounded-2xl py-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-50',
+          side === 'right' ? 'flex-row-reverse text-right' : 'text-left',
+        ].join(' ')}
+      >
+        <span
+          aria-hidden="true"
+          className={[
+            'flex size-[72px] shrink-0 items-center justify-center rounded-full border-4 border-white ring-2 ring-black transition-transform group-hover:-translate-y-1',
+            isRead
+              ? 'bg-[#16a34a] text-white'
+              : isNext
+                ? 'bg-blue-500 text-white'
+                : 'bg-white text-blue-500',
+          ].join(' ')}
+        >
+          {isRead ? (
+            <svg viewBox="0 0 24 24" fill="none" className="size-7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m5 12 4 4L19 6" />
+            </svg>
+          ) : (
+            <BooksIcon className="size-7 stroke-2" />
+          )}
+        </span>
+
+        <span className="flex min-w-0 flex-1 flex-col">
+          <span className="text-lg font-semibold leading-tight text-blue-950 transition-colors group-hover:text-blue-500 sm:text-xl">
+            {t('lesson-number', { number })}
+          </span>
+          <span className="mt-1 text-sm leading-snug text-grey-600">{title}</span>
+          <span className="sr-only">
+            {isRead ? t('completed') : isNext ? t('next') : t('available')}
+          </span>
+        </span>
+      </Link>
+    </li>
   );
 };

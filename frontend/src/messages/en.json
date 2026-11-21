@@ -8,6 +8,9 @@
       "roadmap": "Lesson roadmap",
       "lesson-number": "Lesson #{number}",
       "open-lesson": "Open lesson {number}",
+      "completed": "Completed",
+      "next": "Your next lesson",
+      "available": "Open lesson",
       "categories": {
         "stocks-bonds": "Stocks and Bonds",
         "investing": "Investing",

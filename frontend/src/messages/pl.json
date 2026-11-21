@@ -8,6 +8,9 @@
       "roadmap": "Mapa lekcji",
       "lesson-number": "Lekcja #{number}",
       "open-lesson": "Otwórz lekcję {number}",
+      "completed": "Ukończona",
+      "next": "Twoja następna lekcja",
+      "available": "Otwórz lekcję",
       "categories": {
         "stocks-bonds": "Akcje i obligacje",
         "investing": "Inwestowanie",

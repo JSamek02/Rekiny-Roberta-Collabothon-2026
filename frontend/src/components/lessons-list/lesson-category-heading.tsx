@@ -18,9 +18,9 @@ export const LessonCategoryHeading = async ({
   const progress = total > 0 ? Math.min(100, Math.round((completed / total) * 100)) : 0;
 
   return (
-    <section className="mb-6 w-full rounded-xl border border-blue-100 bg-white p-4 shadow-xs">
+    <section className="mx-auto mb-7 w-full max-w-lg rounded-2xl border border-blue-100 bg-white p-5 shadow-xs">
       <div className="flex items-center gap-3">
-        <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-950">
+        <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-500">
           {icon}
         </div>
         <div className="min-w-0 flex-1">
