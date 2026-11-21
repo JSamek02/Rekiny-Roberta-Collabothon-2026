@@ -297,6 +297,11 @@
       }
     }
   },
+  "pages": {
+    "profile": {
+      "heading": "Witaj,<br></br><span>{name}</span>"
+    }
+  },
   "global": {
     "routes": {
       "home": "Strona główna",
