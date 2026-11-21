@@ -7,6 +7,7 @@ import {
   ApiPostGameCoin,
   ApiPostLogout,
   ApiPostMockLogin,
+  ApiPostShopPurchase,
   AuthUser,
 } from '@/api/types/auth';
 import { UseReactQuery, UseReactQueryMutation } from '@/api/types/react-query';
@@ -103,6 +104,21 @@ export async function apiPostGameCoin(): Promise<ApiPostGameCoin.Response> {
     ...WITH_SESSION,
     headers: AJAX_HEADERS,
   });
+  return res.data;
+}
+
+export async function apiPostShopPurchase(
+  body: ApiPostShopPurchase.Body,
+): Promise<ApiPostShopPurchase.Response> {
+  const client = await getApiClient();
+  const res = await client.post<ApiPostShopPurchase.Response, ApiPostShopPurchase.Body>(
+    '/api/auth/shop-purchase',
+    body,
+    {
+      ...WITH_SESSION,
+      headers: AJAX_HEADERS,
+    },
+  );
   return res.data;
 }
 

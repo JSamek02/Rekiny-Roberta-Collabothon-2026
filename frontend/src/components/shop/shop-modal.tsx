@@ -1,11 +1,19 @@
 'use client';
 
-import { AvatarHatImage, avatarHats } from '@/components/avatar';
+import { AvatarHatImage, avatarHats, type AvatarHat } from '@/components/avatar';
 import { useShop } from '@/components/shop/shop-context';
+import { ApiError } from '@/api/error-handler';
+import { AUTH_QUERY_KEYS, apiPostShopPurchase } from '@/api/services/auth-service';
+import { AuthUser } from '@/api/types/auth';
+import { saveGuestSharkCoins, useSharkCoins } from '@/hooks/use-shark-coins';
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle } from '@/ui';
+import { useQueryClient } from '@tanstack/react-query';
 import { Check, ImageIcon } from 'lucide-react';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
+const HAT_COST = 500;
 const otherRewards = [
   { id: 'advice-discount', title: 'other-advice-discount', company: 'Tumbleweed co.' },
   { id: 'account-bonus', title: 'other-account-bonus', company: 'Tumbleweed co.' },
@@ -20,6 +28,41 @@ type ShopModalProps = {
 export const ShopModal = ({ open, onOpenChange }: ShopModalProps) => {
   const t = useTranslations('components.rewards');
   const { boughtHats, buyHat } = useShop();
+  const { sharkCoins, isGuest, isLoading } = useSharkCoins();
+  const queryClient = useQueryClient();
+  const [buyingHat, setBuyingHat] = useState<AvatarHat | null>(null);
+  const [purchaseError, setPurchaseError] = useState<string | null>(null);
+
+  const purchaseHat = async (hat: AvatarHat) => {
+    setPurchaseError(null);
+    setBuyingHat(hat);
+
+    try {
+      if (isGuest) {
+        if (sharkCoins < HAT_COST) {
+          setPurchaseError(t('not-enough-coins'));
+          return;
+        }
+        saveGuestSharkCoins(sharkCoins - HAT_COST);
+      } else {
+        const purchase = await apiPostShopPurchase({ item_id: `hat-${hat}` });
+        queryClient.setQueryData<AuthUser | null>(AUTH_QUERY_KEYS.currentUser, (current) =>
+          current ? { ...current, shark_coins: purchase.shark_coins } : current,
+        );
+      }
+
+      buyHat(hat);
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 409) {
+        setPurchaseError(t('not-enough-coins'));
+      } else {
+        console.error('Could not purchase shop item', error);
+        setPurchaseError(t('purchase-error'));
+      }
+    } finally {
+      setBuyingHat(null);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -28,8 +71,16 @@ export const ShopModal = ({ open, onOpenChange }: ShopModalProps) => {
         className="!left-2 !top-2 !h-[calc(100dvh-1rem)] !max-h-none !w-[calc(100%-1rem)] !max-w-none !translate-x-0 !translate-y-0 rounded-xl p-5 sm:max-w-none"
       >
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-blue-950">{t('title')}</DialogTitle>
+          <div className="flex items-center justify-between gap-4 pr-8">
+            <DialogTitle className="text-xl font-semibold text-blue-950">{t('title')}</DialogTitle>
+            <div className="flex shrink-0 items-center gap-2 text-sm font-semibold text-blue-950">
+              <Image src="/img/SharkCoin.svg" alt="" width={24} height={24} />
+              <span>{t('balance', { balance: isLoading ? '—' : sharkCoins.toLocaleString() })}</span>
+            </div>
+          </div>
         </DialogHeader>
+
+        {purchaseError && <p className="text-sm text-red-800" role="alert">{purchaseError}</p>}
 
         <div className="min-h-0 flex-1 overflow-y-auto pr-4 -mr-4">
           <h3 className="mb-4 text-sm font-semibold text-grey-600">{t('category-hats')}</h3>
@@ -60,10 +111,14 @@ export const ShopModal = ({ open, onOpenChange }: ShopModalProps) => {
                     <Button
                       size="sm"
                       variant={isBought ? 'ghost' : 'solid'}
-                      disabled={isBought}
-                      onClick={() => buyHat(hat)}
+                      disabled={isBought || isLoading || buyingHat !== null}
+                      onClick={() => void purchaseHat(hat)}
                     >
-                      {isBought ? t('owned') : t('buy', { price: 500 })}
+                      {isBought
+                        ? t('owned')
+                        : buyingHat === hat
+                          ? t('purchasing')
+                          : t('buy', { price: HAT_COST })}
                     </Button>
                   </div>
                 </article>
