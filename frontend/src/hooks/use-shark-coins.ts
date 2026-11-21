@@ -1,8 +1,9 @@
 'use client';
 
-import { AUTH_QUERY_KEYS } from '@/api/services/auth-service';
+import { AUTH_QUERY_KEYS, apiPostGameCoin } from '@/api/services/auth-service';
 import { SimulationSession } from '@/api/services/simulation-service';
 import { syncSimulationSessions } from '@/api/simulation';
+import { AuthUser } from '@/api/types/auth';
 import { useViewer } from '@/components/auth';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useSyncExternalStore } from 'react';
@@ -189,12 +190,36 @@ export const useSharkCoins = () => {
     [user, isGuest, sharkCoins, queryClient]
   );
 
+  const creditGameCoin = useCallback(
+    (amount: number) => {
+      if (!user) {
+        addGuestProfitCoins(amount);
+        return;
+      }
+      queryClient.setQueryData<AuthUser | null>(AUTH_QUERY_KEYS.currentUser, (current) =>
+        current ? { ...current, shark_coins: (current.shark_coins || 0) + amount } : current,
+      );
+      apiPostGameCoin()
+        .then(({ shark_coins }) =>
+          queryClient.setQueryData<AuthUser | null>(AUTH_QUERY_KEYS.currentUser, (current) =>
+            current ? { ...current, shark_coins } : current,
+          ),
+        )
+        .catch((err) => {
+          console.warn('Could not credit game coin:', err);
+          queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.currentUser });
+        });
+    },
+    [user, queryClient],
+  );
+
   return {
     sharkCoins,
     isGuest,
     storageType,
     isLoading: status === 'loading',
     handleInvestmentProfit,
+    creditGameCoin,
     refreshCoins: () => {
       if (user) {
         queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.currentUser });
