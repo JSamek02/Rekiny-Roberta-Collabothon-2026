@@ -4,6 +4,8 @@ CREATE TABLE IF NOT EXISTS users (
     email TEXT,
     name TEXT,
     picture TEXT,
+    preferred_language VARCHAR(2) NOT NULL DEFAULT 'pl',
+    shark_coins INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -24,6 +26,7 @@ CREATE TABLE IF NOT EXISTS courses (
     estimated_minutes INTEGER NOT NULL DEFAULT 15,
     icon_url TEXT,
     is_published BOOLEAN NOT NULL DEFAULT TRUE,
+    translations JSONB NOT NULL DEFAULT '{}'::jsonb,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -36,6 +39,7 @@ CREATE TABLE IF NOT EXISTS lessons (
     order_index INTEGER NOT NULL DEFAULT 0,
     is_published BOOLEAN NOT NULL DEFAULT TRUE,
     xp_reward INTEGER NOT NULL DEFAULT 20,
+    translations JSONB NOT NULL DEFAULT '{}'::jsonb,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -51,6 +55,7 @@ CREATE TABLE IF NOT EXISTS activities (
     coin_reward INTEGER NOT NULL DEFAULT 5,
     estimated_minutes INTEGER NOT NULL DEFAULT 3,
     content JSONB NOT NULL DEFAULT '{}'::jsonb,
+    translations JSONB NOT NULL DEFAULT '{}'::jsonb,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

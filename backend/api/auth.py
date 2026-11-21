@@ -13,7 +13,7 @@ from sqlalchemy import delete, func, select
 from sqlalchemy.exc import SQLAlchemyError
 
 from database import database
-from database.models import User, UserSession
+from database.models import SUPPORTED_LANGUAGE_CODES, User, UserSession
 
 
 auth = Blueprint("auth", __name__)
@@ -132,6 +132,28 @@ class CurrentUser(MethodView):
             return jsonify(error="Database unavailable"), 503
 
 
+class UserPreferences(MethodView):
+    def post(self):
+        payload = request.get_json(silent=True)
+        preferred_language = payload.get("preferred_language") if isinstance(payload, dict) else None
+        if preferred_language not in SUPPORTED_LANGUAGE_CODES:
+            return jsonify(
+                error="Unsupported preferred_language. Use one of: pl, en, de"
+            ), 400
+
+        try:
+            with database() as db:
+                user = get_authenticated_user(db)
+                if not user:
+                    return jsonify(error="Not authenticated"), 401
+                user.preferred_language = preferred_language
+                db.commit()
+                return jsonify(user=user.to_dict())
+        except SQLAlchemyError:
+            current_app.logger.exception("Could not update user preferences")
+            return jsonify(error="Database unavailable"), 503
+
+
 class Logout(MethodView):
     def post(self):
         # A cross-origin browser request cannot set this header without CORS permission.
@@ -161,4 +183,5 @@ auth.add_url_rule("/api/auth/google", view_func=GoogleLogin.as_view("google_logi
 auth.add_url_rule("/api/auth/google/callback", view_func=GoogleCallback.as_view("google_callback"))
 auth.add_url_rule("/api/auth/mock", view_func=MockLogin.as_view("mock_login"))
 auth.add_url_rule("/api/auth/me", view_func=CurrentUser.as_view("current_user"))
+auth.add_url_rule("/api/auth/preferences", view_func=UserPreferences.as_view("user_preferences"))
 auth.add_url_rule("/api/auth/logout", view_func=Logout.as_view("logout"))

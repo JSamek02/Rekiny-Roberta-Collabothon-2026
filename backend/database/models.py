@@ -10,6 +10,12 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.types import JSON
 
 JsonType = JSON().with_variant(JSONB, "postgresql")
+SUPPORTED_LANGUAGE_CODES = ("pl", "en", "de")
+
+
+def get_translation(translations: dict[str, Any] | None, language: str) -> dict[str, Any]:
+    translation = (translations or {}).get(language, {})
+    return translation if isinstance(translation, dict) else {}
 
 
 class Base(DeclarativeBase):
@@ -24,6 +30,12 @@ class User(Base):
     email: Mapped[str | None] = mapped_column(Text)
     name: Mapped[str | None] = mapped_column(Text)
     picture: Mapped[str | None] = mapped_column(Text)
+    preferred_language: Mapped[str] = mapped_column(
+        String(2), nullable=False, default="pl", server_default="pl"
+    )
+    shark_coins: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0, server_default="0"
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
@@ -47,7 +59,8 @@ class User(Base):
     def to_dict(self):
         return {
             "id": self.id, "email": self.email, "name": self.name,
-            "picture": self.picture, "created_at": self.created_at,
+            "picture": self.picture, "preferred_language": self.preferred_language,
+            "shark_coins": self.shark_coins, "created_at": self.created_at,
         }
 
 
@@ -73,6 +86,7 @@ class Course(Base):
     estimated_minutes: Mapped[int] = mapped_column(Integer, default=15)
     icon_url: Mapped[str | None] = mapped_column(Text)
     is_published: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    translations: Mapped[dict[str, Any]] = mapped_column(JsonType, nullable=False, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
@@ -80,12 +94,13 @@ class Course(Base):
         "Lesson", back_populates="course", cascade="all, delete-orphan", order_by="Lesson.order_index"
     )
 
-    def to_dict(self, include_lessons=False):
+    def to_dict(self, include_lessons=False, language="pl"):
+        translation = get_translation(self.translations, language)
         data = {
             "id": self.id,
             "slug": self.slug,
-            "title": self.title,
-            "description": self.description,
+            "title": translation.get("title", self.title),
+            "description": translation.get("description", self.description),
             "category": self.category,
             "difficulty": self.difficulty,
             "estimated_minutes": self.estimated_minutes,
@@ -94,7 +109,9 @@ class Course(Base):
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
         if include_lessons:
-            data["lessons"] = [lesson.to_dict() for lesson in self.lessons if lesson.is_published]
+            data["lessons"] = [
+                lesson.to_dict(language=language) for lesson in self.lessons if lesson.is_published
+            ]
         return data
 
 
@@ -112,6 +129,7 @@ class Lesson(Base):
     order_index: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     is_published: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     xp_reward: Mapped[int] = mapped_column(Integer, default=20)
+    translations: Mapped[dict[str, Any]] = mapped_column(JsonType, nullable=False, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
@@ -120,19 +138,20 @@ class Lesson(Base):
         "Activity", back_populates="lesson", cascade="all, delete-orphan", order_by="Activity.order_index"
     )
 
-    def to_dict(self, include_activities=False):
+    def to_dict(self, include_activities=False, language="pl"):
+        translation = get_translation(self.translations, language)
         data = {
             "id": self.id,
             "course_id": self.course_id,
-            "title": self.title,
-            "description": self.description,
+            "title": translation.get("title", self.title),
+            "description": translation.get("description", self.description),
             "order_index": self.order_index,
             "xp_reward": self.xp_reward,
             "is_published": self.is_published,
         }
         if include_activities:
             data["activities"] = [
-                activity.to_dict(include_content=False) for activity in self.activities
+                activity.to_dict(include_content=False, language=language) for activity in self.activities
             ]
         return data
 
@@ -153,16 +172,23 @@ class Activity(Base):
     coin_reward: Mapped[int] = mapped_column(Integer, default=5)
     estimated_minutes: Mapped[int] = mapped_column(Integer, default=3)
     content: Mapped[dict[str, Any]] = mapped_column(JsonType, nullable=False, default=dict)
+    translations: Mapped[dict[str, Any]] = mapped_column(JsonType, nullable=False, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     lesson: Mapped["Lesson"] = relationship("Lesson", back_populates="activities")
 
-    def to_dict(self, include_content=True, sanitize_quiz=True):
+    def localized_content(self, language="pl"):
+        translation = get_translation(self.translations, language)
+        content = translation.get("content")
+        return content if isinstance(content, dict) else self.content
+
+    def to_dict(self, include_content=True, sanitize_quiz=True, language="pl"):
+        translation = get_translation(self.translations, language)
         data = {
             "id": self.id,
             "lesson_id": self.lesson_id,
-            "title": self.title,
+            "title": translation.get("title", self.title),
             "activity_type": self.activity_type,
             "order_index": self.order_index,
             "xp_reward": self.xp_reward,
@@ -170,7 +196,8 @@ class Activity(Base):
             "estimated_minutes": self.estimated_minutes,
         }
         if include_content:
-            content_copy = dict(self.content) if self.content else {}
+            content = self.localized_content(language)
+            content_copy = dict(content) if content else {}
             if self.activity_type == "quiz" and sanitize_quiz and "questions" in content_copy:
                 sanitized_questions = []
                 for q in content_copy.get("questions", []):
