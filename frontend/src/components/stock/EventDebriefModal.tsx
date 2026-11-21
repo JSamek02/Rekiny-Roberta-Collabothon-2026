@@ -6,6 +6,7 @@ import { SimulationDebrief, SimulationSession } from './types';
 import { Trophy, ShieldCheck, TrendingUp, Sparkles, Award, RotateCcw, ArrowRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSharkCoins } from '@/hooks/use-shark-coins';
+import { Dialog, DialogContent, DialogTitle } from '@/ui';
 
 interface EventDebriefModalProps {
   debrief: SimulationDebrief;
@@ -89,15 +90,16 @@ export const EventDebriefModal: React.FC<EventDebriefModalProps> = ({
   }, [debrief, t]);
 
   return (
-    <div className="bg-white rounded-2xl p-5 border border-blue-200 shadow-xl flex flex-col gap-4 animate-fadeIn">
-      {/* Trophy & Header */}
-      <div className="text-center flex flex-col items-center">
-        <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-300 flex items-center justify-center shadow-md mb-2">
-          <Trophy className="w-8 h-8 text-[#f59e0b]" />
+    <Dialog open>
+      <DialogContent showCloseButton={false}>
+        {/* Trophy & Header */}
+        <div className="text-center flex flex-col items-center">
+          <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-300 flex items-center justify-center shadow-md mb-2">
+            <Trophy className="w-8 h-8 text-[#f59e0b]" />
+          </div>
+          <span className="text-xs font-bold uppercase tracking-wider text-blue-500">{t('crisis-completed')}</span>
+          <DialogTitle className="text-lg font-bold text-blue-950 mt-0.5">{eventTitle}</DialogTitle>
         </div>
-        <span className="text-xs font-bold uppercase tracking-wider text-blue-500">{t('crisis-completed')}</span>
-        <h2 className="text-lg font-bold text-blue-950 mt-0.5">{eventTitle}</h2>
-      </div>
 
       {/* Rewards Banner */}
       <div className="flex items-center justify-center gap-6 bg-blue-50/70 p-3 rounded-xl border border-blue-100">
@@ -110,7 +112,6 @@ export const EventDebriefModal: React.FC<EventDebriefModalProps> = ({
           <Image src="/img/coin.svg" alt="" width={22} height={22} />
           <span className="text-xs font-bold text-amber-800">+{coinsAwarded.toLocaleString()} SharkCoins</span>
         </div>
-      </div>
 
       {/* Main Stats Grid */}
       <div className="grid grid-cols-2 gap-2 text-xs">
@@ -119,11 +120,7 @@ export const EventDebriefModal: React.FC<EventDebriefModalProps> = ({
           <span className="text-base font-bold text-blue-950">
             {debrief.final_capital.toLocaleString(undefined, { minimumFractionDigits: 2 })} zł
           </span>
-          <span
-            className={`text-[11px] font-bold block mt-0.5 ${
-              isProfit ? 'text-[#10b981]' : 'text-[#ef4444]'
-            }`}
-          >
+          <span className={`text-[11px] font-bold block mt-0.5 ${isProfit ? 'text-[#10b981]' : 'text-[#ef4444]'}`}>
             {t('nominal-return', { prefix: isProfit ? '+' : '', value: debrief.nominal_return_pct })}
           </span>
         </div>
@@ -133,11 +130,7 @@ export const EventDebriefModal: React.FC<EventDebriefModalProps> = ({
           <span className="text-base font-bold text-blue-950">
             {debrief.real_capital.toLocaleString(undefined, { minimumFractionDigits: 2 })} zł
           </span>
-          <span
-            className={`text-[11px] font-bold block mt-0.5 ${
-              isRealProfit ? 'text-[#10b981]' : 'text-[#ef4444]'
-            }`}
-          >
+          <span className={`text-[11px] font-bold block mt-0.5 ${isRealProfit ? 'text-[#10b981]' : 'text-[#ef4444]'}`}>
             {t('real-return', { prefix: isRealProfit ? '+' : '', value: debrief.real_return_pct })}
           </span>
         </div>
@@ -162,7 +155,17 @@ export const EventDebriefModal: React.FC<EventDebriefModalProps> = ({
             {debrief.badges_earned.map((badgeName) => {
               const b = BADGE_MAP[badgeName];
               const Icon = b ? b.icon : Award;
-              const displayName = b ? (t.has(`badges.${b.key}.name` as any) ? t(`badges.${b.key}.name` as any) : badgeName) : badgeName;
+              {
+                /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+              }
+              const displayName = b
+                ? t.has(`badges.${b.key}.name` as any)
+                  ? t(`badges.${b.key}.name` as any)
+                  : badgeName
+                : badgeName;
+              {
+                /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+              }
               const displayDesc = b ? t(`badges.${b.key}.desc` as any) : t('badges.default.desc');
 
               return (
@@ -239,6 +242,7 @@ export const EventDebriefModal: React.FC<EventDebriefModalProps> = ({
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

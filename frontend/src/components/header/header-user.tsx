@@ -6,6 +6,7 @@ import { Link } from '@/i18n/navigation';
 import { Button } from '@/ui';
 import { routes } from '@/utils/routes';
 import { useTranslations } from 'next-intl';
+import { Avatar } from '@/components/avatar';
 import React, { useEffect, useRef, useState } from 'react';
 
 /** Left side of the header: "Log in" for guests, avatar with an account menu for signed-in users. */
@@ -57,7 +58,8 @@ export const HeaderUser = () => {
         aria-label={t('account-menu')}
         className="flex items-center gap-2 rounded-full cursor-pointer"
       >
-        <UserAvatar user={user} />
+        {/* <UserAvatar user={user} /> */}
+        <Avatar />
         <RoleBadge type={viewerType} />
       </button>
 
