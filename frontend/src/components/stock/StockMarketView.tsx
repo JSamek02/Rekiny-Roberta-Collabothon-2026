@@ -17,7 +17,7 @@ import {
   stepSimulationQuarter,
   resetSimulation,
 } from '@/api/simulation';
-import { EventSelector } from './EventSelector';
+import { EventSelector, SHORT_EVENT_TITLES } from './EventSelector';
 import { AllocationSliders } from './AllocationSliders';
 import { QuarterHistoryChart } from './QuarterHistoryChart';
 import { QuarterNewsCard } from './QuarterNewsCard';
@@ -181,11 +181,13 @@ export const StockMarketView: React.FC = () => {
 
         {/* Intro banner */}
         <div className="bg-white rounded-2xl p-4 border border-blue-100 flex flex-col gap-2">
-          <h2 className="text-base font-bold text-blue-950">{selectedEvent.title}</h2>
+          <h2 className="text-base font-bold text-blue-950">
+            {SHORT_EVENT_TITLES[selectedEvent.id] || selectedEvent.title}
+          </h2>
           <div className="flex items-center gap-2 text-xs font-semibold text-grey-600">
-            <span>📅 {selectedEvent.period}</span>
+            <span>{selectedEvent.period}</span>
             <span>•</span>
-            <span>⏱️ {selectedEvent.total_quarters} kwartałów</span>
+            <span>{selectedEvent.total_quarters} kwartałów</span>
           </div>
           <div className="p-2.5 rounded-xl bg-blue-50/60 border border-blue-100 text-xs text-grey-700 mt-1 leading-relaxed">
             {selectedEvent.initial_context?.description}
@@ -233,7 +235,7 @@ export const StockMarketView: React.FC = () => {
       <div className="py-4 px-4 flex flex-col gap-4 max-w-md mx-auto w-full">
         <EventDebriefModal
           debrief={session.debrief}
-          eventTitle={selectedEvent.title}
+          eventTitle={SHORT_EVENT_TITLES[selectedEvent.id] || selectedEvent.title}
           onRestart={handleResetSession}
           onChooseOther={handleBackToEvents}
         />
@@ -275,7 +277,9 @@ export const StockMarketView: React.FC = () => {
       {/* Progress across the crisis */}
       <div className="bg-white rounded-2xl p-4 border border-blue-100 flex flex-col gap-2">
         <div className="flex items-center justify-between text-xs">
-          <span className="font-bold text-blue-950 truncate max-w-[200px]">{selectedEvent.title}</span>
+          <span className="font-bold text-blue-950 truncate max-w-[200px]">
+            {SHORT_EVENT_TITLES[selectedEvent.id] || selectedEvent.title}
+          </span>
           <span className="font-semibold text-blue-600">
             Kwartał {currentIdx} / {session.total_quarters}
           </span>

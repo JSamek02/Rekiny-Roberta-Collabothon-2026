@@ -46,7 +46,7 @@ export const QuarterNewsCard: React.FC<QuarterNewsCardProps> = ({ quarterData })
 
       {/* Robert Biznesu Lesson */}
       {quarterData.lesson && (
-        <div className="flex items-start gap-2.5 bg-gradient-to-r from-blue-50 to-indigo-50/50 p-2.5 rounded-xl border border-blue-100">
+        <div className="flex items-start gap-2.5 bg-blue-50 p-2.5 rounded-xl border border-blue-100">
           <div className="w-8 h-8 shrink-0 relative mt-0.5">
             <Image
               src="/img/shark.png"

@@ -22,7 +22,7 @@ export const DashboardContent: React.FC = () => {
       {/* Featured Giełda Callout Banner */}
       <Link
         href={routes.stock}
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 p-4 text-white shadow-md hover:shadow-lg transition-all border border-blue-400 group"
+        className="relative overflow-hidden rounded-2xl bg-blue-500 p-4 text-white shadow-xs hover:shadow-md transition-all border border-blue-400 group"
       >
         <div className="relative z-10 max-w-[75%]">
           <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/20 text-[10px] font-bold backdrop-blur-sm mb-1.5">
