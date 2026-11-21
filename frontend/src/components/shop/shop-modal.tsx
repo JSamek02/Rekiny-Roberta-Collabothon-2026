@@ -1,6 +1,6 @@
 'use client';
 
-import { AvatarHatImage, avatarHats, type AvatarHat } from '@/components/avatar';
+import { AvatarHatImage, avatarHats } from '@/components/avatar';
 import { useShop } from '@/components/shop/shop-context';
 import { ApiError } from '@/api/error-handler';
 import { AUTH_QUERY_KEYS, apiPostShopPurchase } from '@/api/services/auth-service';
@@ -15,9 +15,9 @@ import { useState } from 'react';
 
 const HAT_COST = 500;
 const otherRewards = [
-  { id: 'advice-discount', title: 'other-advice-discount', company: 'Tumbleweed co.' },
-  { id: 'account-bonus', title: 'other-account-bonus', company: 'Tumbleweed co.' },
-  { id: 'investment-webinar', title: 'other-investment-webinar' },
+  { id: 'advice-discount', title: 'other-advice-discount', company: 'Tumbleweed co.', cost: 7500 },
+  { id: 'account-bonus', title: 'other-account-bonus', company: 'Tumbleweed co.', cost: 6000 },
+  { id: 'investment-webinar', title: 'other-investment-webinar', cost: 5000 },
 ] as const;
 
 type ShopModalProps = {
@@ -30,28 +30,29 @@ export const ShopModal = ({ open, onOpenChange }: ShopModalProps) => {
   const { boughtHats, buyHat } = useShop();
   const { sharkCoins, isGuest, isLoading } = useSharkCoins();
   const queryClient = useQueryClient();
-  const [buyingHat, setBuyingHat] = useState<AvatarHat | null>(null);
+  const [buyingItem, setBuyingItem] = useState<string | null>(null);
+  const [boughtOtherRewards, setBoughtOtherRewards] = useState<string[]>([]);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
 
-  const purchaseHat = async (hat: AvatarHat) => {
+  const purchaseItem = async (itemId: string, cost: number, onSuccess: () => void) => {
     setPurchaseError(null);
-    setBuyingHat(hat);
+    setBuyingItem(itemId);
 
     try {
       if (isGuest) {
-        if (sharkCoins < HAT_COST) {
+        if (sharkCoins < cost) {
           setPurchaseError(t('not-enough-coins'));
           return;
         }
-        saveGuestSharkCoins(sharkCoins - HAT_COST);
+        saveGuestSharkCoins(sharkCoins - cost);
       } else {
-        const purchase = await apiPostShopPurchase({ item_id: `hat-${hat}` });
+        const purchase = await apiPostShopPurchase({ item_id: itemId });
         queryClient.setQueryData<AuthUser | null>(AUTH_QUERY_KEYS.currentUser, (current) =>
           current ? { ...current, shark_coins: purchase.shark_coins } : current,
         );
       }
 
-      buyHat(hat);
+      onSuccess();
     } catch (error) {
       if (error instanceof ApiError && error.status === 409) {
         setPurchaseError(t('not-enough-coins'));
@@ -60,7 +61,7 @@ export const ShopModal = ({ open, onOpenChange }: ShopModalProps) => {
         setPurchaseError(t('purchase-error'));
       }
     } finally {
-      setBuyingHat(null);
+      setBuyingItem(null);
     }
   };
 
@@ -80,7 +81,11 @@ export const ShopModal = ({ open, onOpenChange }: ShopModalProps) => {
           </div>
         </DialogHeader>
 
-        {purchaseError && <p className="text-sm text-red-800" role="alert">{purchaseError}</p>}
+        {purchaseError && (
+          <p className="text-sm text-red-800" role="alert">
+            {purchaseError}
+          </p>
+        )}
 
         <div className="min-h-0 flex-1 overflow-y-auto pr-4 -mr-4">
           <h3 className="mb-4 text-sm font-semibold text-grey-600">{t('category-hats')}</h3>
@@ -111,12 +116,12 @@ export const ShopModal = ({ open, onOpenChange }: ShopModalProps) => {
                     <Button
                       size="sm"
                       variant={isBought ? 'ghost' : 'solid'}
-                      disabled={isBought || isLoading || buyingHat !== null}
-                      onClick={() => void purchaseHat(hat)}
+                      disabled={isBought || isLoading || sharkCoins < HAT_COST || buyingItem !== null}
+                      onClick={() => void purchaseItem(`hat-${hat}`, HAT_COST, () => buyHat(hat))}
                     >
                       {isBought
                         ? t('owned')
-                        : buyingHat === hat
+                        : buyingItem === `hat-${hat}`
                           ? t('purchasing')
                           : t('buy', { price: HAT_COST })}
                     </Button>
@@ -128,20 +133,51 @@ export const ShopModal = ({ open, onOpenChange }: ShopModalProps) => {
 
           <h3 className="mb-4 mt-8 text-sm font-semibold text-grey-600">{t('category-others')}</h3>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            {otherRewards.map((reward) => (
-              <article
-                key={reward.id}
-                className="flex min-h-64 flex-col rounded-xl border border-blue-100 bg-white p-3"
-              >
-                <div className="flex min-h-40 flex-1 items-center justify-center rounded-lg bg-blue-50">
-                  <ImageIcon className="size-10 text-grey-400" aria-hidden />
-                </div>
-                <div className="mt-3 flex flex-1 flex-col gap-1">
-                  <span className="text-sm font-semibold text-blue-950">{t(reward.title)}</span>
-                  {'company' in reward && <span className="text-xs text-grey-600">{reward.company}</span>}
-                </div>
-              </article>
-            ))}
+            {otherRewards.map((reward) => {
+              const isBought = boughtOtherRewards.includes(reward.id);
+
+              return (
+                <article
+                  key={reward.id}
+                  className={
+                    isBought
+                      ? 'flex min-h-64 flex-col rounded-xl border border-green-600 bg-green-50 p-3'
+                      : 'flex min-h-64 flex-col rounded-xl border border-blue-100 bg-white p-3'
+                  }
+                >
+                  <div className="relative flex min-h-40 flex-1 items-center justify-center rounded-lg bg-blue-50">
+                    <ImageIcon className="size-10 text-grey-400" aria-hidden />
+                    {isBought && (
+                      <span className="absolute right-2 top-2 flex size-8 items-center justify-center rounded-full bg-green-600 text-white">
+                        <Check className="size-5" aria-hidden />
+                        <span className="sr-only">{t('owned')}</span>
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-3 flex flex-1 flex-col gap-1">
+                    <span className="text-sm font-semibold text-blue-950">{t(reward.title)}</span>
+                    {'company' in reward && <span className="text-xs text-grey-600">{reward.company}</span>}
+                  </div>
+                  <Button
+                    className="mt-2"
+                    size="sm"
+                    variant={isBought ? 'ghost' : 'solid'}
+                    disabled={isBought || isLoading || sharkCoins < reward.cost || buyingItem !== null}
+                    onClick={() =>
+                      void purchaseItem(reward.id, reward.cost, () =>
+                        setBoughtOtherRewards((current) => [...current, reward.id]),
+                      )
+                    }
+                  >
+                    {isBought
+                      ? t('owned')
+                      : buyingItem === reward.id
+                        ? t('purchasing')
+                        : t('buy', { price: reward.cost })}
+                  </Button>
+                </article>
+              );
+            })}
           </div>
         </div>
       </DialogContent>

@@ -143,6 +143,18 @@ Body JSON:
 
 Dozwolone wartości: `pl`, `en`, `de`. Zwraca `200` z takim samym obiektem `user` jak `/api/auth/me`; `400` dla nieobsługiwanego języka, `401` bez sesji.
 
+### `POST /api/auth/shop-purchase`
+
+Kupuje przedmiot w sklepie i odejmuje jego cenę od salda SharkCoins zalogowanego użytkownika. Cena jest ustalana przez backend na podstawie identyfikatora produktu.
+
+Body JSON:
+
+```json
+{"item_id": "hat-4"}
+```
+
+Obsługiwane przedmioty: `hat-4` (500 SC), `advice-discount` (7500 SC), `account-bonus` (6000 SC) i `investment-webinar` (5000 SC). Zwraca `200` z nowym saldem i pobranym kosztem. Zwraca `400` dla nieznanego przedmiotu, `401` bez sesji, `403` bez nagłówka AJAX lub `409`, gdy saldo jest niewystarczające.
+
 ### `POST /api/auth/logout`
 
 Usuwa bieżącą sesję i czyści ciasteczko. Nie przyjmuje body. Wymaga nagłówka:

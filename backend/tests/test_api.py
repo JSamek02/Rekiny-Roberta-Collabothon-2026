@@ -294,6 +294,69 @@ with patch("dotenv.load_dotenv", side_effect=load_test_env):
         with Session(self.engine) as db:
             self.assertEqual(len(db.scalars(select(User)).all()), 3)
 
+    def test_shop_purchase_deducts_coins_and_rejects_insufficient_balance(self):
+        headers = {"X-Requested-With": "XMLHttpRequest"}
+        with patch.dict(app.config, {"AUTH_MODE": "mock"}):
+            self.client.post("/api/auth/mock", headers=headers)
+            purchase = self.client.post(
+                "/api/auth/shop-purchase",
+                headers=headers,
+                json={"item_id": "hat-4"},
+            )
+            self.assertEqual(purchase.status_code, 200)
+            self.assertEqual(purchase.get_json(), {"shark_coins": 2500, "cost": 500})
+            self.assertEqual(
+                self.client.get("/api/auth/me").get_json()["user"]["shark_coins"],
+                2500,
+            )
+
+            user_id = self.client.get("/api/auth/me").get_json()["user"]["id"]
+            with Session(self.engine) as db, db.begin():
+                db.get(User, user_id).shark_coins = 200
+
+            insufficient = self.client.post(
+                "/api/auth/shop-purchase",
+                headers=headers,
+                json={"item_id": "hat-4"},
+            )
+            self.assertEqual(insufficient.status_code, 409)
+            self.assertEqual(
+                self.client.get("/api/auth/me").get_json()["user"]["shark_coins"],
+                200,
+            )
+
+    def test_shop_purchase_requires_ajax_header_and_known_item(self):
+        headers = {"X-Requested-With": "XMLHttpRequest"}
+        self.assertEqual(
+            self.client.post("/api/auth/shop-purchase", json={"item_id": "hat-4"}).status_code,
+            403,
+        )
+        with patch.dict(app.config, {"AUTH_MODE": "mock"}):
+            self.client.post("/api/auth/mock", headers=headers)
+            invalid_item = self.client.post(
+                "/api/auth/shop-purchase",
+                headers=headers,
+                json={"item_id": "hat-5"},
+            )
+        self.assertEqual(invalid_item.status_code, 400)
+
+    def test_shop_purchase_deducts_other_item_price(self):
+        headers = {"X-Requested-With": "XMLHttpRequest"}
+        with patch.dict(app.config, {"AUTH_MODE": "mock"}):
+            self.client.post("/api/auth/mock", headers=headers)
+            user_id = self.client.get("/api/auth/me").get_json()["user"]["id"]
+            with Session(self.engine) as db, db.begin():
+                db.get(User, user_id).shark_coins = 10000
+
+            purchase = self.client.post(
+                "/api/auth/shop-purchase",
+                headers=headers,
+                json={"item_id": "advice-discount"},
+            )
+
+        self.assertEqual(purchase.status_code, 200)
+        self.assertEqual(purchase.get_json(), {"shark_coins": 2500, "cost": 7500})
+
     def test_google_mode_rejects_every_mock_role_session(self):
         headers = {"X-Requested-With": "XMLHttpRequest"}
         with patch.dict(app.config, {"AUTH_MODE": "mock"}):

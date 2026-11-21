@@ -9,7 +9,7 @@ from flask import Blueprint, current_app, jsonify, redirect, request, session
 from flask.views import MethodView
 from joserfc.errors import JoseError
 from requests import RequestException
-from sqlalchemy import delete, func, select
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.exc import SQLAlchemyError
 
 from database import database
@@ -172,6 +172,12 @@ class UserPreferences(MethodView):
 
 
 GAME_COIN_REWARD = 5
+SHOP_ITEM_COSTS = {
+    "hat-4": 500,
+    "advice-discount": 7500,
+    "account-bonus": 6000,
+    "investment-webinar": 5000,
+}
 
 
 class GameCoin(MethodView):
@@ -190,6 +196,42 @@ class GameCoin(MethodView):
                 return jsonify(shark_coins=int(user.shark_coins), reward=GAME_COIN_REWARD)
         except SQLAlchemyError:
             current_app.logger.exception("Could not credit game coin")
+            return jsonify(error="Database unavailable"), 503
+
+
+class ShopPurchase(MethodView):
+    """Deducts the server-defined price for a shop item from the signed-in user."""
+
+    def post(self):
+        if request.headers.get("X-Requested-With") != "XMLHttpRequest":
+            return jsonify(error="Missing X-Requested-With header"), 403
+
+        payload = request.get_json(silent=True)
+        item_id = payload.get("item_id") if isinstance(payload, dict) else None
+        if not isinstance(item_id, str) or item_id not in SHOP_ITEM_COSTS:
+            return jsonify(error="Unknown shop item"), 400
+        cost = SHOP_ITEM_COSTS[item_id]
+
+        try:
+            with database() as db:
+                user = get_authenticated_user(db)
+                if not user:
+                    return jsonify(error="Not authenticated"), 401
+
+                result = db.execute(
+                    update(User)
+                    .where(User.id == user.id, User.shark_coins >= cost)
+                    .values(shark_coins=User.shark_coins - cost)
+                    .returning(User.shark_coins)
+                )
+                shark_coins = result.scalar_one_or_none()
+                if shark_coins is None:
+                    return jsonify(error="Insufficient SharkCoins"), 409
+
+                db.commit()
+                return jsonify(shark_coins=int(shark_coins), cost=cost)
+        except SQLAlchemyError:
+            current_app.logger.exception("Could not purchase shop item")
             return jsonify(error="Database unavailable"), 503
 
 
@@ -225,4 +267,5 @@ auth.add_url_rule("/api/auth/me", view_func=CurrentUser.as_view("current_user"))
 auth.add_url_rule("/api/auth/config", view_func=AuthConfig.as_view("auth_config"))
 auth.add_url_rule("/api/auth/preferences", view_func=UserPreferences.as_view("user_preferences"))
 auth.add_url_rule("/api/auth/game-coin", view_func=GameCoin.as_view("game_coin"))
+auth.add_url_rule("/api/auth/shop-purchase", view_func=ShopPurchase.as_view("shop_purchase"))
 auth.add_url_rule("/api/auth/logout", view_func=Logout.as_view("logout"))
