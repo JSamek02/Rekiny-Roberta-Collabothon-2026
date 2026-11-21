@@ -24,6 +24,14 @@ export type SimulationEventSummary = {
     description: string;
     key_learning_question: string;
   };
+  user_progress?: {
+    status: 'awaiting_initial_investment' | 'in_progress' | 'completed';
+    current_quarter: number;
+    total_quarters: number;
+    is_completed: boolean;
+    final_capital?: number | null;
+    completed_at?: string | null;
+  } | null;
 };
 
 export type SimulationEventsResponse = {

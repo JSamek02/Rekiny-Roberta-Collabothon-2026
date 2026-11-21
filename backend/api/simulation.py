@@ -165,6 +165,20 @@ class SimulationEventsListView(MethodView):
                             "final_capital": rec.current_capital if rec.status == "completed" else None,
                             "completed_at": rec.completed_at.isoformat() if rec.completed_at else None,
                         }
+                    elif not user:
+                        key = _get_session_key(ev["id"], None)
+                        sim = _SIM_SESSIONS.get(key)
+                        if sim:
+                            ev_data["user_progress"] = {
+                                "status": sim.get("status", "in_progress"),
+                                "current_quarter": sim.get("current_quarter_index", 0),
+                                "total_quarters": sim.get("total_quarters", ev["total_quarters"]),
+                                "is_completed": sim.get("status") == "completed",
+                                "final_capital": sim.get("current_capital") if sim.get("status") == "completed" else None,
+                                "completed_at": None,
+                            }
+                        else:
+                            ev_data["user_progress"] = None
                     else:
                         ev_data["user_progress"] = None
                     events_summary.append(ev_data)
@@ -324,7 +338,21 @@ class SimulationSyncView(MethodView):
             with database() as db:
                 user = get_authenticated_user(db)
                 if not user:
-                    return jsonify(error="Wymagane zalogowanie, aby zsynchronizować postęp do bazy"), 401
+                    payload = request.get_json(silent=True) or {}
+                    sessions_to_sync = payload.get("sessions", [])
+                    synced_count = 0
+                    for s in sessions_to_sync:
+                        ev_id = s.get("event_id")
+                        if not ev_id or not get_event_by_id(ev_id):
+                            continue
+                        key = _get_session_key(ev_id, None)
+                        _SIM_SESSIONS[key] = s
+                        synced_count += 1
+                    return jsonify(
+                        status="ok",
+                        synced_count=synced_count,
+                        persisted=False,
+                    )
 
                 payload = request.get_json(silent=True) or {}
                 sessions_to_sync = payload.get("sessions", [])

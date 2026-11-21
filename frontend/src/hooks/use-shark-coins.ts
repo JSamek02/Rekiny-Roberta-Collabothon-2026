@@ -109,6 +109,17 @@ export const saveGuestSimulationSession = (session: SimulationSession) => {
   }
 };
 
+export const deleteGuestSimulationSession = (eventId: string) => {
+  if (typeof window === 'undefined') return;
+  try {
+    const all = getGuestSimulationSessions();
+    if (eventId in all) {
+      delete all[eventId];
+      window.localStorage.setItem(SESSIONS_STORAGE_KEY, JSON.stringify(all));
+    }
+  } catch {}
+};
+
 export const clearGuestSimulationSessions = () => {
   if (typeof window === 'undefined') return;
   try {

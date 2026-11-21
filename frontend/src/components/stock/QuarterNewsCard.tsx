@@ -8,6 +8,7 @@ import { BankIcon } from '@/icons/bank';
 import { TrendingUpIcon } from '@/icons/trending-up';
 import { CoinsIcon } from '@/icons/coins';
 import { BanknoteIcon } from '@/icons/banknote';
+import { Globe } from 'lucide-react';
 
 interface QuarterNewsCardProps {
   quarterData: QuarterHistoryEntry;
@@ -56,10 +57,16 @@ export const QuarterNewsCard: React.FC<QuarterNewsCardProps> = ({ quarterData })
         <h3 className="font-bold text-sm text-blue-950 leading-snug">{headline}</h3>
       </div>
 
-      {/* Historical Context */}
-      <p className="text-xs text-grey-600 leading-relaxed bg-blue-50/40 p-2.5 rounded-xl border border-blue-50">
-        {context}
-      </p>
+      {/* Historical World Story */}
+      <div className="bg-blue-50/60 p-3 rounded-xl border border-blue-100 flex flex-col gap-1.5">
+        <div className="flex items-center gap-1.5 text-blue-900 font-bold text-xs">
+          <Globe className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+          <span>{t('world-events-title')}</span>
+        </div>
+        <p className="text-xs text-grey-700 leading-relaxed font-normal">
+          {context}
+        </p>
+      </div>
 
       {/* Robert Biznesu Lesson */}
       {lesson && (

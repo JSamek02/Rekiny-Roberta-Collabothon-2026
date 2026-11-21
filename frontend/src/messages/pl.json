@@ -150,13 +150,18 @@
         "badge": "Robert Biznesu poleca",
         "title": "Symulator Giełdowy",
         "description": "Zarządzaj portfelem w realnych, historycznych kryzysach. Sprawdź, czy pokonasz inflację i ocalisz kapitał!",
-        "starting-capital": "Kapitał startowy: {amount} zł"
+        "starting-capital": "Kapitał startowy: {amount} SC"
       },
       "event-selector": {
         "heading": "Wybierz Realny scenariusz",
         "scenarios-count": "{count, plural, =1 {# scenariusz} few {# scenariusze} other {# scenariuszy}}",
         "quarters-count": "{count, plural, =1 {# kwartał} few {# kwartały} other {# kwartałów}}",
+        "quarters-progress": "{current}/{total} kwartałów",
+        "quarters-completed": "{total}/{total} kwartałów",
         "play": "Zagraj",
+        "continue": "Kontynuuj",
+        "play-again": "Zagraj ponownie",
+        "completed-badge": "Ukończono",
         "expand": "Rozwiń",
         "collapse": "Zwiń",
         "fallback-desc": "Historyczna symulacja rynkowa.",
@@ -172,9 +177,9 @@
           "inflation_2022": "Szok Inflacyjny 2022"
         },
         "descriptions": {
-          "gfc_2008": "Jest IV kwartał 2007 roku. Światowa gospodarka od lat rozwija się stabilnie, a rynki akcji osiągają historyczne szczyty. Masz 10 000 zł w gotówce i zero inwestycji. W mediach pojawiają się pierwsze niepokojące sygnały o 'złych kredytach hipotecznych subprime' w USA, ale większość analityków bagatelizuje problem. Zdecyduj, w co ulokujesz swój kapitał!",
-          "covid_2020": "Jest styczeń 2020 roku. Rynki finansowe pną się w górę, a spółki technologiczne biją rekordy. Pojawiają się pierwsze wieści o nowym wirusie w Chinach. Zaczynasz ten etap z 10 000 zł w czystej gotówce. Wybierz, jak podzielisz kapitał na starcie!",
-          "inflation_2022": "Jest styczeń 2022 roku. Ceny w sklepach rosną w oczach, a banki centralne zapowiadają koniec ery darmowego pieniądza. Zaczynasz z 10 000 zł w gotówce. Twoim celem jest obrona realnej siły nabywczej w jednym z najtrudniejszych lat dla rynków!"
+          "gfc_2008": "Jest IV kwartał 2007 roku. Światowa gospodarka od lat rozwija się stabilnie, a rynki akcji osiągają historyczne szczyty. Masz 10 000 SC w gotówce i zero inwestycji. W mediach pojawiają się pierwsze niepokojące sygnały o 'złych kredytach hipotecznych subprime' w USA, ale większość analityków bagatelizuje problem. Zdecyduj, w co ulokujesz swój kapitał!",
+          "covid_2020": "Jest styczeń 2020 roku. Rynki finansowe pną się w górę, a spółki technologiczne biją rekordy. Pojawiają się pierwsze wieści o nowym wirusie w Chinach. Zaczynasz ten etap z 10 000 SC w czystej gotówce. Wybierz, jak podzielisz kapitał na starcie!",
+          "inflation_2022": "Jest styczeń 2022 roku. Ceny w sklepach rosną w oczach, a banki centralne zapowiadają koniec ery darmowego pieniądza. Zaczynasz z 10 000 SC w gotówce. Twoim celem jest obrona realnej siły nabywczej w jednym z najtrudniejszych lat dla rynków!"
         },
         "tags": {
           "gfc_2008": "Lehman Brothers & Hossa",
@@ -212,7 +217,9 @@
         "reset-modal-desc": "Cały postęp w tym scenariuszu zostanie utracony i zaczniesz od nowa z domyślnym portfelem.",
         "reset-modal-cancel": "Anuluj",
         "reset-modal-confirm": "Resetuj",
-        "quarters-count": "{count} kwartałów"
+        "quarters-count": "{count} kwartałów",
+        "chronicle-title": "Kronika wydarzeń kryzysu",
+        "chronicle-hint": "Wybierz kwartał, aby przeczytać historię"
       },
       "allocation-sliders": {
         "title-initial": "Ustal Podział Kapitału na Start",
@@ -242,7 +249,7 @@
           },
           "gold": {
             "name": "Złoto Kruszcowe",
-            "subname": "Fizyczne złoto spot w USD",
+            "subname": "Fizyczne złoto spot w EUR",
             "description": "Ochrona przed dewaluacją walut, inflacją i szokami geopolitycznymi."
           },
           "cash": {
@@ -255,6 +262,7 @@
       "quarter-news": {
         "quarter-badge": "KWARTAŁ: {quarter}",
         "portfolio-return": "Twój portfel: {prefix}{value}%",
+        "world-events-title": "Co działo się na świecie:",
         "robert-lesson": "Lekcja Roberta Biznesu:",
         "asset-returns-title": "Stopy zwrotu klas aktywów w tym kwartale:",
         "assets": {
@@ -267,7 +275,7 @@
         "quarters": {
           "2007-Q4": {
             "headline": "Pierwsze pęknięcia: Bankructwa mniejszych funduszy hipotecznych",
-            "context": "Rynki akcji lekko korygują (-3.8%), ale złoto zyskuje +12.3%, a bezpieczne obligacje skarbowe rosną.",
+            "context": "W sierpniu 2007 r. francuski BNP Paribas zamraża fundusze z powodu kryzysu pożyczek subprime w USA. W Wielkiej Brytanii wybucha pierwszy od 140 lat run na bank – tłumy klientów masowo wypłacają gotówkę z Northern Rock. Banki centralne interweniują, pompując miliardy w płynność, ale na rynkach pojawia się pierwszy strach.",
             "lesson": "Złoto i obligacje natychmiast reagują na pierwsze sygnały niepewności w sektorze bankowym."
           },
           "2008-Q1": {
@@ -362,7 +370,7 @@
           },
           "2020-Q3": {
             "headline": "Stopniowe odmrażanie gospodarki i letnia hossa",
-            "context": "Fabryki wznawiają produkcję, zaufanie konsumentów wraca, a złoto bije historyczny rekord przekraczając 2000 USD/oz.",
+            "context": "Fabryki wznawiają produkcję, zaufanie konsumentów wraca, a złoto bije historyczny rekord przekraczając 2000 USD/oz (ponad 1700 EUR/oz).",
             "lesson": "Rynki giełdowe wyprzedzają realną gospodarkę o 6-12 miesięcy."
           },
           "2020-Q4": {

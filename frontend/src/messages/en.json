@@ -150,13 +150,18 @@
         "badge": "Robert's Pick",
         "title": "Stock Simulator",
         "description": "Manage your portfolio through real historical crises. See if you can beat inflation and preserve capital!",
-        "starting-capital": "Starting capital: {amount} PLN"
+        "starting-capital": "Starting capital: {amount} SC"
       },
       "event-selector": {
         "heading": "Choose Real Scenario",
         "scenarios-count": "{count, plural, =1 {# scenario} other {# scenarios}}",
         "quarters-count": "{count, plural, =1 {# quarter} other {# quarters}}",
+        "quarters-progress": "{current}/{total} quarters",
+        "quarters-completed": "{total}/{total} quarters",
         "play": "Play",
+        "continue": "Continue",
+        "play-again": "Play again",
+        "completed-badge": "Completed",
         "expand": "Expand",
         "collapse": "Collapse",
         "fallback-desc": "Historical market simulation.",
@@ -172,9 +177,9 @@
           "inflation_2022": "Inflation Shock 2022"
         },
         "descriptions": {
-          "gfc_2008": "It is Q4 2007. The global economy has been growing steadily for years, and stock markets are reaching all-time highs. You have 10,000 PLN in cash and zero investments. The media carries the first troubling reports of 'subprime mortgage loans' in the US, but most analysts downplay the risk. Decide where to allocate your capital!",
-          "covid_2020": "It is January 2020. Financial markets are climbing, and tech companies are breaking records. The first news of a new virus in China begins to emerge. You start this stage with 10,000 PLN in pure cash. Choose how to distribute your capital at the start!",
-          "inflation_2022": "It is January 2022. Prices in stores are skyrocketing, and central banks announce the end of the free-money era. You start with 10,000 PLN in cash. Your goal is to defend real purchasing power during one of the most challenging years for financial markets!"
+          "gfc_2008": "It is Q4 2007. The global economy has been growing steadily for years, and stock markets are reaching all-time highs. You have 10,000 SC in cash and zero investments. The media carries the first troubling reports of 'subprime mortgage loans' in the US, but most analysts downplay the risk. Decide where to allocate your capital!",
+          "covid_2020": "It is January 2020. Financial markets are climbing, and tech companies are breaking records. The first news of a new virus in China begins to emerge. You start this stage with 10,000 SC in pure cash. Choose how to distribute your capital at the start!",
+          "inflation_2022": "It is January 2022. Prices in stores are skyrocketing, and central banks announce the end of the free-money era. You start with 10,000 SC in cash. Your goal is to defend real purchasing power during one of the most challenging years for financial markets!"
         },
         "tags": {
           "gfc_2008": "Lehman Brothers & Bull Market",
@@ -212,7 +217,9 @@
         "reset-modal-desc": "All progress in this scenario will be lost and you will start over with the default portfolio.",
         "reset-modal-cancel": "Cancel",
         "reset-modal-confirm": "Reset",
-        "quarters-count": "{count} quarters"
+        "quarters-count": "{count} quarters",
+        "chronicle-title": "Crisis Chronicle",
+        "chronicle-hint": "Select quarter to view story"
       },
       "allocation-sliders": {
         "title-initial": "Set Initial Capital Allocation",
@@ -242,7 +249,7 @@
           },
           "gold": {
             "name": "Physical Gold",
-            "subname": "Spot gold in USD",
+            "subname": "Spot gold in EUR",
             "description": "Hedge against currency devaluation, inflation, and geopolitical shocks."
           },
           "cash": {
@@ -255,6 +262,7 @@
       "quarter-news": {
         "quarter-badge": "QUARTER: {quarter}",
         "portfolio-return": "Your portfolio: {prefix}{value}%",
+        "world-events-title": "What was happening in the world:",
         "robert-lesson": "Robert's Lesson:",
         "asset-returns-title": "Asset class returns this quarter:",
         "assets": {
@@ -267,7 +275,7 @@
         "quarters": {
           "2007-Q4": {
             "headline": "First Cracks: Bankruptcies of Smaller Mortgage Funds",
-            "context": "Stock markets correct slightly (-3.8%), but gold gains +12.3% and safe Treasury bonds rise.",
+            "context": "In August 2007, BNP Paribas freezes investment funds citing the US subprime crisis. In the UK, a run on Northern Rock sees customers line up to withdraw cash. Central banks pump billions into liquidity as initial panic grips global markets.",
             "lesson": "Gold and bonds immediately react to the first signs of uncertainty in the banking sector."
           },
           "2008-Q1": {
@@ -362,7 +370,7 @@
           },
           "2020-Q3": {
             "headline": "Economic Reopening and Summer Bull Run",
-            "context": "Factories resume output, consumer confidence climbs, and gold shatters records by crossing $2,000/oz.",
+            "context": "Factories resume output, consumer confidence climbs, and gold shatters records by crossing $2,000/oz (over 1,700 €/oz).",
             "lesson": "Equity markets anticipate real economic conditions 6 to 12 months ahead."
           },
           "2020-Q4": {

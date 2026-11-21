@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import {
   AssetAllocations,
   SimulationEventSummary,
@@ -12,6 +13,7 @@ import {
   startSimulation,
   submitInitialInvestment,
   resetSimulation,
+  syncSimulationSessions,
 } from '@/api/simulation';
 import { useStepSimulationQuarterMutation } from '@/api/services/simulation-service';
 import { EventSelector, SHORT_EVENT_TITLES } from './EventSelector';
@@ -19,7 +21,13 @@ import { AllocationSliders } from './AllocationSliders';
 import { QuarterHistoryChart } from './QuarterHistoryChart';
 import { QuarterNewsCard } from './QuarterNewsCard';
 import { EventDebriefModal } from './EventDebriefModal';
-import { useSharkCoins, clearSessionCredited } from '@/hooks/use-shark-coins';
+import {
+  useSharkCoins,
+  clearSessionCredited,
+  getGuestSimulationSessions,
+  saveGuestSimulationSession,
+  deleteGuestSimulationSession,
+} from '@/hooks/use-shark-coins';
 import {
   RotateCcw,
   Scale,
@@ -49,6 +57,7 @@ export const StockMarketView: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showRebalance, setShowRebalance] = useState<boolean>(false);
   const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
+  const [guestSessions, setGuestSessions] = useState<Record<string, SimulationSession>>({});
   const stepQuarterMutation = useStepSimulationQuarterMutation();
 
   // Load available events on mount
@@ -60,6 +69,8 @@ export const StockMarketView: React.FC = () => {
     try {
       setIsLoading(true);
       setError(null);
+      const guest = getGuestSimulationSessions();
+      setGuestSessions(guest);
       const data = await getSimulationEvents();
       setEvents(data.events || []);
     } catch (err: any) {
@@ -76,13 +87,25 @@ export const StockMarketView: React.FC = () => {
     setError(null);
     try {
       const detail = await getSimulationEvent(ev.id);
+      const currentGuest = getGuestSimulationSessions();
+      const localGuestSession = currentGuest[ev.id];
+
       if (detail.active_session) {
         setSession(detail.active_session);
         setAllocations(detail.active_session.allocations);
+        saveGuestSimulationSession(detail.active_session);
+      } else if (localGuestSession && localGuestSession.status !== 'completed') {
+        try {
+          await syncSimulationSessions([localGuestSession]);
+        } catch {}
+        setSession(localGuestSession);
+        setAllocations(localGuestSession.allocations);
       } else {
         // Start fresh session
         const startRes = await startSimulation(ev.id, ev.starting_capital);
         setSession(startRes.session);
+        setAllocations(startRes.session.allocations);
+        saveGuestSimulationSession(startRes.session);
       }
     } catch (err: any) {
       console.error('Error starting event session:', err);
@@ -99,6 +122,7 @@ export const StockMarketView: React.FC = () => {
     try {
       const res = await submitInitialInvestment(selectedEvent.id, allocations);
       setSession(res.session);
+      saveGuestSimulationSession(res.session);
     } catch (err: any) {
       console.error('Error setting investment:', err);
       setError(err.message || t('error-allocation'));
@@ -117,6 +141,7 @@ export const StockMarketView: React.FC = () => {
       setSession(res.full_session);
       setAllocations(res.full_session.allocations);
       setShowRebalance(false);
+      saveGuestSimulationSession(res.full_session);
 
       if (res.full_session.status === 'completed' && res.full_session.debrief) {
         const coinsAwarded = res.full_session.debrief.sharcoins_awarded ?? 0;
@@ -139,6 +164,12 @@ export const StockMarketView: React.FC = () => {
   const handleResetConfirm = async () => {
     if (!selectedEvent) return;
     clearSessionCredited(selectedEvent.id);
+    deleteGuestSimulationSession(selectedEvent.id);
+    setGuestSessions((prev) => {
+      const next = { ...prev };
+      delete next[selectedEvent.id];
+      return next;
+    });
     setShowResetConfirm(false);
     setIsLoading(true);
     setError(null);
@@ -148,6 +179,7 @@ export const StockMarketView: React.FC = () => {
       setSession(startRes.session);
       setAllocations({ stocks: 0.4, bonds: 0.3, gold: 0.2, cash: 0.1 });
       setShowRebalance(false);
+      saveGuestSimulationSession(startRes.session);
     } catch (err: any) {
       console.error('Error resetting session:', err);
       setError(err.message || t('error-reset'));
@@ -164,6 +196,7 @@ export const StockMarketView: React.FC = () => {
     setSelectedEvent(null);
     setSession(null);
     setError(null);
+    loadEvents();
   };
 
   // Render Loading spinner
@@ -185,7 +218,12 @@ export const StockMarketView: React.FC = () => {
             {error}
           </div>
         )}
-        <EventSelector events={events} onSelectEvent={handleSelectEvent} isLoading={isLoading} />
+        <EventSelector
+          events={events}
+          onSelectEvent={handleSelectEvent}
+          isLoading={isLoading}
+          guestSessions={guestSessions}
+        />
       </div>
     );
   }
@@ -233,8 +271,9 @@ export const StockMarketView: React.FC = () => {
           </div>
           <div className="flex items-center justify-between pt-2 border-t border-grey-100 mt-1">
             <span className="text-xs text-grey-600">{t('starting-budget')}</span>
-            <span className="text-sm font-bold text-[#10b981] font-mono">
-              {session.initial_capital.toLocaleString(undefined)} zł
+            <span className="text-sm font-bold text-[#10b981] font-mono flex items-center gap-1.5">
+              <Image src="/img/coin.svg" alt="SC" width={16} height={16} className="inline-block" />
+              <span>{session.initial_capital.toLocaleString(undefined)} SC</span>
             </span>
           </div>
         </div>
@@ -351,8 +390,9 @@ export const StockMarketView: React.FC = () => {
             <span className="text-[11px] font-semibold text-grey-600 uppercase tracking-wide">
               {t('portfolio-value')}
             </span>
-            <div className="text-2xl font-bold text-blue-950 font-mono">
-              {session.current_capital.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} zł
+            <div className="text-2xl font-bold text-blue-950 font-mono flex items-center gap-2">
+              <Image src="/img/coin.svg" alt="SC" width={24} height={24} className="inline-block shrink-0" />
+              <span>{session.current_capital.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} SC</span>
             </div>
           </div>
           <div
@@ -368,8 +408,9 @@ export const StockMarketView: React.FC = () => {
         <div className="grid grid-cols-2 gap-2 pt-2 border-t border-grey-100 text-xs">
           <div>
             <span className="text-[10px] text-grey-600 block">{t('real-value')}</span>
-            <span className="font-bold text-blue-950 font-mono">
-              {realCapital.toLocaleString(undefined, { minimumFractionDigits: 2 })} zł
+            <span className="font-bold text-blue-950 font-mono flex items-center gap-1">
+              <Image src="/img/coin.svg" alt="SC" width={14} height={14} className="inline-block shrink-0" />
+              <span>{realCapital.toLocaleString(undefined, { minimumFractionDigits: 2 })} SC</span>
             </span>
           </div>
           <div className="text-right">
@@ -381,7 +422,7 @@ export const StockMarketView: React.FC = () => {
         </div>
       </div>
 
-      {/* Latest Quarter News & Context Flash */}
+      {/* Latest Quarter News & World Story Card */}
       {latestHistory && latestHistory.quarter !== 'Start' && (
         <QuarterNewsCard quarterData={latestHistory} />
       )}

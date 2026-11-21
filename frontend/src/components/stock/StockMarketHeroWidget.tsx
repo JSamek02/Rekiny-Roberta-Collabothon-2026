@@ -25,7 +25,7 @@ export const StockMarketHeroWidget: React.FC<StockMarketHeroWidgetProps> = ({ is
         </div>
 
         <div className="flex items-center gap-1.5 text-[11px] font-semibold bg-white/15 px-2 py-0.5 rounded-lg w-fit">
-          <CoinsIcon className="w-3.5 h-3.5 text-white" />
+          <Image src="/img/coin.svg" alt="SC" width={14} height={14} />
           <span>{t('starting-capital', { amount: '10 000' })}</span>
         </div>
       </div>

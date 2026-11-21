@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { QuarterHistoryEntry } from './types';
 import { useTranslations } from 'next-intl';
 
@@ -72,8 +73,9 @@ export const QuarterHistoryChart: React.FC<QuarterHistoryChartProps> = ({ histor
         {hoveredData && (
           <div className="text-right">
             <span className="text-[10px] text-grey-600 block">{hoveredData.quarter}</span>
-            <span className="text-xs font-bold text-blue-950">
-              {hoveredData.portfolio_value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} zł
+            <span className="text-xs font-bold text-blue-950 flex items-center justify-end gap-1">
+              <Image src="/img/coin.svg" alt="SC" width={12} height={12} className="inline-block shrink-0" />
+              <span>{hoveredData.portfolio_value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} SC</span>
             </span>
           </div>
         )}
