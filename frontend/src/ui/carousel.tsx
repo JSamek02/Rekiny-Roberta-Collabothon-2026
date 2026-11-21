@@ -110,7 +110,10 @@ export const CarouselSlides = ({ className, children }: React.HTMLAttributes<HTM
 
   return (
     <div className={clsx('overflow-x-clip', className)} ref={carouselRef}>
-      <div className="ml-[calc(-1*var(--slide-gap))] flex active:cursor-grabbing" aria-roledescription="carousel">
+      <div
+        className="ml-[calc(-1*var(--slide-gap))] flex h-full active:cursor-grabbing"
+        aria-roledescription="carousel"
+      >
         {children}
       </div>
     </div>

@@ -1,6 +1,12 @@
 'use client';
 
-import { Avatar, avatarHats, useAvatar, type AvatarHat } from '@/components/avatar';
+import {
+  AvatarBaseImage,
+  AvatarHatImage,
+  avatarHats,
+  useAvatar,
+  type AvatarHat,
+} from '@/components/avatar';
 import {
   Button,
   CarouselRoot,
@@ -15,7 +21,7 @@ import {
   useCarousel,
 } from '@/ui';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const HAT_CAROUSEL_OPTIONS = {
   loop: true,
@@ -54,7 +60,7 @@ const HatCarouselControl = ({ direction }: { direction: 'previous' | 'next' }) =
   );
 };
 
-const HatCarouselSync = ({ selectedHat, onSelectHat }: HatCarouselProps) => {
+const HatCarouselSync = ({ onSelectHat }: Pick<HatCarouselProps, 'onSelectHat'>) => {
   const { api } = useCarousel();
 
   useEffect(() => {
@@ -66,12 +72,13 @@ const HatCarouselSync = ({ selectedHat, onSelectHat }: HatCarouselProps) => {
     };
 
     api.on('select', updateSelection);
-    api.scrollTo(selectedHat - 1, true);
+    api.on('reInit', updateSelection);
 
     return () => {
       api.off('select', updateSelection);
+      api.off('reInit', updateSelection);
     };
-  }, [api, onSelectHat, selectedHat]);
+  }, [api, onSelectHat]);
 
   return null;
 };
@@ -91,6 +98,10 @@ const PersonalizationContent = ({
 }: PersonalizationContentProps) => {
   const [draftHat, setDraftHat] = useState(selectedHat);
   const setDraftHatStable = useCallback((hat: AvatarHat) => setDraftHat(hat), []);
+  const carouselOptions = useMemo(
+    () => ({ ...HAT_CAROUSEL_OPTIONS, startIndex: selectedHat - 1 }),
+    [selectedHat],
+  );
 
   const save = () => {
     setSelectedHat(draftHat);
@@ -104,22 +115,25 @@ const PersonalizationContent = ({
       </DialogHeader>
 
       <div className="flex flex-col items-center gap-4 py-2">
-        <CarouselRoot options={HAT_CAROUSEL_OPTIONS} autoplayOptions={{ playOnInit: false }}>
+        <CarouselRoot options={carouselOptions} autoplayOptions={{ playOnInit: false }}>
           <div className="grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
             <HatCarouselControl direction="previous" />
-            <CarouselSlides className="[--slide-gap:0px]">
-              {avatarHats.map((hat) => (
-                <CarouselSlide key={hat} className="flex items-center justify-center">
-                  <Avatar hat={hat} className="size-48" />
-                </CarouselSlide>
-              ))}
-            </CarouselSlides>
+            <div className="relative size-48">
+              <AvatarBaseImage className="absolute inset-0 z-0" />
+              <CarouselSlides className="absolute inset-0 z-10 h-full w-full [--slide-gap:0px]">
+                {avatarHats.map((hat) => (
+                  <CarouselSlide key={hat} className="flex h-full items-center justify-center">
+                    <AvatarHatImage hat={hat} className="h-full w-full" />
+                  </CarouselSlide>
+                ))}
+              </CarouselSlides>
+            </div>
             <HatCarouselControl direction="next" />
           </div>
           <div className="mt-3 text-center text-xs font-medium text-grey-600">
             Hat {draftHat} of {avatarHats.length}
           </div>
-          <HatCarouselSync selectedHat={draftHat} onSelectHat={setDraftHatStable} />
+          <HatCarouselSync onSelectHat={setDraftHatStable} />
         </CarouselRoot>
       </div>
 
