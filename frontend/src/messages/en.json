@@ -36,6 +36,39 @@
       "progress": "Progress",
       "lesson-count": "{count}/{total, plural, =1 {# lesson} other {# lessons}}"
     },
+    "course-marketplace": {
+      "title": "All courses",
+      "see-all": "See all",
+      "star": "Star {title}",
+      "unstar": "Unstar {title}",
+      "company": "Tumbleweed co.",
+      "courses": {
+        "stocks-bonds": {
+          "title": "Stocks and Bonds",
+          "description": "Learn how stocks and bonds work and how to balance risk in a portfolio."
+        },
+        "investing": {
+          "title": "Investing",
+          "description": "Build practical investing skills, from diversification to long-term strategies."
+        },
+        "budgeting": {
+          "title": "Budgeting",
+          "description": "Plan income and expenses, create savings goals, and manage everyday spending."
+        },
+        "economics": {
+          "title": "Economics",
+          "description": "Understand markets, inflation, interest rates, and the wider economy."
+        },
+        "taxes": {
+          "title": "Taxes",
+          "description": "Explore tax basics, deductions, and how to make sense of personal tax forms."
+        },
+        "retirement": {
+          "title": "Retirement",
+          "description": "Prepare for retirement with pension planning, saving habits, and future projections."
+        }
+      }
+    },
     "level-bar": {
       "next-level": "Next level {points}"
     },

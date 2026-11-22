@@ -26,7 +26,7 @@ export const LessonCategoryNavItem = ({
   return (
     <Link
       href={href}
-      className="bg-white p-2.5 flex flex-col justify-between gap-3 rounded-xl border-blue-100 border shadow-xs hover:border-blue-400 hover:shadow-sm transition-all"
+      className="h-[100px] bg-white p-2.5 flex flex-col justify-between gap-3 rounded-xl border-blue-100 border shadow-xs hover:border-blue-400 hover:shadow-sm transition-all"
     >
       <div className="flex gap-2 items-center">
         <div className="size-11 rounded-lg bg-blue-50 text-blue-950 flex items-center justify-center shrink-0">

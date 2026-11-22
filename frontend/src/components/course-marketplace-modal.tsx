@@ -7,50 +7,44 @@ import { HandCoinsIcon } from '@/icons/hand-coins';
 import { WalletIcon } from '@/icons/wallet';
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle } from '@/ui';
 import { Sparkles, Star } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { type ReactNode } from 'react';
 
 const COURSES: Array<{
   key: string;
-  title: string;
-  description: string;
+  translationKey: 'stocks-bonds' | 'investing' | 'budgeting' | 'economics' | 'taxes' | 'retirement';
   company?: string;
   icon: ReactNode;
 }> = [
   {
     key: 'stocks-bonds',
-    title: 'Stocks and Bonds',
-    description: 'Learn how stocks and bonds work and how to balance risk in a portfolio.',
+    translationKey: 'stocks-bonds',
     icon: <BankIcon className="text-2xl" strokeWidth={1.5} />,
   },
   {
     key: 'investing',
-    title: 'Investing',
-    description: 'Build practical investing skills, from diversification to long-term strategies.',
+    translationKey: 'investing',
     icon: <DollarIcon className="text-2xl" strokeWidth={1.5} />,
   },
   {
     key: 'budgeting',
-    title: 'Budgeting',
-    description: 'Plan income and expenses, create savings goals, and manage everyday spending.',
+    translationKey: 'budgeting',
     icon: <WalletIcon className="text-2xl" strokeWidth={1.5} />,
   },
   {
     key: 'economics',
-    title: 'Economics',
-    description: 'Understand markets, inflation, interest rates, and the wider economy.',
+    translationKey: 'economics',
     icon: <HandCoinsIcon className="text-2xl" strokeWidth={1.5} />,
   },
   {
     key: 'taxes',
-    title: 'Taxes',
-    description: 'Explore tax basics, deductions, and how to make sense of personal tax forms.',
+    translationKey: 'taxes',
     company: 'Tumbleweed co.',
     icon: <Sparkles className="size-6" strokeWidth={1.5} />,
   },
   {
     key: 'retirement',
-    title: 'Retirement',
-    description: 'Prepare for retirement with pension planning, saving habits, and future projections.',
+    translationKey: 'retirement',
     company: 'Tumbleweed co.',
     icon: <Star className="size-6" strokeWidth={1.5} />,
   },
@@ -63,6 +57,7 @@ type CourseMarketplaceModalProps = {
 
 export const CourseMarketplaceModal = ({ open, onOpenChange }: CourseMarketplaceModalProps) => {
   const { starredCourses, toggleStarredCourse } = useShop();
+  const t = useTranslations('components.course-marketplace');
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -71,12 +66,14 @@ export const CourseMarketplaceModal = ({ open, onOpenChange }: CourseMarketplace
         className="!left-2 !top-2 !h-[calc(100dvh-1rem)] !max-h-none !w-[calc(100%-1rem)] !max-w-none !translate-x-0 !translate-y-0 rounded-xl p-5"
       >
         <DialogHeader>
-          <DialogTitle className="pr-10 text-xl font-semibold text-blue-950">Marketplace</DialogTitle>
+          <DialogTitle className="pr-10 text-xl font-semibold text-blue-950">{t('title')}</DialogTitle>
         </DialogHeader>
         <div className="min-h-0 flex-1 overflow-y-auto py-4 pr-3 -mr-3">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {COURSES.map((course) => {
               const isStarred = starredCourses.includes(course.key);
+              const title = t(`courses.${course.translationKey}.title`);
+              const description = t(`courses.${course.translationKey}.description`);
               return (
                 <article
                   key={course.key}
@@ -86,20 +83,20 @@ export const CourseMarketplaceModal = ({ open, onOpenChange }: CourseMarketplace
                     {course.icon}
                   </div>
                   <div className="flex min-w-0 flex-1 flex-col gap-1">
-                    <h3 className="font-semibold leading-tight text-blue-950">{course.title}</h3>
+                    <h3 className="font-semibold leading-tight text-blue-950">{title}</h3>
                     {course.company && (
                       <span className="mt-1 w-fit rounded-full bg-blue-500 px-2 py-0.5 text-[10px] font-semibold text-white">
-                        {course.company}
+                        {t('company')}
                       </span>
                     )}
-                    <p className="text-xs leading-relaxed text-grey-600">{course.description}</p>
+                    <p className="text-xs leading-relaxed text-grey-600">{description}</p>
                   </div>
                   <Button
                     size="iconSm"
                     variant={isStarred ? 'solid' : 'ghost'}
                     aria-pressed={isStarred}
-                    aria-label={`${isStarred ? 'Unstar' : 'Star'} ${course.title}`}
-                    title={`${isStarred ? 'Unstar' : 'Star'} ${course.title}`}
+                    aria-label={isStarred ? t('unstar', { title }) : t('star', { title })}
+                    title={isStarred ? t('unstar', { title }) : t('star', { title })}
                     onClick={() => toggleStarredCourse(course.key)}
                   >
                     <Star className="size-5" strokeWidth={1.5} fill={isStarred ? 'currentColor' : 'none'} />
