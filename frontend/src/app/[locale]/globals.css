@@ -46,6 +46,9 @@
   --font-sans: var(--font-poppins);
 }
 
+@custom-variant contrast-bw (&:where([data-contrast='black-white'] *));
+@custom-variant contrast-by (&:where([data-contrast='black-yellow'] *));
+
 html[data-contrast='black-white'] {
   color-scheme: dark;
   --background: #000000;

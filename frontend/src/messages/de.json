@@ -11,7 +11,7 @@
       "log-out": "Abmelden",
       "account-menu": "Kontomenü",
       "account-type": "Kontotyp",
-      "no-name": "Kein Name",
+      "no-name": "Besucher",
       "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
       "roles": {
         "guest": "Gast",
@@ -103,6 +103,39 @@
     "lesson-category-nav-item": {
       "progress": "Fortschritt",
       "lesson-count": "{count}/{total, plural, =1 {# Lektion} other {# Lektionen}}"
+    },
+    "course-marketplace": {
+      "title": "Alle Kurse",
+      "see-all": "Alle anzeigen",
+      "star": "{title} markieren",
+      "unstar": "Markierung für {title} entfernen",
+      "company": "Tumbleweed co.",
+      "courses": {
+        "stocks-bonds": {
+          "title": "Aktien und Anleihen",
+          "description": "Lerne, wie Aktien und Anleihen funktionieren und wie man Risiken im Portfolio ausbalanciert."
+        },
+        "investing": {
+          "title": "Investieren",
+          "description": "Entwickle praktische Anlegekenntnisse – von Diversifikation bis zu langfristigen Strategien."
+        },
+        "budgeting": {
+          "title": "Budgetplanung",
+          "description": "Plane Einnahmen und Ausgaben, setze Sparziele und verwalte alltägliche Ausgaben."
+        },
+        "economics": {
+          "title": "Wirtschaft",
+          "description": "Verstehe Märkte, Inflation, Zinssätze und die Gesamtwirtschaft."
+        },
+        "taxes": {
+          "title": "Steuern",
+          "description": "Lerne Steuergrundlagen, Abzüge und das Lesen persönlicher Steuerformularen kennen."
+        },
+        "retirement": {
+          "title": "Rente",
+          "description": "Bereite dich auf den Ruhestand mit Rentenplanung, Spargewohnheiten und Zukunftsprojektionen vor."
+        }
+      }
     },
     "level-bar": {
       "next-level": "Nächstes Level {points}"

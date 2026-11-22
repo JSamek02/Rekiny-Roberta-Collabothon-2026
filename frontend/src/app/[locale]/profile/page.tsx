@@ -1,16 +1,11 @@
 import { Avatar } from '@/components/avatar';
 import { LevelBar } from '@/components/level-bar';
+import { ProfileActions } from '@/components/profile/profile-actions';
 import { ProfileEditButton } from '@/components/profile/profile-edit-button';
-import { ProfileLogoutButton } from '@/components/profile/profile-logout-button';
-import { ProfileAchievements } from '@/components/profile/profile-achievements';
-import { RichText } from '@/components/rich-text/rich-text';
-import { ShopButton } from '@/components/shop';
+import { ProfileWelcome } from '@/components/profile/profile-welcome';
 import { ContrastSelect, LanguageSelect } from '@/ui';
-import { getTranslations } from 'next-intl/server';
 
-export default async function Profile() {
-  const t = await getTranslations('pages.profile');
-
+export default function Profile() {
   return (
     <main className="relative flex-1 flex flex-col px-3 pt-32 overflow-x-clip overflow-y-clip">
       <ContrastSelect />
@@ -20,13 +15,9 @@ export default async function Profile() {
           <Avatar className="size-40 block rounded-full bg-blue-100" />
           <ProfileEditButton />
         </div>
-        <h2 className="text-center text-base [&_span]:text-2xl font-medium">
-          <RichText>{(tags) => t.rich('heading', { ...tags, name: 'Rekin Robert' })}</RichText>
-        </h2>
+        <ProfileWelcome />
         <LevelBar />
-        <ShopButton />
-        <ProfileAchievements />
-        <ProfileLogoutButton />
+        <ProfileActions />
       </div>
     </main>
   );

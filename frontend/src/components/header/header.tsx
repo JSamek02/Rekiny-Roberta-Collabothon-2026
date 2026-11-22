@@ -11,7 +11,7 @@ import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 
 export const Header = () => {
-  const { sharkCoins } = useSharkCoins();
+  const { sharkCoins, isGuest, isLoading } = useSharkCoins();
   const pathname = usePathname();
   const t = useTranslations('components.rewards');
   const [isShopOpen, setIsShopOpen] = useState(false);
@@ -28,6 +28,7 @@ export const Header = () => {
         <HeaderExperience />
         <button
           type="button"
+          disabled={isGuest || isLoading}
           onClick={() => setIsShopOpen(true)}
           className="flex items-center gap-1 rounded-lg p-1 text-blue-950 transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           aria-label={t('open-with-balance', { balance: sharkCoins.toLocaleString() })}

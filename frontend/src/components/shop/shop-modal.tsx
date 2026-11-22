@@ -9,9 +9,11 @@ import { saveGuestSharkCoins, useSharkCoins } from '@/hooks/use-shark-coins';
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle } from '@/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { Check, ImageIcon } from 'lucide-react';
+import { Lottie } from 'lottie-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import tapBurstAnimation from '../../../public/lottie/tap-burst.json';
 
 const HAT_COST = 500;
 const otherRewards = [
@@ -33,6 +35,15 @@ export const ShopModal = ({ open, onOpenChange }: ShopModalProps) => {
   const [buyingItem, setBuyingItem] = useState<string | null>(null);
   const [boughtOtherRewards, setBoughtOtherRewards] = useState<string[]>([]);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
+  const [purchaseAnimationItem, setPurchaseAnimationItem] = useState<string | null>(null);
+  const animationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(
+    () => () => {
+      if (animationTimeoutRef.current !== null) clearTimeout(animationTimeoutRef.current);
+    },
+    [],
+  );
 
   const purchaseItem = async (itemId: string, cost: number, onSuccess: () => void) => {
     setPurchaseError(null);
@@ -53,6 +64,11 @@ export const ShopModal = ({ open, onOpenChange }: ShopModalProps) => {
       }
 
       onSuccess();
+      if (animationTimeoutRef.current !== null) clearTimeout(animationTimeoutRef.current);
+      animationTimeoutRef.current = setTimeout(() => {
+        setPurchaseAnimationItem(itemId);
+        animationTimeoutRef.current = null;
+      }, 150);
     } catch (error) {
       if (error instanceof ApiError && error.status === 409) {
         setPurchaseError(t('not-enough-coins'));
@@ -113,18 +129,44 @@ export const ShopModal = ({ open, onOpenChange }: ShopModalProps) => {
                   </div>
                   <div className="mt-3 flex justify-between gap-2 flex-col">
                     <span className="text-sm font-semibold text-blue-950">{t('hat', { number: hat })}</span>
-                    <Button
-                      size="sm"
-                      variant={isBought ? 'ghost' : 'solid'}
-                      disabled={isBought || isLoading || sharkCoins < HAT_COST || buyingItem !== null}
-                      onClick={() => void purchaseItem(`hat-${hat}`, HAT_COST, () => buyHat(hat))}
-                    >
-                      {isBought
-                        ? t('owned')
-                        : buyingItem === `hat-${hat}`
-                          ? t('purchasing')
-                          : t('buy', { price: HAT_COST })}
-                    </Button>
+                    <div className="relative">
+                      <Button
+                        size="sm"
+                        variant={isBought ? 'ghost' : 'solid'}
+                        disabled={isBought || isLoading || sharkCoins < HAT_COST || buyingItem !== null}
+                        className="w-full"
+                        onClick={() => void purchaseItem(`hat-${hat}`, HAT_COST, () => buyHat(hat))}
+                      >
+                        {isBought
+                          ? t('owned')
+                          : buyingItem === `hat-${hat}`
+                            ? t('purchasing')
+                            : t('buy', { price: HAT_COST })}
+                      </Button>
+                      {purchaseAnimationItem === `hat-${hat}` && (
+                        <Lottie
+                          src={tapBurstAnimation}
+                          autoplay
+                          loop={false}
+                          aria-hidden
+                          className="pointer-events-none z-10"
+                          style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            width: '5rem',
+                            height: '5rem',
+                            transform: 'translate(-50%, -50%)',
+                          }}
+                          subscriptions={{
+                            complete: () =>
+                              setPurchaseAnimationItem((current) =>
+                                current === `hat-${hat}` ? null : current,
+                              ),
+                          }}
+                        />
+                      )}
+                    </div>
                   </div>
                 </article>
               );
@@ -158,23 +200,48 @@ export const ShopModal = ({ open, onOpenChange }: ShopModalProps) => {
                     <span className="text-sm font-semibold text-blue-950">{t(reward.title)}</span>
                     {'company' in reward && <span className="text-xs text-grey-600">{reward.company}</span>}
                   </div>
-                  <Button
-                    className="mt-2"
-                    size="sm"
-                    variant={isBought ? 'ghost' : 'solid'}
-                    disabled={isBought || isLoading || sharkCoins < reward.cost || buyingItem !== null}
-                    onClick={() =>
-                      void purchaseItem(reward.id, reward.cost, () =>
-                        setBoughtOtherRewards((current) => [...current, reward.id]),
-                      )
-                    }
-                  >
-                    {isBought
-                      ? t('owned')
-                      : buyingItem === reward.id
-                        ? t('purchasing')
-                        : t('buy', { price: reward.cost })}
-                  </Button>
+                  <div className="relative mt-2">
+                    <Button
+                      size="sm"
+                      variant={isBought ? 'ghost' : 'solid'}
+                      disabled={isBought || isLoading || sharkCoins < reward.cost || buyingItem !== null}
+                      className="w-full"
+                      onClick={() =>
+                        void purchaseItem(reward.id, reward.cost, () =>
+                          setBoughtOtherRewards((current) => [...current, reward.id]),
+                        )
+                      }
+                    >
+                      {isBought
+                        ? t('owned')
+                        : buyingItem === reward.id
+                          ? t('purchasing')
+                          : t('buy', { price: reward.cost })}
+                    </Button>
+                    {purchaseAnimationItem === reward.id && (
+                      <Lottie
+                        src={tapBurstAnimation}
+                        autoplay
+                        loop={false}
+                        aria-hidden
+                        className="pointer-events-none z-10"
+                        style={{
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          width: '5rem',
+                          height: '5rem',
+                          transform: 'translate(-50%, -50%)',
+                        }}
+                        subscriptions={{
+                          complete: () =>
+                            setPurchaseAnimationItem((current) =>
+                              current === reward.id ? null : current,
+                            ),
+                        }}
+                      />
+                    )}
+                  </div>
                 </article>
               );
             })}

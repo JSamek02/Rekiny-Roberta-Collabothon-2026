@@ -22,7 +22,7 @@ export const BottomNavItem = ({ href, children }: BottomNavItemProps) => {
       className={clsx(
         'grow shrink-0 flex items-center justify-center gap-0.5 flex-col stroke-[1.5] py-2 rounded-lg text-blue-950 transition-colors',
         '[span]:text-xs [span]:font-medium [svg]:text-xl',
-        isActive ? 'bg-blue-100 font-semibold' : 'hover:bg-blue-50'
+        isActive ? 'bg-blue-100 font-semibold contrast-bw:text-white contrast-by:text-white' : 'hover:bg-blue-50',
       )}
     >
       {children}

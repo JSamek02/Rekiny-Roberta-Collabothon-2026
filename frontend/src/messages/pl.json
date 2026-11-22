@@ -36,6 +36,39 @@
       "progress": "Postęp",
       "lesson-count": "{count}/{total, plural, =1 {# lekcja} few {# lekcje} other {# lekcji}}"
     },
+    "course-marketplace": {
+      "title": "Wszystkie kursy",
+      "see-all": "Zobacz wszystkie",
+      "star": "Oznacz gwiazdą: {title}",
+      "unstar": "Usuń gwiazdę: {title}",
+      "company": "Tumbleweed co.",
+      "courses": {
+        "stocks-bonds": {
+          "title": "Akcje i obligacje",
+          "description": "Dowiedz się, jak działają akcje i obligacje oraz jak równoważyć ryzyko w portfelu."
+        },
+        "investing": {
+          "title": "Inwestowanie",
+          "description": "Rozwijaj praktyczne umiejętności inwestowania, od dywersyfikacji po strategie długoterminowe."
+        },
+        "budgeting": {
+          "title": "Budżetowanie",
+          "description": "Planuj przychody i wydatki, wyznaczaj cele oszczędnościowe i zarządzaj codziennymi wydatkami."
+        },
+        "economics": {
+          "title": "Ekonomia",
+          "description": "Poznaj rynki, inflację, stopy procentowe i działanie gospodarki."
+        },
+        "taxes": {
+          "title": "Podatki",
+          "description": "Poznaj podstawy podatków, ulgi i zasady rozumienia formularzy podatkowych."
+        },
+        "retirement": {
+          "title": "Emerytura",
+          "description": "Przygotuj się do emerytury dzięki planowaniu świadczeń, nawykom oszczędzania i prognozom."
+        }
+      }
+    },
     "level-bar": {
       "next-level": "Następny poziom: {points}"
     },
@@ -134,7 +167,7 @@
       "log-out": "Wyloguj",
       "account-menu": "Menu konta",
       "account-type": "Typ konta",
-      "no-name": "Bez nazwy",
+      "no-name": "Gość",
       "error": "Coś poszło nie tak. Spróbuj ponownie.",
       "roles": {
         "guest": "Niezalogowany",
