@@ -29,7 +29,7 @@ Wszystkie odpowiedzi poza plikiem MP4 i strumieniem TTS są w JSON-ie. Błędy m
 }
 ```
 
-`lesson` ma `id`, `course_id`, `title`, `description`, `order_index`, `xp_reward` i `is_published`. `activity` ma `id`, `lesson_id`, `title`, `activity_type` (`article`, `quiz` lub `video`), `order_index`, `xp_reward`, `coin_reward` i `estimated_minutes`.
+`lesson` ma `id`, `course_id`, `title`, `description`, `order_index`, `xp_reward` i `is_published`. `activity` ma `id`, `lesson_id`, `title`, `activity_type` (`article`, `quiz`, `video` lub `guided_flow`), `order_index`, `xp_reward`, `coin_reward` i `estimated_minutes`.
 
 ### Treść i obrazy aktywności
 
@@ -42,6 +42,7 @@ Treść aktywności jest w `content`, a jej wersje językowe w `translations.<pl
 - `article`: używa `markdown`, opcjonalnego `reading_time_minutes` i opcjonalnego głównego `image`. Dodatkowe obrazy można osadzać jako osobne linie Markdown, np. `![Opis](/img/example.png)`.
 - `quiz`: `content.questions[]` ma `id`, `prompt`, `options[]` oraz opcjonalny `image` w powyższej postaci. Poprawna odpowiedź `correct_option_id` i `explanation` pozostają wyłącznie w bazowej treści.
 - `video`: zachowuje opis i metadane w `content`; sam MP4 jest w `activity_videos`.
+- `guided_flow`: ma wstęp `intro`, referencyjny `canvas` (`width`, `height`), tekst powrotu, komunikaty walidacji i ukończenia oraz `frames[]`. Każdy frame ma `image_url`, `quest`, `hint` i niewidzialny `hitbox` (`x`, `y`, `width`, `height`, `label`), liczony względem canvasu. Ostatni frame może dodatkowo zawierać `inputs[]` z pozycją, etykietą i `accepted_values`; pole z `options` renderuje się jako lista wyboru.
 
 Frontend wyświetla adresy obrazów zaczynające się od `/` albo pełne adresy `http(s)`. W danych tłumaczenia pytania i odpowiedzi zachowują te same identyfikatory.
 
@@ -265,11 +266,12 @@ Odpowiedź `200`:
 - Dla `article`, `content` zawiera zwykle `markdown`, opcjonalnie `reading_time_minutes` oraz `image`. Obrazy w samym Markdown są zwracane jako zwykła treść tekstowa.
 - Dla `quiz`, `content.questions` zawiera `id`, `prompt`, `options` oraz opcjonalnie `image`; poprawna odpowiedź nie jest zwracana przed wysłaniem quizu.
 - Dla lokalnie przechowywanego `video`, `content` dostaje `video_url`, `video_filename`, `video_mime_type`, `video_size_bytes` i `video_language`. URL ma parametr `v`, który zmienia się po podmianie pliku, dzięki czemu może być bezpiecznie cache'owany przez przeglądarkę i CDN.
+- Dla `guided_flow`, `content.frames` zawiera komplet danych do wyświetlenia kolejnych screenów, ich hitboxów i ewentualnych pól wpisywanych przez użytkownika.
 - `user_progress` występuje tylko dla zalogowanego użytkownika i ma pola: `status`, `quiz_score`, `passed`, `attempts_count`, `xp_earned`, `coins_earned`, `completed_at`.
 
 ### `POST /api/activities/:activityId/complete`
 
-Oznacza artykuł albo film jako ukończony i nalicza nagrody tylko przy pierwszym ukończeniu. Nie przyjmuje body.
+Oznacza artykuł, film albo ćwiczenie `guided_flow` jako ukończone i nalicza nagrody tylko przy pierwszym ukończeniu. Nie przyjmuje body.
 
 Odpowiedź `200`:
 

@@ -26,6 +26,7 @@ const activityIcons: Record<ActivityType, string> = {
   article: '▤',
   quiz: '?',
   video: '▶',
+  guided_flow: '✦',
 };
 
 export const LessonActivities = ({ category, lessonSlug }: LessonActivitiesProps) => {

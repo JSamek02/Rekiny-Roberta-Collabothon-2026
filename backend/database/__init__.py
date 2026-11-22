@@ -103,6 +103,31 @@ def upgrade_content_translation_columns():
                 ))
 
 
+def upgrade_activity_type_constraint():
+    """Allow the guided frame activity in PostgreSQL databases created earlier."""
+    if engine.dialect.name != "postgresql":
+        return
+
+    with engine.begin() as connection:
+        constraints = inspect(connection).get_check_constraints("activities")
+        activity_type_constraint = next(
+            (constraint for constraint in constraints
+             if constraint.get("name") == "ck_activities_activity_type"),
+            None,
+        )
+        constraint_sql = activity_type_constraint.get("sqltext") if activity_type_constraint else ""
+        if "guided_flow" in (constraint_sql or ""):
+            return
+
+        connection.execute(text(
+            "ALTER TABLE activities DROP CONSTRAINT IF EXISTS ck_activities_activity_type"
+        ))
+        connection.execute(text(
+            "ALTER TABLE activities ADD CONSTRAINT ck_activities_activity_type "
+            "CHECK (activity_type IN ('article', 'quiz', 'video', 'guided_flow'))"
+        ))
+
+
 def ensure_model_indexes():
     """Create indexes declared by the ORM for databases created before them."""
     statements = (
@@ -130,5 +155,6 @@ def init_db():
     Base.metadata.create_all(engine)
     upgrade_user_profile_columns()
     upgrade_content_translation_columns()
+    upgrade_activity_type_constraint()
     ensure_model_indexes()
     print("Baza danych jest gotowa.")

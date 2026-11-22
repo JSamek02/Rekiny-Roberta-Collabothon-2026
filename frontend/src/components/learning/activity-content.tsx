@@ -4,6 +4,7 @@ import { LearningActivity, SubmitQuizResponse } from '@/api/types/learning';
 import { useTranslations } from 'next-intl';
 import { ActivityCompleteButton } from './activity-complete-button';
 import { ArticleActivity } from './article-activity';
+import { GuidedFlowActivity } from './guided-flow-activity';
 import { QuizActivity } from './quiz-activity';
 
 type ActivityContentProps = {
@@ -13,6 +14,7 @@ type ActivityContentProps = {
   isSubmittingQuiz: boolean;
   quizResult: SubmitQuizResponse | null;
   onComplete: () => void;
+  onBack: () => void;
   onQuizSubmit: (answers: Record<string, string>) => void;
   onQuizRetry: () => void;
 };
@@ -31,6 +33,7 @@ export const ActivityContent = ({
   isSubmittingQuiz,
   quizResult,
   onComplete,
+  onBack,
   onQuizSubmit,
   onQuizRetry,
 }: ActivityContentProps) => {
@@ -60,6 +63,18 @@ export const ActivityContent = ({
         result={quizResult}
         onSubmit={onQuizSubmit}
         onRetry={onQuizRetry}
+      />
+    );
+  }
+
+  if (activity.activity_type === 'guided_flow') {
+    return (
+      <GuidedFlowActivity
+        content={activity.content}
+        completed={isCompleted}
+        isCompleting={isCompleting}
+        onComplete={onComplete}
+        onBack={onBack}
       />
     );
   }

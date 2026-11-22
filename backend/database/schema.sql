@@ -63,7 +63,9 @@ CREATE TABLE IF NOT EXISTS activities (
     translations JSONB NOT NULL DEFAULT '{}'::jsonb,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    CONSTRAINT ck_activities_activity_type CHECK (activity_type IN ('article', 'quiz', 'video'))
+    CONSTRAINT ck_activities_activity_type CHECK (
+        activity_type IN ('article', 'quiz', 'video', 'guided_flow')
+    )
 );
 CREATE INDEX IF NOT EXISTS ix_activities_lesson_id ON activities(lesson_id);
 

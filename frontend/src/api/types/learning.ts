@@ -1,4 +1,4 @@
-export type ActivityType = 'article' | 'quiz' | 'video';
+export type ActivityType = 'article' | 'quiz' | 'video' | 'guided_flow';
 export type ActivityProgressStatus = 'not_started' | 'started' | 'completed';
 
 export type ContentImage = {
@@ -50,6 +50,60 @@ export type VideoContent = {
   video_language?: string;
 };
 
+export type GuidedFlowCanvas = {
+  width: number;
+  height: number;
+};
+
+export type GuidedFlowArea = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+export type GuidedFlowInputOption = {
+  value: string;
+  label: string;
+};
+
+export type GuidedFlowInput = GuidedFlowArea & {
+  id: string;
+  label: string;
+  placeholder?: string;
+  input_mode?: 'decimal' | 'text';
+  accepted_values?: string[];
+  options?: GuidedFlowInputOption[];
+};
+
+export type GuidedFlowFrame = {
+  id: string;
+  image_url: string;
+  alt: string;
+  quest: string;
+  hint: string;
+  hitbox: GuidedFlowArea & {
+    label: string;
+  };
+  inputs?: GuidedFlowInput[];
+};
+
+export type GuidedFlowContent = {
+  canvas: GuidedFlowCanvas;
+  intro: {
+    title: string;
+    description: string;
+    start_label: string;
+  };
+  frames: GuidedFlowFrame[];
+  back_label: string;
+  incomplete_inputs_message: string;
+  completion: {
+    title: string;
+    description: string;
+  };
+};
+
 type ActivityBase = {
   id: number;
   lesson_id: number;
@@ -77,7 +131,12 @@ export type VideoActivity = ActivityBase & {
   content: VideoContent;
 };
 
-export type LearningActivity = ArticleActivity | QuizActivity | VideoActivity;
+export type GuidedFlowActivity = ActivityBase & {
+  activity_type: 'guided_flow';
+  content: GuidedFlowContent;
+};
+
+export type LearningActivity = ArticleActivity | QuizActivity | VideoActivity | GuidedFlowActivity;
 
 export type ActivitySummary = {
   id: number;
