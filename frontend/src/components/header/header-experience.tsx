@@ -1,14 +1,11 @@
 'use client';
 
 import { useViewer } from '@/components/auth';
+import { Link } from '@/i18n/navigation';
+import { routes } from '@/utils/routes';
+import { getExperienceProgress } from '@/utils/experience';
 import { useFormatter, useTranslations } from 'next-intl';
-import Image from 'next/image';
 
-/**
- * Signed-in user's EXP from `/api/auth/me`. The query is invalidated after every action
- * that awards EXP (see `invalidateExperienceQueries`), so the value refreshes on its own.
- * Guests have no account EXP, so nothing is shown for them.
- */
 export const HeaderExperience = () => {
   const t = useTranslations('components.auth');
   const format = useFormatter();
@@ -20,12 +17,21 @@ export const HeaderExperience = () => {
 
   if (!user) return null;
 
+  const { experience, level, nextLevelExperience } = getExperienceProgress(user.experience_points ?? 0);
+  const label = t('level-progress', {
+    level,
+    current: format.number(experience),
+    total: format.number(nextLevelExperience),
+  });
+
   return (
-    <div className="flex items-center gap-1" title={t('experience')}>
-      <Image src="/img/green-gem.svg" alt="" width={24} height={24} />
-      <p className="text-sm font-medium">
-        {format.number(user.experience_points ?? 0)} {t('xp')}
-      </p>
-    </div>
+    <Link
+      href={routes.ranking}
+      className="flex size-7 shrink-0 items-center justify-center rounded-full bg-blue-500 text-xs font-semibold text-white transition-colors hover:bg-blue-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+      aria-label={label}
+      title={label}
+    >
+      {level}
+    </Link>
   );
 };

@@ -22,21 +22,19 @@ export const Header = () => {
   }
 
   return (
-    <header className="w-full px-5 pt-10 pb-4 flex justify-between sticky top-0 z-10 bg-blue-50">
+    <header className="flex w-full items-center gap-3 px-5 pt-10 pb-4 sticky top-0 z-10 bg-blue-50">
       <HeaderUser />
-      <div className="flex items-center gap-4">
-        <HeaderExperience />
-        <button
-          type="button"
-          disabled={isGuest || isLoading}
-          onClick={() => setIsShopOpen(true)}
-          className="flex items-center gap-1 rounded-lg p-1 text-blue-950 transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-          aria-label={t('open-with-balance', { balance: sharkCoins.toLocaleString() })}
-        >
-          <Image src="/img/SharkCoin.svg" alt="" width={24} height={24} />
-          <p className="text-sm font-medium">{sharkCoins.toLocaleString()} SC</p>
-        </button>
-      </div>
+      <HeaderExperience />
+      <button
+        type="button"
+        disabled={isGuest || isLoading}
+        onClick={() => setIsShopOpen(true)}
+        className="ml-auto flex shrink-0 items-center gap-1 rounded-lg p-1 text-blue-950 transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+        aria-label={t('open-with-balance', { balance: sharkCoins.toLocaleString() })}
+      >
+        <Image src="/img/SharkCoin.svg" alt="" width={24} height={24} />
+        <p className="text-sm font-medium">{sharkCoins.toLocaleString()} SC</p>
+      </button>
       <span className="absolute bottom-0 left-0 right-0 mx-5 h-px bg-grey-100" />
       <ShopModal open={isShopOpen} onOpenChange={setIsShopOpen} />
     </header>

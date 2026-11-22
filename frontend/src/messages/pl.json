@@ -176,7 +176,8 @@
         "partner": "Partner"
       },
       "xp": "XP",
-      "experience": "Twoje punkty doświadczenia (EXP)"
+      "experience": "Twoje punkty doświadczenia (EXP)",
+      "level-progress": "Poziom {level}. {current} z {total} XP do następnego poziomu. Otwórz ranking."
     },
     "login-view": {
       "kicker": "Witaj na pokładzie!",
@@ -561,6 +562,30 @@
       "play-again": "Jeszcze raz",
       "back": "Wróć"
     },
+    "investment-platform-preview": {
+      "back": "Wróć",
+      "preview": "Platforma partnerska",
+      "portfolio": "Twój portfel",
+      "market-open": "Rynki otwarte",
+      "portfolio-value": "12 740,54 €",
+      "today": "+2,84% dziś",
+      "chart-title": "Wartość portfela",
+      "chart-period": "ostatnie 12 miesięcy",
+      "assets": "Aktywa",
+      "allocation": "Alokacja aktywów",
+      "stock": "Akcje",
+      "bonds": "Obligacje",
+      "cash": "Gotówka",
+      "watchlist": "Obserwowane rynki",
+      "locked": "Zablokowane do poziomu {level}",
+      "title": "Prawdziwe inwestowanie jest coraz bliżej",
+      "description": "Platformę inwestowania prawdziwymi pieniędzmi odblokujesz po osiągnięciu poziomu {level}.",
+      "level-title": "Wymagany poziom",
+      "level-description": "Kontynuuj naukę i zdobywaj XP.",
+      "bonus": "50 € na start",
+      "bonus-description": "Bonus inwestycyjny po odblokowaniu platformy.",
+      "notice": "To wyłącznie podgląd planowanej funkcji — bez możliwości składania zleceń."
+    },
     "starting-quiz": {
       "skip": "Pomiń",
       "back": "Wstecz",
@@ -673,6 +698,7 @@
       "home": "Strona główna",
       "learning": "Nauka",
       "ranking": "Ranking",
+      "investment-platform": "Inwestuj",
       "stock": "Giełda",
       "profile": "Profil"
     },

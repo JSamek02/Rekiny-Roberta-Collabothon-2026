@@ -176,7 +176,8 @@
         "partner": "Partner"
       },
       "xp": "XP",
-      "experience": "Your experience points (EXP)"
+      "experience": "Your experience points (EXP)",
+      "level-progress": "Level {level}. {current} of {total} XP to the next level. Open ranking."
     },
     "login-view": {
       "kicker": "Welcome aboard!",
@@ -561,6 +562,30 @@
       "play-again": "Play again",
       "back": "Back"
     },
+    "investment-platform-preview": {
+      "back": "Back",
+      "preview": "Partner platform",
+      "portfolio": "Your portfolio",
+      "market-open": "Markets open",
+      "portfolio-value": "€12,740.54",
+      "today": "+2.84% today",
+      "chart-title": "Portfolio value",
+      "chart-period": "last 12 months",
+      "assets": "Assets",
+      "allocation": "Asset allocation",
+      "stock": "Stocks",
+      "bonds": "Bonds",
+      "cash": "Cash",
+      "watchlist": "Market watchlist",
+      "locked": "Locked until level {level}",
+      "title": "Real investing is getting closer",
+      "description": "You will unlock the real-money investment platform when you reach level {level}.",
+      "level-title": "Required level",
+      "level-description": "Keep learning and earning XP.",
+      "bonus": "€50 to start",
+      "bonus-description": "Investment bonus when the platform is unlocked.",
+      "notice": "This is a preview of a planned feature — no orders can be placed."
+    },
     "starting-quiz": {
       "skip": "Skip",
       "back": "Back",
@@ -673,6 +698,7 @@
       "home": "Home",
       "learning": "Learning",
       "ranking": "Ranking",
+      "investment-platform": "Invest",
       "stock": "Stock",
       "profile": "Profile"
     },
