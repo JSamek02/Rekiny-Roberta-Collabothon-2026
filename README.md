@@ -7,6 +7,9 @@
 
 **FinanceShark**
 
+## Live link
+**https://shark-finance-web-141627841887.us-east1.run.app**
+
 ## One-Line Summary
 
 FinanceShark is a gamified financial-learning app that helps beginners build confidence through courses, market simulations and an AI finance mentor.
