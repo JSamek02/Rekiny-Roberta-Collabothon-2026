@@ -196,7 +196,7 @@ Artykuł może zawierać więcej obrazów w Markdown jako osobne linie, np. `![O
 
 ## Filmy MP4 w bazie
 
-Struktura treści jest następująca: kurs ma lekcje, lekcja ma aktywności, a aktywność ma typ `article`, `quiz` lub `video`. Artykuł i quiz pozostają w JSON-ie `activities.content`; pliki MP4 są przechowywane binarnie w tabeli `activity_videos`, oddzielnie dla każdego języka (`pl`, `en`, `de`). Dzięki temu film angielski i niemiecki mogą być różnymi plikami.
+Struktura treści jest następująca: kurs ma lekcje, lekcja ma aktywności, a aktywność ma typ `article`, `quiz`, `video` lub `guided_flow`. Artykuł, quiz i `guided_flow` pozostają w JSON-ie `activities.content`; pliki MP4 są przechowywane binarnie w tabeli `activity_videos`, oddzielnie dla każdego języka (`pl`, `en`, `de`). `guided_flow` opisuje kolejne obrazowe frame'y, ich hitboxy i opcjonalne pola do wypełnienia. Dzięki temu film angielski i niemiecki mogą być różnymi plikami.
 
 Zwykłe odczyty kursów nie pobierają plików binarnych. Przy `GET /api/activities/:activityId` backend wybiera film według `Accept-Language` i zwraca jego metadane w `content`; gdy brakuje wersji `en` lub `de`, używa wersji polskiej:
 

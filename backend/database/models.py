@@ -22,6 +22,83 @@ def get_translation(translations: dict[str, Any] | None, language: str) -> dict[
     return translation if isinstance(translation, dict) else {}
 
 
+def merge_guided_flow_content(content: dict[str, Any], translated_content: dict[str, Any]) -> dict[str, Any]:
+    """Overlay localized copy without losing frame coordinates and images."""
+    merged = dict(content)
+    for key, value in translated_content.items():
+        if key not in ("intro", "frames"):
+            merged[key] = value
+
+    base_intro = content.get("intro")
+    translated_intro = translated_content.get("intro")
+    if isinstance(base_intro, dict) and isinstance(translated_intro, dict):
+        merged["intro"] = {**base_intro, **translated_intro}
+    elif "intro" in translated_content:
+        merged["intro"] = translated_intro
+
+    base_frames = content.get("frames")
+    translated_frames = translated_content.get("frames")
+    if not isinstance(base_frames, list) or not isinstance(translated_frames, list):
+        if "frames" in translated_content:
+            merged["frames"] = translated_frames
+        return merged
+
+    translated_by_id = {
+        str(frame["id"]): frame
+        for frame in translated_frames
+        if isinstance(frame, dict) and frame.get("id") is not None
+    }
+    merged_frames = []
+    for frame in base_frames:
+        if not isinstance(frame, dict):
+            merged_frames.append(frame)
+            continue
+
+        translated_frame = translated_by_id.get(str(frame.get("id")))
+        if not translated_frame:
+            merged_frames.append(frame)
+            continue
+
+        merged_frame = {
+            **frame,
+            **{
+                key: value
+                for key, value in translated_frame.items()
+                if key not in ("hitbox", "inputs")
+            },
+        }
+        base_hitbox = frame.get("hitbox")
+        translated_hitbox = translated_frame.get("hitbox")
+        if isinstance(base_hitbox, dict) and isinstance(translated_hitbox, dict):
+            merged_frame["hitbox"] = {**base_hitbox, **translated_hitbox}
+        elif "hitbox" in translated_frame:
+            merged_frame["hitbox"] = translated_hitbox
+
+        base_inputs = frame.get("inputs")
+        translated_inputs = translated_frame.get("inputs")
+        if isinstance(base_inputs, list) and isinstance(translated_inputs, list):
+            translated_inputs_by_id = {
+                str(input_field["id"]): input_field
+                for input_field in translated_inputs
+                if isinstance(input_field, dict) and input_field.get("id") is not None
+            }
+            merged_frame["inputs"] = [
+                {
+                    **input_field,
+                    **translated_inputs_by_id.get(str(input_field.get("id")), {}),
+                }
+                if isinstance(input_field, dict) else input_field
+                for input_field in base_inputs
+            ]
+        elif "inputs" in translated_frame:
+            merged_frame["inputs"] = translated_inputs
+
+        merged_frames.append(merged_frame)
+
+    merged["frames"] = merged_frames
+    return merged
+
+
 class Base(DeclarativeBase):
     pass
 
@@ -182,7 +259,7 @@ class Activity(Base):
     __tablename__ = "activities"
     __table_args__ = (
         CheckConstraint(
-            "activity_type IN ('article', 'quiz', 'video')",
+            "activity_type IN ('article', 'quiz', 'video', 'guided_flow')",
             name="ck_activities_activity_type",
         ),
     )
@@ -194,7 +271,9 @@ class Activity(Base):
         BigInteger, ForeignKey("lessons.id", ondelete="CASCADE"), nullable=False, index=True
     )
     title: Mapped[str] = mapped_column(Text, nullable=False)
-    activity_type: Mapped[str] = mapped_column(String(32), nullable=False)  # 'article', 'quiz', 'video'
+    activity_type: Mapped[str] = mapped_column(
+        String(32), nullable=False
+    )  # 'article', 'quiz', 'video', 'guided_flow'
     order_index: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     xp_reward: Mapped[int] = mapped_column(Integer, default=10)
     coin_reward: Mapped[int] = mapped_column(Integer, default=5)
@@ -214,7 +293,10 @@ class Activity(Base):
         translated_content = translation.get("content")
         content = dict(self.content or {})
         if isinstance(translated_content, dict):
-            content.update(translated_content)
+            if self.activity_type == "guided_flow":
+                content = merge_guided_flow_content(content, translated_content)
+            else:
+                content.update(translated_content)
         return content
 
     def to_dict(self, include_content=True, sanitize_quiz=True, language="pl"):

@@ -1309,6 +1309,7 @@ Indikatoren, Angebote und Prognosen sind Informationen, keine Anweisungen. Frage
 lesson_materials AS (
     SELECT
         l.id AS lesson_id,
+        l.order_index AS lesson_order_index,
         l.title,
         l.description,
         l.translations -> 'en' ->> 'title' AS title_en,
@@ -1501,6 +1502,243 @@ activity_templates AS (
             )
         )
     FROM lesson_materials
+
+    UNION ALL
+
+    SELECT
+        lesson_id,
+        'Ćwiczenie: Dodaj wydatek krok po kroku',
+        'guided_flow',
+        4,
+        20,
+        10,
+        4,
+        jsonb_build_object(
+            'intro', jsonb_build_object(
+                'title', 'Przećwicz dodawanie wydatku',
+                'description', 'Przejdź przez przykładową aplikację krok po kroku. Zobacz, jak zapisanie wydatku w kategorii pomaga obserwować budżet.',
+                'start_label', 'Rozpocznij ćwiczenie'
+            ),
+            'canvas', jsonb_build_object('width', 430, 'height', 932),
+            'back_label', 'Wróć do aktywności w lekcji',
+            'incomplete_inputs_message', 'Wybierz kategorię oraz uzupełnij poprawnie kwotę i nazwę wydatku przed zapisaniem.',
+            'completion', jsonb_build_object(
+                'title', 'Ćwiczenie ukończone!',
+                'description', 'Świetna robota — zapisano wydatek i wykonano kolejny krok do lepszego zarządzania budżetem.'
+            ),
+            'frames', jsonb_build_array(
+                jsonb_build_object(
+                    'id', 'home',
+                    'image_url', '/img/guided-flow/budget-home.png',
+                    'alt', 'Ekran główny aplikacji do zarządzania finansami',
+                    'quest', 'Otwórz widok kategorii wydatków.',
+                    'hint', 'Kliknij ikonę kategorii w dolnym pasku nawigacji.',
+                    'hitbox', jsonb_build_object(
+                        'x', 261, 'y', 848, 'width', 24, 'height', 24,
+                        'label', 'Otwórz kategorie wydatków'
+                    )
+                ),
+                jsonb_build_object(
+                    'id', 'categories',
+                    'image_url', '/img/guided-flow/budget-categories.png',
+                    'alt', 'Widok kategorii wydatków',
+                    'quest', 'Wybierz kategorię Food dla wydatku na jedzenie.',
+                    'hint', 'Kliknij kafelek Food w lewym górnym rogu.',
+                    'hitbox', jsonb_build_object(
+                        'x', 37, 'y', 314, 'width', 105, 'height', 105,
+                        'label', 'Wybierz kategorię Food'
+                    )
+                ),
+                jsonb_build_object(
+                    'id', 'food',
+                    'image_url', '/img/guided-flow/budget-food.png',
+                    'alt', 'Lista wydatków w kategorii Food',
+                    'quest', 'Dodaj nowy wydatek do kategorii Food.',
+                    'hint', 'Kliknij przycisk Add Expenses na dole listy.',
+                    'hitbox', jsonb_build_object(
+                        'x', 123, 'y', 769, 'width', 169, 'height', 36,
+                        'label', 'Dodaj nowy wydatek'
+                    )
+                ),
+                jsonb_build_object(
+                    'id', 'add-expense',
+                    'image_url', '/img/guided-flow/budget-add-expense.png',
+                    'alt', 'Formularz dodawania wydatku',
+                    'quest', 'Wybierz kategorię Food, wpisz kwotę 26,00 oraz nazwę Dinner, a następnie zapisz wydatek.',
+                    'hint', 'Uzupełnij kategorię i oba pola, a następnie kliknij przycisk Save.',
+                    'hitbox', jsonb_build_object(
+                        'x', 123, 'y', 769, 'width', 169, 'height', 36,
+                        'label', 'Zapisz wydatek'
+                    ),
+                    'inputs', jsonb_build_array(
+                        jsonb_build_object(
+                            'id', 'category', 'x', 55, 'y', 300, 'width', 320, 'height', 41,
+                            'label', 'Kategoria wydatku', 'placeholder', 'Wybierz kategorię',
+                            'options', jsonb_build_array(
+                                jsonb_build_object('value', 'Food', 'label', 'Jedzenie'),
+                                jsonb_build_object('value', 'Transport', 'label', 'Transport'),
+                                jsonb_build_object('value', 'Medicine', 'label', 'Medycyna'),
+                                jsonb_build_object('value', 'Groceries', 'label', 'Zakupy'),
+                                jsonb_build_object('value', 'Rent', 'label', 'Czynsz'),
+                                jsonb_build_object('value', 'Gifts', 'label', 'Prezenty'),
+                                jsonb_build_object('value', 'Savings', 'label', 'Oszczędności'),
+                                jsonb_build_object('value', 'Entertainment', 'label', 'Rozrywka'),
+                                jsonb_build_object('value', 'More', 'label', 'Więcej')
+                            ),
+                            'accepted_values', jsonb_build_array('Food')
+                        ),
+                        jsonb_build_object(
+                            'id', 'amount', 'x', 55, 'y', 392, 'width', 320, 'height', 41,
+                            'label', 'Kwota wydatku', 'placeholder', '26.00', 'input_mode', 'decimal',
+                            'accepted_values', jsonb_build_array('26', '26.00', '26,00', '$26.00', '$26,00')
+                        ),
+                        jsonb_build_object(
+                            'id', 'title', 'x', 55, 'y', 488, 'width', 320, 'height', 41,
+                            'label', 'Nazwa wydatku', 'placeholder', 'Dinner', 'input_mode', 'text',
+                            'accepted_values', jsonb_build_array('Dinner')
+                        )
+                    )
+                )
+            )
+        ),
+        jsonb_build_object(
+            'en', jsonb_build_object(
+                'title', 'Practice: Add an expense step by step',
+                'content', jsonb_build_object(
+                    'intro', jsonb_build_object(
+                        'title', 'Practice adding an expense',
+                        'description', 'Follow a sample app step by step and see how assigning an expense to a category helps you monitor a budget.',
+                        'start_label', 'Start practice'
+                    ),
+                    'back_label', 'Back to lesson activities',
+                    'incomplete_inputs_message', 'Choose a category and enter a valid amount and expense title before saving.',
+                    'completion', jsonb_build_object(
+                        'title', 'Practice complete!',
+                        'description', 'Great work — you recorded an expense and took another step toward better budget awareness.'
+                    ),
+                    'frames', jsonb_build_array(
+                        jsonb_build_object(
+                            'id', 'home', 'alt', 'Finance management app home screen',
+                            'quest', 'Open the expense categories view.',
+                            'hint', 'Click the categories icon in the bottom navigation bar.',
+                            'hitbox', jsonb_build_object('label', 'Open expense categories')
+                        ),
+                        jsonb_build_object(
+                            'id', 'categories', 'alt', 'Expense categories view',
+                            'quest', 'Choose the Food category for a meal expense.',
+                            'hint', 'Click the Food tile in the upper-left corner.',
+                            'hitbox', jsonb_build_object('label', 'Choose the Food category')
+                        ),
+                        jsonb_build_object(
+                            'id', 'food', 'alt', 'Food category expense list',
+                            'quest', 'Add a new expense to the Food category.',
+                            'hint', 'Click the Add Expenses button at the bottom of the list.',
+                            'hitbox', jsonb_build_object('label', 'Add a new expense')
+                        ),
+                        jsonb_build_object(
+                            'id', 'add-expense', 'alt', 'Add expense form',
+                            'quest', 'Choose Food, enter 26.00 and Dinner, then save the expense.',
+                            'hint', 'Complete the category and both fields, then click Save.',
+                            'hitbox', jsonb_build_object('label', 'Save the expense'),
+                            'inputs', jsonb_build_array(
+                                jsonb_build_object(
+                                    'id', 'category', 'label', 'Expense category', 'placeholder', 'Select the category',
+                                    'options', jsonb_build_array(
+                                        jsonb_build_object('value', 'Food', 'label', 'Food'),
+                                        jsonb_build_object('value', 'Transport', 'label', 'Transport'),
+                                        jsonb_build_object('value', 'Medicine', 'label', 'Medicine'),
+                                        jsonb_build_object('value', 'Groceries', 'label', 'Groceries'),
+                                        jsonb_build_object('value', 'Rent', 'label', 'Rent'),
+                                        jsonb_build_object('value', 'Gifts', 'label', 'Gifts'),
+                                        jsonb_build_object('value', 'Savings', 'label', 'Savings'),
+                                        jsonb_build_object('value', 'Entertainment', 'label', 'Entertainment'),
+                                        jsonb_build_object('value', 'More', 'label', 'More')
+                                    ),
+                                    'accepted_values', jsonb_build_array('Food')
+                                ),
+                                jsonb_build_object(
+                                    'id', 'amount', 'label', 'Expense amount', 'placeholder', '26.00',
+                                    'accepted_values', jsonb_build_array('26', '26.00', '26,00', '$26.00', '$26,00')
+                                ),
+                                jsonb_build_object(
+                                    'id', 'title', 'label', 'Expense title', 'placeholder', 'Dinner',
+                                    'accepted_values', jsonb_build_array('Dinner')
+                                )
+                            )
+                        )
+                    )
+                )
+            ),
+            'de', jsonb_build_object(
+                'title', 'Übung: Eine Ausgabe Schritt für Schritt hinzufügen',
+                'content', jsonb_build_object(
+                    'intro', jsonb_build_object(
+                        'title', 'Das Hinzufügen einer Ausgabe üben',
+                        'description', 'Gehe eine Beispiel-App Schritt für Schritt durch und sieh, wie eine Ausgabenkategorie dir hilft, dein Budget zu beobachten.',
+                        'start_label', 'Übung starten'
+                    ),
+                    'back_label', 'Zurück zu den Aktivitäten der Lektion',
+                    'incomplete_inputs_message', 'Wähle eine Kategorie und fülle Betrag und Ausgabenname korrekt aus, bevor du speicherst.',
+                    'completion', jsonb_build_object(
+                        'title', 'Übung abgeschlossen!',
+                        'description', 'Gut gemacht — du hast eine Ausgabe erfasst und einen weiteren Schritt zu mehr Budgetbewusstsein gemacht.'
+                    ),
+                    'frames', jsonb_build_array(
+                        jsonb_build_object(
+                            'id', 'home', 'alt', 'Startbildschirm einer Finanz-App',
+                            'quest', 'Öffne die Ansicht der Ausgabenkategorien.',
+                            'hint', 'Klicke auf das Kategorien-Symbol in der unteren Navigation.',
+                            'hitbox', jsonb_build_object('label', 'Ausgabenkategorien öffnen')
+                        ),
+                        jsonb_build_object(
+                            'id', 'categories', 'alt', 'Ansicht der Ausgabenkategorien',
+                            'quest', 'Wähle die Kategorie Food für eine Essensausgabe.',
+                            'hint', 'Klicke auf die Food-Kachel oben links.',
+                            'hitbox', jsonb_build_object('label', 'Kategorie Food auswählen')
+                        ),
+                        jsonb_build_object(
+                            'id', 'food', 'alt', 'Ausgabenliste der Kategorie Food',
+                            'quest', 'Füge der Kategorie Food eine neue Ausgabe hinzu.',
+                            'hint', 'Klicke unten in der Liste auf Add Expenses.',
+                            'hitbox', jsonb_build_object('label', 'Neue Ausgabe hinzufügen')
+                        ),
+                        jsonb_build_object(
+                            'id', 'add-expense', 'alt', 'Formular zum Hinzufügen einer Ausgabe',
+                            'quest', 'Wähle Food, gib 26.00 und Dinner ein und speichere die Ausgabe.',
+                            'hint', 'Wähle die Kategorie, fülle beide Felder aus und klicke auf Save.',
+                            'hitbox', jsonb_build_object('label', 'Ausgabe speichern'),
+                            'inputs', jsonb_build_array(
+                                jsonb_build_object(
+                                    'id', 'category', 'label', 'Ausgabenkategorie', 'placeholder', 'Kategorie auswählen',
+                                    'options', jsonb_build_array(
+                                        jsonb_build_object('value', 'Food', 'label', 'Essen'),
+                                        jsonb_build_object('value', 'Transport', 'label', 'Transport'),
+                                        jsonb_build_object('value', 'Medicine', 'label', 'Medizin'),
+                                        jsonb_build_object('value', 'Groceries', 'label', 'Lebensmittel'),
+                                        jsonb_build_object('value', 'Rent', 'label', 'Miete'),
+                                        jsonb_build_object('value', 'Gifts', 'label', 'Geschenke'),
+                                        jsonb_build_object('value', 'Savings', 'label', 'Sparen'),
+                                        jsonb_build_object('value', 'Entertainment', 'label', 'Unterhaltung'),
+                                        jsonb_build_object('value', 'More', 'label', 'Mehr')
+                                    ),
+                                    'accepted_values', jsonb_build_array('Food')
+                                ),
+                                jsonb_build_object(
+                                    'id', 'amount', 'label', 'Ausgabenbetrag', 'placeholder', '26.00',
+                                    'accepted_values', jsonb_build_array('26', '26.00', '26,00', '$26.00', '$26,00')
+                                ),
+                                jsonb_build_object(
+                                    'id', 'title', 'label', 'Ausgabenname', 'placeholder', 'Dinner',
+                                    'accepted_values', jsonb_build_array('Dinner')
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    FROM lesson_materials
+    WHERE lesson_order_index = 1
 )
 INSERT INTO activities (
     lesson_id, title, activity_type, order_index, xp_reward, coin_reward,
@@ -1520,8 +1758,8 @@ BEGIN
     IF (SELECT count(*) FROM lessons) <> 20 THEN
         RAISE EXCEPTION 'Expected 20 mock lessons';
     END IF;
-    IF (SELECT count(*) FROM activities) <> 60 THEN
-        RAISE EXCEPTION 'Expected 60 mock activities';
+    IF (SELECT count(*) FROM activities) <> 64 THEN
+        RAISE EXCEPTION 'Expected 64 mock activities';
     END IF;
     IF EXISTS (
         SELECT 1
@@ -1536,10 +1774,13 @@ BEGIN
         SELECT 1
         FROM lessons l
         LEFT JOIN activities a ON a.lesson_id = l.id
-        GROUP BY l.id
-        HAVING count(a.id) <> 3
+        GROUP BY l.id, l.order_index
+        HAVING count(a.id) <> CASE WHEN l.order_index = 1 THEN 4 ELSE 3 END
     ) THEN
-        RAISE EXCEPTION 'Expected 3 activities in every mock lesson';
+        RAISE EXCEPTION 'Expected 4 activities in first lessons and 3 in the others';
+    END IF;
+    IF (SELECT count(*) FROM activities WHERE activity_type = 'guided_flow') <> 4 THEN
+        RAISE EXCEPTION 'Expected 4 guided flow activities';
     END IF;
     IF EXISTS (
         SELECT 1

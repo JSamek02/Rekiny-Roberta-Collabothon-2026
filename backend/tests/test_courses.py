@@ -239,6 +239,112 @@ class CoursesApiTest(unittest.TestCase):
             self.assertIn("prompt", q)
             self.assertIn("options", q)
 
+    def test_activity_detail_localizes_guided_flow_without_losing_layout(self):
+        with Session(self.engine) as db:
+            guided_flow = Activity(
+                lesson_id=self.lesson_id,
+                title="Ćwiczenie: Dodaj wydatek",
+                activity_type="guided_flow",
+                order_index=4,
+                xp_reward=20,
+                coin_reward=10,
+                content={
+                    "canvas": {"width": 430, "height": 932},
+                    "intro": {
+                        "title": "Ćwiczenie", "description": "Opis", "start_label": "Start",
+                    },
+                    "back_label": "Wróć do aktywności",
+                    "incomplete_inputs_message": "Uzupełnij pola.",
+                    "completion": {"title": "Gotowe", "description": "Opis ukończenia"},
+                    "frames": [{
+                        "id": "add-expense",
+                        "image_url": "/img/guided-flow/budget-add-expense.png",
+                        "alt": "Formularz wydatku",
+                        "hitbox": {
+                            "x": 123, "y": 769, "width": 169, "height": 36, "label": "Zapisz",
+                        },
+                        "quest": "Uzupełnij formularz.",
+                        "hint": "Wpisz wartości.",
+                        "inputs": [{
+                            "id": "category", "x": 55, "y": 300, "width": 320, "height": 41,
+                            "label": "Kategoria", "placeholder": "Wybierz kategorię",
+                            "options": [{"value": "Food", "label": "Jedzenie"}],
+                            "accepted_values": ["Food"],
+                        }, {
+                            "id": "amount", "x": 55, "y": 392, "width": 320, "height": 41,
+                            "label": "Kwota", "placeholder": "26.00",
+                            "accepted_values": ["26", "26.00"],
+                        }],
+                    }],
+                },
+                translations={
+                    "de": {
+                        "title": "Übung: Eine Ausgabe hinzufügen",
+                        "content": {
+                            "intro": {
+                                "title": "Eine Ausgabe üben", "start_label": "Starten",
+                            },
+                            "back_label": "Zurück zu den Aktivitäten",
+                            "incomplete_inputs_message": "Fülle die Felder aus.",
+                            "completion": {
+                                "title": "Fertig", "description": "Abschlussbeschreibung",
+                            },
+                            "frames": [{
+                                "id": "add-expense",
+                                "quest": "Fülle das Formular aus.",
+                                "hint": "Gib die Werte ein.",
+                                "hitbox": {"label": "Ausgabe speichern"},
+                                "inputs": [{
+                                    "id": "category", "label": "Kategorie", "placeholder": "Kategorie auswählen",
+                                }, {
+                                    "id": "amount", "label": "Ausgabenbetrag", "placeholder": "26,00",
+                                    "accepted_values": ["26", "26,00"],
+                                }],
+                            }],
+                        },
+                    },
+                },
+            )
+            db.add(guided_flow)
+            db.commit()
+            guided_flow_id = guided_flow.id
+
+        res = self.client.get(
+            f"/api/activities/{guided_flow_id}", headers={"Accept-Language": "de-DE"}
+        )
+        self.assertEqual(res.status_code, 200)
+        activity = res.get_json()["activity"]
+        frame = activity["content"]["frames"][0]
+        category_field, input_field = frame["inputs"]
+
+        self.assertEqual(activity["title"], "Übung: Eine Ausgabe hinzufügen")
+        self.assertEqual(activity["content"]["intro"]["title"], "Eine Ausgabe üben")
+        self.assertEqual(activity["content"]["intro"]["description"], "Opis")
+        self.assertEqual(activity["content"]["canvas"], {"width": 430, "height": 932})
+        self.assertEqual(activity["content"]["back_label"], "Zurück zu den Aktivitäten")
+        self.assertEqual(activity["content"]["incomplete_inputs_message"], "Fülle die Felder aus.")
+        self.assertEqual(activity["content"]["completion"]["title"], "Fertig")
+        self.assertEqual(frame["image_url"], "/img/guided-flow/budget-add-expense.png")
+        self.assertEqual(
+            frame["hitbox"],
+            {"x": 123, "y": 769, "width": 169, "height": 36, "label": "Ausgabe speichern"},
+        )
+        self.assertEqual(frame["quest"], "Fülle das Formular aus.")
+        self.assertEqual(category_field["y"], 300)
+        self.assertEqual(category_field["label"], "Kategorie")
+        self.assertEqual(category_field["placeholder"], "Kategorie auswählen")
+        self.assertEqual(category_field["options"], [{"value": "Food", "label": "Jedzenie"}])
+        self.assertEqual(input_field["x"], 55)
+        self.assertEqual(input_field["label"], "Ausgabenbetrag")
+        self.assertEqual(input_field["placeholder"], "26,00")
+        self.assertEqual(input_field["accepted_values"], ["26", "26,00"])
+
+        self.set_auth_cookie()
+        completion = self.client.post(f"/api/activities/{guided_flow_id}/complete")
+        self.assertEqual(completion.status_code, 200)
+        self.assertEqual(completion.get_json()["xp_earned"], 20)
+        self.assertEqual(completion.get_json()["coins_earned"], 10)
+
     def test_stored_video_is_versioned_cached_and_supports_ranges(self):
         with Session(self.engine) as db:
             db.add(ActivityVideo(

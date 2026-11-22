@@ -20,7 +20,7 @@ erDiagram
 | `user_sessions` | `token_hash`, `user_id → users` | skrót tokenu sesji i jej data wygaśnięcia |
 | `courses` | `id`, unikalne `slug` | dane kursu i JSON `translations` dla `pl/en/de` |
 | `lessons` | `id`, `course_id → courses` | kolejność, XP, publikacja i tłumaczenia |
-| `activities` | `id`, `lesson_id → lessons` | `article`, `quiz` albo `video`; JSON `content` i `translations`, w tym opcjonalne obrazy artykułów oraz pytań |
+| `activities` | `id`, `lesson_id → lessons` | `article`, `quiz`, `video` albo `guided_flow`; JSON `content` i `translations`, w tym opcjonalne obrazy artykułów, pytań oraz frame'y ćwiczeń |
 | `activity_videos` | `id`, `activity_id → activities`, unikalne `(activity_id, language)` | binarne MP4 (`BYTEA`) i metadane konkretnej wersji językowej |
 | `user_course_enrollments` | `user_id → users`, `course_id → courses`, unikalna para | zapis użytkownika i status ukończenia kursu |
 | `user_activity_progress` | `user_id → users`, `activity_id → activities`, unikalna para | wynik quizu, odpowiedzi, XP, SharkCoiny i ukończenie |

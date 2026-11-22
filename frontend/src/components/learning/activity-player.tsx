@@ -29,6 +29,7 @@ const activityIcons = {
   article: '▤',
   quiz: '?',
   video: '▶',
+  guided_flow: '✦',
 } as const;
 
 export const ActivityPlayer = ({ activityId }: ActivityPlayerProps) => {
@@ -103,9 +104,11 @@ export const ActivityPlayer = ({ activityId }: ActivityPlayerProps) => {
 
   return (
     <section className="mx-auto flex w-full max-w-2xl flex-col gap-5 px-4 py-6">
-      <Button variant="ghost" size="sm" className="w-fit border-0 px-0 text-sm uppercase" onClick={() => router.back()}>
-        <ArrowLeftIcon className="text-2xl stroke-[1.5]" />
-      </Button>
+      {activity.activity_type !== 'guided_flow' && (
+        <Button variant="ghost" size="sm" className="w-fit border-0 px-0 text-sm uppercase" onClick={() => router.back()}>
+          <ArrowLeftIcon className="text-2xl stroke-[1.5]" />
+        </Button>
+      )}
 
       <header className="rounded-2xl border border-blue-100 bg-white p-5">
         <div className="flex items-start gap-3">
@@ -130,6 +133,7 @@ export const ActivityPlayer = ({ activityId }: ActivityPlayerProps) => {
           isSubmittingQuiz={quizMutation.isPending}
           quizResult={quizResult}
           onComplete={() => void handleComplete()}
+          onBack={() => router.back()}
           onQuizSubmit={(answers) => void handleQuizSubmit(answers)}
           onQuizRetry={() => setQuizResult(null)}
         />
