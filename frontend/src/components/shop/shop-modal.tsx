@@ -8,7 +8,7 @@ import { AuthUser } from '@/api/types/auth';
 import { saveGuestSharkCoins, useSharkCoins } from '@/hooks/use-shark-coins';
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle } from '@/ui';
 import { useQueryClient } from '@tanstack/react-query';
-import { Check, ImageIcon } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { Lottie } from 'lottie-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
@@ -17,9 +17,26 @@ import tapBurstAnimation from '../../../public/lottie/tap-burst.json';
 
 const HAT_COST = 500;
 const otherRewards = [
-  { id: 'advice-discount', title: 'other-advice-discount', company: 'Tumbleweed co.', cost: 7500 },
-  { id: 'account-bonus', title: 'other-account-bonus', company: 'Tumbleweed co.', cost: 6000 },
-  { id: 'investment-webinar', title: 'other-investment-webinar', cost: 5000 },
+  {
+    id: 'advice-discount',
+    title: 'other-advice-discount',
+    company: 'Tumbleweed co.',
+    cost: 7500,
+    image: '/img/rewards/reward-1.png',
+  },
+  {
+    id: 'account-bonus',
+    title: 'other-account-bonus',
+    company: 'Tumbleweed co.',
+    cost: 6000,
+    image: '/img/rewards/reward-2.png',
+  },
+  {
+    id: 'investment-webinar',
+    title: 'other-investment-webinar',
+    cost: 5000,
+    image: '/img/rewards/reward-3.png',
+  },
 ] as const;
 
 type ShopModalProps = {
@@ -188,7 +205,13 @@ export const ShopModal = ({ open, onOpenChange }: ShopModalProps) => {
                   }
                 >
                   <div className="relative flex min-h-40 flex-1 items-center justify-center rounded-lg bg-blue-50">
-                    <ImageIcon className="size-10 text-grey-400" aria-hidden />
+                    <Image
+                      src={reward.image}
+                      alt=""
+                      fill
+                      sizes="(max-width: 768px) 50vw, 25vw"
+                      className="object-contain p-3"
+                    />
                     {isBought && (
                       <span className="absolute right-2 top-2 flex size-8 items-center justify-center rounded-full bg-green-600 text-white">
                         <Check className="size-5" aria-hidden />
