@@ -18,7 +18,7 @@ export const UserAvatar = ({ user, className }: UserAvatarProps) => {
   return (
     <span
       className={clsx(
-        'relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white text-blue-950',
+        'relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white text-blue-950',
         className,
       )}
     >

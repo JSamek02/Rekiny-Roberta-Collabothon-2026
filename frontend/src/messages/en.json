@@ -134,7 +134,7 @@
       "log-out": "Log out",
       "account-menu": "Account menu",
       "account-type": "Account type",
-      "no-name": "No name",
+      "no-name": "Guest",
       "error": "Something went wrong. Please try again.",
       "roles": {
         "guest": "Guest",
