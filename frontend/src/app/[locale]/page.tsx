@@ -14,7 +14,7 @@ export default async function Home() {
   const t = await getTranslations('components.learning-category.categories');
 
   return (
-    <main className="flex-1 flex flex-col px-3 py-6 gap-6 overflow-x-clip overflow-y-clip">
+    <main className="flex-1 flex flex-col px-3 pt-6 gap-6 overflow-x-clip overflow-y-clip">
       <StartingQuizModal />
       <LevelBar />
       <div className="grid grid-cols-2 gap-2">

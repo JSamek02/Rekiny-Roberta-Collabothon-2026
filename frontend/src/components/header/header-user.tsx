@@ -59,8 +59,10 @@ export const HeaderUser = () => {
         className="flex items-center gap-2 rounded-full cursor-pointer"
       >
         {/* <UserAvatar user={user} /> */}
-        <Avatar />
-        <RoleBadge type={viewerType} />
+        <Avatar className="size-8 rounded-full bg-blue-100" />
+        <span className="max-w-32 truncate text-sm font-semibold text-blue-950">
+          {user.name?.trim().split(/\s+/)[0] || t('no-name')}
+        </span>
       </button>
 
       {open && (
@@ -69,7 +71,7 @@ export const HeaderUser = () => {
           className="absolute left-0 top-12 z-30 flex w-64 flex-col gap-3 rounded-xl border border-blue-100 bg-white p-4 shadow-lg"
         >
           <div className="flex items-center gap-3">
-            <UserAvatar user={user} className="bg-blue-50" />
+            <Avatar className="size-12 rounded-full bg-blue-100" />
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-blue-950">{user.name || t('no-name')}</p>
               {user.email && <p className="truncate text-xs text-grey-600">{user.email}</p>}

@@ -3,7 +3,6 @@
 import {
   AvatarBaseImage,
   AvatarHatImage,
-  avatarHats,
   useAvatar,
   type AvatarHat,
 } from '@/components/avatar';
@@ -22,6 +21,7 @@ import {
 } from '@/ui';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useShop } from '@/components/shop';
 
 const HAT_CAROUSEL_OPTIONS = {
   loop: true,
@@ -60,14 +60,17 @@ const HatCarouselControl = ({ direction }: { direction: 'previous' | 'next' }) =
   );
 };
 
-const HatCarouselSync = ({ onSelectHat }: Pick<HatCarouselProps, 'onSelectHat'>) => {
+const HatCarouselSync = ({
+  onSelectHat,
+  hats,
+}: Pick<HatCarouselProps, 'onSelectHat'> & { hats: AvatarHat[] }) => {
   const { api } = useCarousel();
 
   useEffect(() => {
     if (!api) return;
 
     const updateSelection = () => {
-      const hat = avatarHats[api.selectedScrollSnap()];
+      const hat = hats[api.selectedScrollSnap()];
       if (hat !== undefined) onSelectHat(hat);
     };
 
@@ -78,7 +81,7 @@ const HatCarouselSync = ({ onSelectHat }: Pick<HatCarouselProps, 'onSelectHat'>)
       api.off('select', updateSelection);
       api.off('reInit', updateSelection);
     };
-  }, [api, onSelectHat]);
+  }, [api, hats, onSelectHat]);
 
   return null;
 };
@@ -96,11 +99,12 @@ const PersonalizationContent = ({
   onSave,
   onCancel,
 }: PersonalizationContentProps) => {
+  const { boughtHats } = useShop();
   const [draftHat, setDraftHat] = useState(selectedHat);
   const setDraftHatStable = useCallback((hat: AvatarHat) => setDraftHat(hat), []);
   const carouselOptions = useMemo(
-    () => ({ ...HAT_CAROUSEL_OPTIONS, startIndex: selectedHat - 1 }),
-    [selectedHat],
+    () => ({ ...HAT_CAROUSEL_OPTIONS, startIndex: Math.max(boughtHats.indexOf(selectedHat), 0) }),
+    [boughtHats, selectedHat],
   );
 
   const save = () => {
@@ -121,7 +125,7 @@ const PersonalizationContent = ({
             <div className="relative size-48">
               <AvatarBaseImage className="absolute inset-0 z-0" />
               <CarouselSlides className="absolute inset-0 z-10 h-full w-full [--slide-gap:0px]">
-                {avatarHats.map((hat) => (
+                {boughtHats.map((hat) => (
                   <CarouselSlide key={hat} className="flex h-full items-center justify-center">
                     <AvatarHatImage hat={hat} className="h-full w-full" />
                   </CarouselSlide>
@@ -131,9 +135,9 @@ const PersonalizationContent = ({
             <HatCarouselControl direction="next" />
           </div>
           <div className="mt-3 text-center text-xs font-medium text-grey-600">
-            Hat {draftHat} of {avatarHats.length}
+            Hat {draftHat} of {boughtHats.length}
           </div>
-          <HatCarouselSync onSelectHat={setDraftHatStable} />
+          <HatCarouselSync hats={boughtHats} onSelectHat={setDraftHatStable} />
         </CarouselRoot>
       </div>
 

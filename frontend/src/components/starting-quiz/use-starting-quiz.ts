@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useSyncExternalStore } from 'react';
 import { useViewer } from '@/components/auth';
 import { STARTING_QUIZ_STEPS, STARTING_QUIZ_STORAGE_KEY_PREFIX } from './constants';
 import type { StartingQuizAnswers } from './types';
@@ -10,17 +10,17 @@ export const useStartingQuiz = () => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [answers, setAnswers] = useState<StartingQuizAnswers>({});
   const [isDismissed, setIsDismissed] = useState(false);
-  const [isClientReady, setIsClientReady] = useState(false);
+  const isClientReady = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   const storageKey = useMemo(() => {
     return user?.id
       ? `${STARTING_QUIZ_STORAGE_KEY_PREFIX}${user.id}`
       : `${STARTING_QUIZ_STORAGE_KEY_PREFIX}guest`;
   }, [user?.id]);
-
-  useEffect(() => {
-    setIsClientReady(true);
-  }, []);
 
   const hasCompletedInStorage = useMemo(() => {
     if (!isClientReady || !storageKey) return false;
@@ -32,9 +32,9 @@ export const useStartingQuiz = () => {
   }, [isClientReady, storageKey]);
 
   const shouldShow = useMemo(() => {
-    if (!isClientReady) return false;
+    if (!isClientReady || status === 'loading') return false;
     // Ankieta pojawia się po zalogowaniu, chyba że wymuszono test
-    if (status !== 'authenticated' && status !== 'loading') return false;
+    if (status !== 'authenticated') return false;
     if (isDismissed) return false;
     return !hasCompletedInStorage;
   }, [isClientReady, status, isDismissed, hasCompletedInStorage]);

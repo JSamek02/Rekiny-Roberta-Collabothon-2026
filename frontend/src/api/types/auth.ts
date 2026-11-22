@@ -52,6 +52,17 @@ export namespace ApiPostGameCoin {
   };
 }
 
+export namespace ApiPostShopPurchase {
+  export type Body = {
+    item_id: string;
+  };
+
+  export type Response = {
+    shark_coins: number;
+    cost: number;
+  };
+}
+
 export namespace ApiPostLogout {
   export type Response = {
     status: 'ok';

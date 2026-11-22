@@ -116,7 +116,7 @@ export const SharkbotChatMessages = ({
         ),
       )}
 
-      {!isLoading && (
+      {isLoading && (
         <div className="flex items-end gap-3 rounded-xl border border-blue-100 bg-white p-4 isolate relative aspect-390/250 overflow-hidden">
           <div className="flex min-w-0 flex-1 flex-col gap-1 z-10 text-shadow-md">
             <p className="text-2xl font-medium text-white">{t('waiting-title')}</p>

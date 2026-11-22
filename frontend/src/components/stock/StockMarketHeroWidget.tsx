@@ -18,7 +18,7 @@ export const StockMarketHeroWidget: React.FC<StockMarketHeroWidgetProps> = ({ is
   const displayCoins = sharkCoins && sharkCoins > 0 ? sharkCoins : 3000;
 
   const content = (
-    <div className="relative overflow-hidden bg-blue-500 rounded-xl p-3 text-white shadow-xs h-[102px] flex flex-col justify-between">
+    <div className="relative isolate overflow-hidden bg-blue-500 rounded-xl p-3 text-white shadow-xs h-[102px] flex flex-col justify-between">
       <div className="relative z-10 max-w-[70%] flex flex-col justify-between h-full">
         <div>
           <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/20 text-[10px] font-medium backdrop-blur-xs mb-1 w-fit">

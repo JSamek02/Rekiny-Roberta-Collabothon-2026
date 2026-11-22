@@ -39,6 +39,22 @@
     "level-bar": {
       "next-level": "Next level {points}"
     },
+    "rewards": {
+      "title": "Rewards",
+      "category-hats": "Shark hats",
+      "category-others": "Others",
+      "hat": "Hat {number}",
+      "buy": "Buy · {price} SC",
+      "purchasing": "Purchasing…",
+      "owned": "Owned",
+      "balance": "{balance} SC",
+      "not-enough-coins": "Not enough SharkCoins.",
+      "purchase-error": "Could not complete the purchase. Please try again.",
+      "other-advice-discount": "Investment advice discount - 50 PLN",
+      "other-account-bonus": "50 PLN to start an account",
+      "other-investment-webinar": "Investment webinar",
+      "open-with-balance": "Open Rewards. Balance: {balance} SharkCoins"
+    },
     "chat-fab": {
       "label": "Open Sharkbot chat"
     },
@@ -608,7 +624,14 @@
   "pages": {
     "profile": {
       "heading": "Welcome,<br></br><span>{name}</span>",
-      "edit-personalization": "Edit personalization"
+      "edit-personalization": "Edit personalization",
+      "change-language": "Change language",
+      "contrast": {
+        "label": "Contrast",
+        "normal": "Normal",
+        "black-white": "Black & white",
+        "black-yellow": "Black & yellow"
+      }
     }
   },
   "global": {

@@ -1,7 +1,7 @@
 'use client';
 
 import { RankingEntry } from '@/api/types/ranking';
-import { UserAvatar } from '@/components/auth';
+import { Avatar } from '@/components/avatar';
 import clsx from 'clsx';
 import { useFormatter, useTranslations } from 'next-intl';
 
@@ -15,9 +15,10 @@ const PODIUM_STYLES: Record<number, string> = {
 type RankingRowProps = {
   entry: RankingEntry;
   isCurrentUser?: boolean;
+  forceHat?: 1 | 2 | 3 | 4;
 };
 
-export const RankingRow = ({ entry, isCurrentUser = false }: RankingRowProps) => {
+export const RankingRow = ({ entry, isCurrentUser = false, forceHat }: RankingRowProps) => {
   const t = useTranslations('components.ranking');
   const format = useFormatter();
   const name = entry.name || t('anonymous');
@@ -40,7 +41,8 @@ export const RankingRow = ({ entry, isCurrentUser = false }: RankingRowProps) =>
         {entry.rank}
       </span>
 
-      <UserAvatar user={{ name: entry.name, picture: entry.picture }} className="bg-blue-50" />
+      {/* <UserAvatar user={{ name: entry.name, picture: entry.picture }} className="bg-blue-50" /> */}
+      <Avatar className="size-12 rounded-full bg-blue-100" hat={forceHat} />
 
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold text-blue-950">{name}</p>

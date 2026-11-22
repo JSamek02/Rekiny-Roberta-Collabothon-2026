@@ -39,6 +39,22 @@
     "level-bar": {
       "next-level": "Następny poziom: {points}"
     },
+    "rewards": {
+      "title": "Nagrody",
+      "category-hats": "Czapki rekinów",
+      "category-others": "Inne",
+      "hat": "Czapka {number}",
+      "buy": "Kup · {price} SC",
+      "purchasing": "Kupowanie…",
+      "owned": "Posiadane",
+      "balance": "{balance} SC",
+      "not-enough-coins": "Za mało SharkCoinów.",
+      "purchase-error": "Nie udało się zrealizować zakupu. Spróbuj ponownie.",
+      "other-advice-discount": "Zniżka na poradę inwestycyjną - 50zł",
+      "other-account-bonus": "50zł na start konta",
+      "other-investment-webinar": "Webinar inwestycyjny",
+      "open-with-balance": "Otwórz Nagrody. Saldo: {balance} SharkCoinów"
+    },
     "chat-fab": {
       "label": "Otwórz czat z Sharkbotem"
     },
@@ -608,7 +624,14 @@
   "pages": {
     "profile": {
       "heading": "Witaj,<br></br><span>{name}</span>",
-      "edit-personalization": "Edytuj personalizację"
+      "edit-personalization": "Edytuj personalizację",
+      "change-language": "Zmień język",
+      "contrast": {
+        "label": "Kontrast",
+        "normal": "Normalny",
+        "black-white": "Czarny i biały",
+        "black-yellow": "Czarny i żółty"
+      }
     }
   },
   "global": {
