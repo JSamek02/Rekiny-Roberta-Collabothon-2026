@@ -12,6 +12,9 @@ import { routes } from '@/utils/routes';
 import { useQueries } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { type ReactNode } from 'react';
+import { usePathname } from '@/i18n/navigation';
+import { useShop } from '@/components/shop/shop-context';
+import { CourseMarketplaceButton } from '@/components/course-marketplace-button';
 
 type Category = {
   key: 'stocks-bonds' | 'investing' | 'budgeting' | 'economics';
@@ -45,6 +48,9 @@ const categories: Category[] = [
 export const LessonCategoryGrid = () => {
   const t = useTranslations('components.learning-category.categories');
   const localActivities = useLocalLearningProgress();
+  const pathname = usePathname();
+  const { starredCourses } = useShop();
+  const isLearningPage = pathname === routes.learning;
   const courseQueries = useQueries({
     queries: categories.map(({ courseSlug }) => ({
       queryKey: LEARNING_QUERY_KEYS.roadmapCourse(courseSlug),
@@ -56,22 +62,48 @@ export const LessonCategoryGrid = () => {
   });
 
   return (
-    <div className="grid grid-cols-2 gap-2">
-      {categories.map((category, index) => {
-        const lessons = courseQueries[index].data?.course.lessons ?? [];
-        const completed = getCompletedLessonsCount(lessons, localActivities);
+    <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-2 gap-2">
+        {categories.map((category, index) => {
+          if (isLearningPage && !starredCourses.includes(category.key)) return null;
+          const lessons = courseQueries[index].data?.course.lessons ?? [];
+          const completed = getCompletedLessonsCount(lessons, localActivities);
 
-        return (
-          <LessonCategoryNavItem
-            key={category.key}
-            title={t(category.key)}
-            icon={category.icon}
-            completed={completed}
-            total={lessons.length}
-            href={routes.learningCategory(category.key)}
-          />
-        );
-      })}
+          return (
+            <LessonCategoryNavItem
+              key={category.key}
+              title={t(category.key)}
+              icon={category.icon}
+              completed={completed}
+              total={lessons.length}
+              href={routes.learningCategory(category.key)}
+            />
+          );
+        })}
+      </div>
+      {isLearningPage && starredCourses.includes('taxes') && (
+        <article className="flex min-h-20 items-center gap-3 rounded-xl border border-blue-100 bg-white p-2.5">
+          <div className="flex size-11 items-center justify-center rounded-lg bg-blue-50 text-blue-950">T</div>
+          <div className="flex flex-col">
+            <h3 className="text-xs font-semibold text-blue-950">Taxes</h3>
+            <span className="mt-1 w-fit rounded-full bg-blue-500 px-2 py-0.5 text-[10px] font-semibold text-white">
+              Tumbleweed co.
+            </span>
+          </div>
+        </article>
+      )}
+      {isLearningPage && starredCourses.includes('retirement') && (
+        <article className="flex min-h-20 items-center gap-3 rounded-xl border border-blue-100 bg-white p-2.5">
+          <div className="flex size-11 items-center justify-center rounded-lg bg-blue-50 text-blue-950">R</div>
+          <div className="flex flex-col">
+            <h3 className="text-xs font-semibold text-blue-950">Retirement</h3>
+            <span className="mt-1 w-fit rounded-full bg-blue-500 px-2 py-0.5 text-[10px] font-semibold text-white">
+              Tumbleweed co.
+            </span>
+          </div>
+        </article>
+      )}
+      <CourseMarketplaceButton />
     </div>
   );
 };
