@@ -39,7 +39,7 @@ The prototype is usable today and includes:
 - Google OAuth authentication and a no-credential mock-login mode for demonstrations, with user roles, preferences and session handling.
 - Four roadmap categories — stocks and bonds, investing, budgeting and economics — with lessons made of articles, quizzes and video activities. Completion state is tracked per user, and each category shows live completed-lesson progress.
 - Polish, English and German interfaces and learning content. Video activities can store an MP4 per language, stream it with range requests, and safely cache versioned URLs.
-- Historical, quarter-by-quarter investment simulations in which users choose allocations, review market events and receive a debrief with portfolio results.
+- Historical, quarter-by-quarter investment simulations in which users choose allocations, review market events and receive a debrief with portfolio results. User can run scenario many times and test different strategies.
 - Robert Biznesu chat: retrieval-augmented answers based on curated finance knowledge and course material, lesson recommendations, optional voice output and a safe demo fallback when Gemini is unavailable.
 - A leaderboard, XP and SharkCoin rewards, profile and avatar customisation, accessibility controls, onboarding quiz, mini-game and shop interface.
 
@@ -59,7 +59,7 @@ We also had to make progress work consistently for guests and signed-in users, s
 
 We produced an end-to-end learning prototype that joins onboarding, courses, quizzes, multimedia, gamification, simulations, ranking and AI assistance in one product. Backend tests cover the key course, chat, ranking and simulation flows, while the frontend has type and lint checks. We are most proud of making several different learning modes feel like parts of one coherent finance journey.
 
-The current prototype intentionally has limits: videos are stored in the database rather than object storage, simulation scenarios are curated rather than live market data, and some personalisation and shop state remain client-side. Next, we would move media to object storage, persist all customisation and onboarding data, expand course and simulation content, add user research and accessibility testing, and introduce stronger production analytics and moderation controls for the AI experience.
+The current prototype intentionally has limits: videos are stored in the database rather than object storage some personalisation and shop state remain client-side. Next, we would move media to object storage, persist all customisation and onboarding data, expand course and simulation content, add user research and accessibility testing, and introduce stronger production analytics and moderation controls for the AI experience.
 
 We also want to build a complete authoring system for creating and customising courses, lessons and activities, including new activity formats beyond articles, quizzes and videos. Financial partners could create their own verified learning paths. At a defined mastery level, earned through progress and XP, a learner could unlock an integration with a full investment platform. SharkCoins could also become redeemable for real partner rewards from financial institutions, subject to appropriate partner agreements, security controls and regulatory requirements.
 
