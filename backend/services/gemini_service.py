@@ -118,6 +118,25 @@ ZASADY DLA PYTAŃ SPOZA FINANSÓW (BĄDŹ DYNAMICZNY I ZABAWNY):
    - Przypomnij, że prawo i regulacje KNF zabraniają wróżenia z fusów i obiecywania pewnych zysków, a każda inwestycja wiąże się z ryzykiem. Zaproponuj naukę dywersyfikacji i analizy.
 """
 
+RESPONSE_LANGUAGE_NAMES = {
+    "pl": "Polish",
+    "en": "English",
+    "de": "German",
+}
+
+FALLBACK_RESPONSES = {
+    "en": (
+        "Hi, {name}! I am Robert Biznesu. 🦈\n\n"
+        "I can help you understand finances—from household budgets and emergency funds, through compound interest, "
+        "to stock-market investing and ETFs. What would you like to ask about?"
+    ),
+    "de": (
+        "Hallo, {name}! Ich bin Robert Biznesu. 🦈\n\n"
+        "Ich helfe dir dabei, Finanzen zu verstehen – vom Haushaltsbudget und Notgroschen über den Zinseszins "
+        "bis zu Börseninvestitionen und ETFs. Worum geht es bei deiner Frage?"
+    ),
+}
+
 
 def generate_synthetic_wav(duration_seconds: float = 0.5, freq: float = 440.0) -> bytes:
     """Generates a valid lightweight PCM WAV tone for mock/demo mode when API key is unset or offline."""
@@ -207,10 +226,12 @@ class GeminiService:
         context_chunks: List[Dict[str, Any]],
         conversation_history: Optional[List[Dict[str, str]]] = None,
         user_name: Optional[str] = None,
+        language: str = "pl",
     ) -> Dict[str, Any]:
         """
         Generates grounded financial response using Gemini with RAG context.
         """
+        language = language if language in RESPONSE_LANGUAGE_NAMES else "pl"
         context_blocks = []
         for i, chunk in enumerate(context_chunks, 1):
             source_title = chunk.get("title", f"Fragment {i}")
@@ -254,7 +275,14 @@ Imię: {safe_user_name}
                     interaction = self._client.interactions.create(
                         model=model_name,
                         input=prompt_input,
-                        system_instruction=ROBERT_BIZNESU_SYSTEM_INSTRUCTION,
+                        system_instruction=(
+                            f"{ROBERT_BIZNESU_SYSTEM_INSTRUCTION}\n\n"
+                            "RESPONSE LANGUAGE:\n"
+                            f"- Your entire response must be in {RESPONSE_LANGUAGE_NAMES[language]}. "
+                            "This includes greetings, refusals, markdown, lesson recommendations, and the investment disclaimer.\n"
+                            "- The RAG context can be in another language; use it as source material, but do not let it change "
+                            "the response language."
+                        ),
                     )
                     output_text = interaction.output_text
                     if output_text:
@@ -276,7 +304,7 @@ Imię: {safe_user_name}
                     print(f"[GeminiService] Model {model_name} error: {e}")
 
         # Graceful fallback response when offline or models unavailable
-        mock_reply = self._generate_fallback_response(user_message, context_chunks, user_name)
+        mock_reply = self._generate_fallback_response(user_message, context_chunks, user_name, language)
         return {
             "reply": mock_reply,
             "model": "gemini (tryb awaryjny)",
@@ -356,7 +384,12 @@ Imię: {safe_user_name}
         query: str,
         context_chunks: List[Dict[str, Any]],
         user_name: Optional[str],
+        language: str = "pl",
     ) -> str:
+        if language in FALLBACK_RESPONSES:
+            default_name = "young Shark" if language == "en" else "junger Hai"
+            return FALLBACK_RESPONSES[language].format(name=user_name or default_name)
+
         name = user_name or "młody Rekinie"
         q_lower = query.lower()
 

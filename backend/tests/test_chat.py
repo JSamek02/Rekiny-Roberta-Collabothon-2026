@@ -103,6 +103,22 @@ class ChatApiTest(unittest.TestCase):
         self.assertIn("poduszka", top_source["title"].lower())
         self.assertIsNone(data["audio_base64"])
 
+    def test_chat_uses_accept_language(self):
+        with patch("api.chat.gemini_service.generate_chat_response") as generate_response:
+            generate_response.return_value = {
+                "reply": "Hallo!",
+                "model": "test-model",
+                "sources": [],
+            }
+            resp = self.client.post(
+                "/api/chat/message",
+                json={"message": "Was ist ein ETF?"},
+                headers={"Accept-Language": "de-DE,de;q=0.9"},
+            )
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(generate_response.call_args.kwargs["language"], "de")
+
     def test_chat_message_with_voice(self):
         resp = self.client.post(
             "/api/chat/message",
@@ -169,7 +185,25 @@ class ChatApiTest(unittest.TestCase):
         )
         self.assertEqual(resp["reply"], "Odpowiedź od gemini-4-hydrogen!")
         self.assertIn("gemini", resp["model"])
+        self.assertIn("English", mock_client.interactions.create.call_args.kwargs["system_instruction"])
         mock_client.interactions.create.assert_called_once()
+
+    def test_fallback_respects_requested_language(self):
+        service = GeminiService(api_key=None)
+
+        english_reply = service.generate_chat_response(
+            user_message="What is an ETF?",
+            context_chunks=[],
+            language="en",
+        )["reply"]
+        german_reply = service.generate_chat_response(
+            user_message="Was ist ein ETF?",
+            context_chunks=[],
+            language="de",
+        )["reply"]
+
+        self.assertTrue(english_reply.startswith("Hi,"))
+        self.assertTrue(german_reply.startswith("Hallo,"))
 
     def test_message_too_long_rejected(self):
         long_message = "A" * 1001

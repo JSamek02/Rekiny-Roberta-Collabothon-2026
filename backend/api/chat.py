@@ -8,6 +8,7 @@ from flask.views import MethodView
 
 from api.auth import get_authenticated_user
 from database import database
+from database.models import SUPPORTED_LANGUAGE_CODES
 from services.gemini_service import GeminiService
 from services.rag_service import RagService
 
@@ -57,6 +58,16 @@ def get_client_ip() -> str:
     return request.remote_addr or "127.0.0.1"
 
 
+def request_chat_language() -> str:
+    for language, quality in request.accept_languages:
+        if quality <= 0:
+            continue
+        language_code = language.lower().split("-", 1)[0]
+        if language_code in SUPPORTED_LANGUAGE_CODES:
+            return language_code
+    return "pl"
+
+
 class ChatMessageView(MethodView):
     def post(self):
         client_ip = get_client_ip()
@@ -78,6 +89,7 @@ class ChatMessageView(MethodView):
         voice = data.get("voice", "Puck")
         voice_enabled = bool(data.get("voice_enabled", False))
         raw_history = data.get("history", [])
+        language = request_chat_language()
 
         # Sanitize and truncate history
         history: List[Dict[str, str]] = []
@@ -107,6 +119,7 @@ class ChatMessageView(MethodView):
             context_chunks=retrieved_chunks,
             conversation_history=history,
             user_name=user_name,
+            language=language,
         )
 
         reply_text = response_data.get("reply", "")

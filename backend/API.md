@@ -424,7 +424,7 @@ Odpowiedź `201` dla nowego pliku albo `200` dla zastąpionego:
 
 ### `POST /api/chat/message`
 
-Wysyła wiadomość do RAG/Gemini. Sesja jest opcjonalna; jeśli istnieje, chatbot użyje imienia użytkownika. 
+Wysyła wiadomość do RAG/Gemini. Sesja jest opcjonalna; jeśli istnieje, chatbot użyje imienia użytkownika. Odpowiedź jest generowana w języku z nagłówka `Accept-Language`: `pl`, `en` lub `de` (np. `de-DE` wybiera `de`); bez obsługiwanego nagłówka domyślny jest polski.
 
 Body JSON:
 
