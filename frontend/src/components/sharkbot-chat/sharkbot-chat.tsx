@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from 'react';
 
 const VOICE = 'Algieba';
 const HISTORY_LIMIT = 6;
+const SPEECH_RECOGNITION_LOCALES = { pl: 'pl-PL', en: 'en-US', de: 'de-DE' } as const;
 
 type SpeechRecognitionResultEvent = { results: ArrayLike<ArrayLike<{ transcript: string }>> };
 type SpeechRecognitionInstance = {
@@ -164,6 +165,7 @@ export const SharkbotChat = () => {
     try {
       const response = await sendChatMutation.mutateAsync({
         message: text,
+        language: locale,
         voice: VOICE,
         voice_enabled: voiceEnabled,
         history,
@@ -233,7 +235,7 @@ export const SharkbotChat = () => {
     }
 
     const recognition = new SpeechRecognition();
-    recognition.lang = locale === 'pl' ? 'pl-PL' : 'en-US';
+    recognition.lang = SPEECH_RECOGNITION_LOCALES[locale];
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
     recognition.onresult = (event) => {

@@ -118,6 +118,37 @@ class ChatApiTest(unittest.TestCase):
 
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(generate_response.call_args.kwargs["language"], "de")
+        self.assertEqual(resp.get_json()["language"], "de")
+
+    def test_chat_body_language_overrides_header(self):
+        with patch("api.chat.gemini_service.generate_chat_response") as generate_response:
+            generate_response.return_value = {
+                "reply": "Hello!",
+                "model": "test-model",
+                "sources": [],
+            }
+            resp = self.client.post(
+                "/api/chat/message",
+                json={"message": "What is an ETF?", "language": "en"},
+                headers={"Accept-Language": "pl"},
+            )
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(generate_response.call_args.kwargs["language"], "en")
+        self.assertEqual(resp.get_json()["language"], "en")
+
+    def test_chat_defaults_to_english(self):
+        with patch("api.chat.gemini_service.generate_chat_response") as generate_response:
+            generate_response.return_value = {
+                "reply": "Hello!",
+                "model": "test-model",
+                "sources": [],
+            }
+            resp = self.client.post("/api/chat/message", json={"message": "What is an ETF?"})
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(generate_response.call_args.kwargs["language"], "en")
+        self.assertEqual(resp.get_json()["language"], "en")
 
     def test_chat_message_with_voice(self):
         resp = self.client.post(
@@ -182,10 +213,13 @@ class ChatApiTest(unittest.TestCase):
             user_message="Jak zacząć inwestować?",
             context_chunks=[{"id": "c1", "title": "Podstawy", "category": "investing", "content": "..."}],
             user_name="Anna",
+            language="en",
         )
         self.assertEqual(resp["reply"], "Odpowiedź od gemini-4-hydrogen!")
         self.assertIn("gemini", resp["model"])
-        self.assertIn("English", mock_client.interactions.create.call_args.kwargs["system_instruction"])
+        request_kwargs = mock_client.interactions.create.call_args.kwargs
+        self.assertIn("Answer only in English", request_kwargs["system_instruction"])
+        self.assertIn("Answer only in English", request_kwargs["input"])
         mock_client.interactions.create.assert_called_once()
 
     def test_fallback_respects_requested_language(self):

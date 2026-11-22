@@ -58,14 +58,20 @@ def get_client_ip() -> str:
     return request.remote_addr or "127.0.0.1"
 
 
-def request_chat_language() -> str:
+def request_chat_language(data: Dict[str, Any]) -> str:
+    requested_language = data.get("language")
+    if isinstance(requested_language, str):
+        language_code = requested_language.lower().split("-", 1)[0]
+        if language_code in SUPPORTED_LANGUAGE_CODES:
+            return language_code
+
     for language, quality in request.accept_languages:
         if quality <= 0:
             continue
         language_code = language.lower().split("-", 1)[0]
         if language_code in SUPPORTED_LANGUAGE_CODES:
             return language_code
-    return "pl"
+    return "en"
 
 
 class ChatMessageView(MethodView):
@@ -89,7 +95,7 @@ class ChatMessageView(MethodView):
         voice = data.get("voice", "Puck")
         voice_enabled = bool(data.get("voice_enabled", False))
         raw_history = data.get("history", [])
-        language = request_chat_language()
+        language = request_chat_language(data)
 
         # Sanitize and truncate history
         history: List[Dict[str, str]] = []
@@ -149,6 +155,7 @@ class ChatMessageView(MethodView):
 
         return jsonify({
             "reply": reply_text,
+            "language": language,
             "model": response_data.get("model", "gemini-4-hydrogen"),
             "voice": voice,
             "voice_enabled": voice_enabled,

@@ -424,22 +424,23 @@ Odpowiedź `201` dla nowego pliku albo `200` dla zastąpionego:
 
 ### `POST /api/chat/message`
 
-Wysyła wiadomość do RAG/Gemini. Sesja jest opcjonalna; jeśli istnieje, chatbot użyje imienia użytkownika. Odpowiedź jest generowana w języku z nagłówka `Accept-Language`: `pl`, `en` lub `de` (np. `de-DE` wybiera `de`); bez obsługiwanego nagłówka domyślny jest polski.
+Wysyła wiadomość do RAG/Gemini. Sesja jest opcjonalna; jeśli istnieje, chatbot użyje imienia użytkownika. Odpowiedź jest generowana w języku `language` z body (`pl`, `en` lub `de`); gdy go nie ma, backend używa `Accept-Language` (np. `de-DE` wybiera `de`). Bez obsługiwanego języka domyślny jest angielski.
 
 Body JSON:
 
 ```json
 {
   "message":"Czym jest ETF?",
+  "language":"pl",
   "voice":"Puck",
   "voice_enabled":true,
   "history":[{"role":"user","content":"Cześć"}]
 }
 ```
 
-Wymagane jest niepuste `message`. Opcjonalne: `voice` (domyślnie `Puck`), `voice_enabled` (domyślnie `false`) i `history` (domyślnie pusta lista). `history` jest obecnie przyjmowane dla zgodności z frontendem, ale nie wpływa jeszcze na odpowiedź modelu.
+Wymagane jest niepuste `message`. Opcjonalne: `language`, `voice` (domyślnie `Puck`), `voice_enabled` (domyślnie `false`) i `history` (domyślnie pusta lista). `history` jest obecnie przyjmowane dla zgodności z frontendem, ale nie wpływa jeszcze na odpowiedź modelu.
 
-Odpowiedź `200` zawiera `reply`, `model`, `voice`, `voice_enabled`, `audio_base64` (albo `null`), `mime_type` (albo `null`), `sources` oraz `suggested_lessons`. Każda pozycja `suggested_lessons` ma `slug`, `title` i `category`. Puste `message` zwraca `400`.
+Odpowiedź `200` zawiera `reply`, wybrany `language`, `model`, `voice`, `voice_enabled`, `audio_base64` (albo `null`), `mime_type` (albo `null`), `sources` oraz `suggested_lessons`. Każda pozycja `suggested_lessons` ma `slug`, `title` i `category`. Puste `message` zwraca `400`.
 
 ### `GET /api/chat/voices`
 

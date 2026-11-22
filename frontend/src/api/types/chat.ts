@@ -17,6 +17,7 @@ export namespace ApiPostChatMessage {
 
   export type Body = {
     message: string;
+    language?: 'pl' | 'en' | 'de';
     voice?: string;
     voice_enabled?: boolean;
     history?: { role: string; content: string }[];
@@ -26,6 +27,7 @@ export namespace ApiPostChatMessage {
 
   export type Response = {
     reply: string;
+    language: 'pl' | 'en' | 'de';
     model: string;
     voice: string;
     voice_enabled: boolean;
