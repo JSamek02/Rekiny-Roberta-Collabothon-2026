@@ -1,6 +1,6 @@
 import { BottomNavItem } from '@/components/bottom-nav/bottom-nav-item';
+import { BankIcon } from '@/icons/bank';
 import { BooksIcon } from '@/icons/books';
-import { TrophyIcon } from '@/icons/trophy';
 import { UserIcon } from '@/icons/user';
 import { WalletIcon } from '@/icons/wallet';
 import { routes } from '@/utils/routes';
@@ -15,9 +15,9 @@ export const BottomNav = async () => {
         <BooksIcon />
         <span>{t('learning')}</span>
       </BottomNavItem>
-      <BottomNavItem href={routes.ranking}>
-        <TrophyIcon />
-        <span>{t('ranking')}</span>
+      <BottomNavItem href={routes.investmentPlatform}>
+        <BankIcon />
+        <span>{t('investment-platform')}</span>
       </BottomNavItem>
       <BottomNavItem href={routes.stock}>
         <WalletIcon />

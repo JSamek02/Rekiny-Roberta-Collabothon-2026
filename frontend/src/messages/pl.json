@@ -176,7 +176,8 @@
         "partner": "Partner"
       },
       "xp": "XP",
-      "experience": "Twoje punkty doświadczenia (EXP)"
+      "experience": "Twoje punkty doświadczenia (EXP)",
+      "level-progress": "Poziom {level}. {current} z {total} XP do następnego poziomu. Otwórz ranking."
     },
     "login-view": {
       "kicker": "Witaj na pokładzie!",
@@ -697,6 +698,7 @@
       "home": "Strona główna",
       "learning": "Nauka",
       "ranking": "Ranking",
+      "investment-platform": "Inwestuj",
       "stock": "Giełda",
       "profile": "Profil"
     },

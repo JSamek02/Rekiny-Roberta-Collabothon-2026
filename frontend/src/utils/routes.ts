@@ -5,6 +5,7 @@ export const routes = {
   learningCategory: (category: string) => `/learning/${category}`,
   learningLesson: (category: string, lesson: string) => `/learning/${category}/${lesson}`,
   learningActivity: (activityId: number) => `/learning/activities/${activityId}`,
+  investmentPlatform: '/investment-platform',
   stock: '/stock',
   profile: '/profile',
   settings: '/profile/settings',

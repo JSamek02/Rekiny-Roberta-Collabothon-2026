@@ -20,7 +20,8 @@
         "partner": "Partner"
       },
       "xp": "XP",
-      "experience": "Deine Erfahrungspunkte (EXP)"
+      "experience": "Deine Erfahrungspunkte (EXP)",
+      "level-progress": "Level {level}. {current} von {total} XP bis zum nächsten Level. Rangliste öffnen."
     },
     "login-view": {
       "kicker": "Willkommen an Bord!",
@@ -697,6 +698,7 @@
       "home": "Startseite",
       "learning": "Lernen",
       "ranking": "Rangliste",
+      "investment-platform": "Investieren",
       "stock": "Börse",
       "profile": "Profil"
     },
