@@ -1,24 +1,26 @@
+'use client';
+
 import { Link } from '@/i18n/navigation';
 import { BankIcon } from '@/icons/bank';
-import { getTranslations } from 'next-intl/server';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 
 type LessonCategoryNavItemProps = {
-  title?: string;
+  title: string;
   icon?: React.ReactNode;
-  completed?: number;
-  total?: number;
-  href?: string;
+  completed: number;
+  total: number;
+  href: string;
 };
 
-export const LessonCategoryNavItem = async ({
-  title = 'Bonds and Stocks',
+export const LessonCategoryNavItem = ({
+  title,
   icon,
-  completed = 6,
-  total = 12,
-  href = '/',
+  completed,
+  total,
+  href,
 }: LessonCategoryNavItemProps) => {
-  const t = await getTranslations('components.lesson-category-nav-item');
+  const t = useTranslations('components.lesson-category-nav-item');
   const progressRatio = total > 0 ? Math.min(1, Math.max(0, completed / total)) : 0;
 
   return (
